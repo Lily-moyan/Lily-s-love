@@ -1,0 +1,7 @@
+# 部署密钥等本地文件，不提交
+.deploy/
+
+# 临时文件
+_check.js
+.DS_Store
+Thumbs.db
