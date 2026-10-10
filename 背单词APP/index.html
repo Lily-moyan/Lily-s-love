@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<meta name="color-scheme" content="light">
+<title>每天一个小故事</title>
+<meta name="theme-color" content="#fdf6e8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="小故事">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<style>
+  :root{
+    --cream:#fdf6e8;
+    --card:#ffffff;
+    --ink:#2d3142;
+    --soft:#8a8f9e;
+    --blue:#2b6cb0;
+    --warm:#e8590c;
+    --green:#2f9e63;
+    --line:#eae2d4;
+    --tap:64px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC","Segoe UI",system-ui,sans-serif;
+    line-height:1.7;
+    padding:16px 14px calc(28px + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust:100%;
+    overscroll-behavior-y:contain;
+  }
+  .wrap{max-width:520px;margin:0 auto}
+  h1{font-size:1.3rem;margin:0}
+  .muted{color:var(--soft);font-size:.9rem;margin:2px 0 0}
+
+  /* ---------- 顶栏 ---------- */
+  .top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .top .title{flex:1 1 auto;min-width:0}
+  .star-pill{
+    background:#fff;border:2px solid var(--line);border-radius:999px;
+    padding:6px 14px;font-weight:800;white-space:nowrap;
+  }
+
+  /* ---------- 大按钮 ---------- */
+  button{font-family:inherit;color:var(--ink);cursor:pointer;touch-action:manipulation}
+  button:active{transform:scale(.985)}
+  .btn{
+    display:block;width:100%;min-height:var(--tap);
+    font-size:1.15rem;font-weight:800;
+    background:#fff;border:2px solid var(--line);border-radius:20px;
+    padding:14px 18px;margin:0 0 12px;
+  }
+  .btn.primary{background:var(--green);border-color:var(--green);color:#fff;font-size:1.3rem;min-height:76px}
+  .btn.primary.off{background:#dfeee6;border-color:#dfeee6;color:#4b8f6d}
+  .btn.ghost{background:transparent;font-size:1rem;font-weight:600;color:var(--soft);min-height:52px}
+  .btn.small{display:inline-block;width:auto;min-height:44px;font-size:.95rem;padding:8px 16px;margin:0 8px 8px 0;border-radius:14px}
+
+  /* ---------- 今日卡片 ---------- */
+  .card{
+    background:var(--card);border:2px solid var(--line);border-radius:26px;
+    padding:22px 20px;box-shadow:0 8px 24px rgba(80,70,50,.06);margin-bottom:14px;
+  }
+  .daytag{display:inline-block;background:#fff4e6;color:var(--warm);border-radius:999px;padding:4px 14px;font-weight:800;font-size:.88rem}
+  .word{font-size:clamp(2.8rem,17vw,4.2rem);font-weight:800;color:var(--blue);letter-spacing:.5px;line-height:1.05;margin:10px 0 0;word-break:break-word}
+  .ipa{color:var(--soft);font-size:1.02rem;margin:4px 0 0}
+  .cn{color:var(--warm);font-size:1.45rem;font-weight:800;margin:6px 0 0}
+  .tip{display:inline-block;background:#eefaf1;color:var(--green);border-radius:12px;padding:6px 14px;font-weight:800;margin-top:12px}
+
+  /* ---------- 发音提示 ---------- */
+  .sound{
+    display:flex;align-items:center;gap:12px;background:#f3f8fd;border:2px solid #d9e8f7;
+    border-radius:16px;padding:10px 14px;margin-top:14px;width:100%;
+  }
+  .sound .say-main{
+    display:flex;align-items:center;gap:12px;flex:1 1 auto;min-width:0;
+    background:transparent;border:none;padding:0;text-align:left;
+  }
+  .sound .letter{font-size:2rem;font-weight:800;color:var(--blue);min-width:1.2em;text-align:center}
+  .sound .txt{font-size:.98rem;font-weight:700;color:var(--blue)}
+  .sound .hint{color:var(--soft);font-weight:500;font-size:.9rem}
+  .sound .slow{
+    flex:0 0 auto;min-height:48px;padding:0 14px;border:2px solid #f6c9a8;border-radius:12px;
+    background:#fff;color:var(--warm);font-weight:800;font-size:.95rem;
+  }
+  .say-main{font-family:inherit;color:var(--ink);cursor:pointer}
+  .sayrow{display:flex;gap:10px;margin:6px 0 14px}
+  .sayrow .saybig{margin:0}
+  .sayrow .slowbtn{
+    flex:0 0 auto;min-width:112px;min-height:76px;font-size:1.05rem;font-weight:800;
+    color:var(--warm);background:#fff;border:3px dashed #f6c9a8;border-radius:20px;
+  }
+  .rrow .sps{display:flex;gap:6px;margin-left:auto}
+  .rrow .sps button{min-height:44px;border:2px solid var(--line);background:#fff;border-radius:12px;font-size:1.05rem;padding:0 12px}
+  .rrow .sps button.slow{color:var(--warm);border-color:#f6c9a8}
+  .rrow .ck{margin-left:8px}
+
+  /* ---------- 复习条 ---------- */
+  .review{background:#fff8f0;border:2px solid #f6e2cc;border-radius:22px;padding:16px 18px;margin-bottom:14px}
+  .review h2{font-size:1rem;margin:0 0 2px;color:var(--warm)}
+  .review .muted{margin-bottom:10px}
+  .rrow{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:8px 12px;margin-bottom:8px}
+  .rrow .rw{font-weight:800;color:var(--blue);font-size:1.1rem}
+  .rrow .rc{color:var(--warm);font-weight:700;font-size:.95rem}
+  .rrow .rw2{color:var(--soft);font-size:.78rem}
+  .rrow .sp{margin-left:auto;min-height:44px;min-width:44px;border:2px solid var(--line);background:#fff;border-radius:12px;font-size:1.1rem}
+  .rrow .ck{min-height:44px;border:2px solid var(--line);background:#fff;border-radius:12px;font-weight:800;padding:0 14px}
+  .rrow .ck.ok{background:var(--green);border-color:var(--green);color:#fff}
+  .rrow.done{opacity:.55}
+  .empty{color:var(--soft);font-size:.92rem;margin:0}
+
+  /* ---------- 全屏学一学 ---------- */
+  .sheet{
+    position:fixed;inset:0;background:var(--cream);z-index:50;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding:16px 14px calc(30px + env(safe-area-inset-bottom));
+  }
+  .sheet-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;max-width:520px;margin-left:auto;margin-right:auto}
+  .sheet-top .steps{margin-left:auto;color:var(--soft);font-weight:700;font-size:.9rem}
+  .sheet-body{max-width:520px;margin:0 auto}
+  .xbtn{min-height:44px;min-width:44px;border:2px solid var(--line);background:#fff;border-radius:14px;font-size:1.2rem;font-weight:700}
+
+  .step{display:none}
+  .step.on{display:block}
+  .line{display:flex;align-items:flex-start;gap:8px;margin:0 0 12px;padding:10px 12px;border-radius:14px;background:#fff;border:2px solid var(--line)}
+  .line .linetop{display:flex;flex-direction:column;gap:4px;flex:0 0 auto}
+  .line .linesay,.line .linemic{
+    font-size:1.05rem;line-height:1.6;padding:2px 6px;border-radius:8px;
+    background:#f7f4ec;cursor:pointer;
+  }
+  .line .linemic{background:#fdeee2}
+  .line .linetop span:active{transform:scale(.94)}
+  .line .en{font-size:1.28rem;font-weight:700;margin:0}
+  .line .zh{margin:2px 0 0;color:var(--soft)}
+  body.hidezh .line .zh{opacity:0;user-select:none}
+  body.hidezh .cn{opacity:0;user-select:none}
+  .saybig{
+    width:100%;min-height:76px;font-size:1.35rem;font-weight:800;color:var(--blue);
+    background:#fff;border:3px dashed #bcd8f2;border-radius:20px;margin:6px 0 14px;
+  }
+  .pic{background:#fbfaf6;border:2px dashed var(--line);border-radius:18px;padding:16px;text-align:center;font-size:1.05rem}
+  .askbox{background:#eefaf1;border:2px solid #cdeada;border-radius:18px;padding:14px 16px;margin-top:12px}
+  .askbox .ask{font-size:1.12rem;font-weight:700;color:#256b47;margin:4px 0 0}
+
+  /* ---------- 跟读录音 ---------- */
+  .recword{
+    text-align:center;font-size:clamp(2rem,12vw,3rem);font-weight:800;color:var(--blue);
+    margin:14px 0 4px;word-break:break-word;
+  }
+  .recbtn{
+    display:block;width:100%;min-height:92px;margin:10px 0 0;
+    font-size:1.25rem;font-weight:800;color:#fff;
+    background:var(--warm);border:3px solid var(--warm);border-radius:24px;
+    touch-action:none;user-select:none;
+  }
+  .recbtn.on{background:#fff;color:var(--warm);border-style:dashed}
+  .recbtn.off{background:#efe6dd;border-color:#e0d3c6;color:#a49384}
+
+  /* ---------- 星星墙 ---------- */
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:12px 0 4px}
+  .cell{
+    background:#faf7f0;border:2px solid var(--line);border-radius:14px;
+    padding:8px 2px;text-align:center;font-size:.72rem;color:var(--soft);
+  }
+  .cell b{display:block;font-size:.86rem;color:var(--soft);font-weight:700}
+  .cell.has{background:#eefaf1;border-color:#cdeada;color:#256b47}
+  .cell.has b{color:#256b47}
+  .cell.has .st{font-size:1rem}
+
+  /* ---------- 家长区 ---------- */
+  .stat{display:flex;gap:10px;margin-bottom:10px}
+  .stat div{flex:1 1 0;background:#faf7f0;border:2px solid var(--line);border-radius:16px;padding:10px;text-align:center}
+  .stat b{display:block;font-size:1.4rem;color:var(--blue)}
+  .stat span{font-size:.78rem;color:var(--soft)}
+  .rules{margin:10px 0 0;padding-left:20px;color:var(--soft);font-size:.9rem}
+  .rules li{margin-bottom:6px}
+
+  /* ---------- 完成庆祝 ---------- */
+  .win{text-align:center;padding:34px 16px}
+  .win .big{font-size:3.4rem}
+  .win h2{font-size:1.5rem;margin:10px 0 4px}
+  @media print{ .btn,.review{display:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="title">
+      <h1>🌞 每天一个小故事</h1>
+      <p class="muted" id="today-hint">一天一个词 · 5 分钟 · 不考试</p>
+    </div>
+    <span class="star-pill" id="stars">⭐ 0 / 30</span>
+  </div>
+
+  <div class="card">
+    <span class="daytag" id="day-tag">第 1 天</span>
+    <p class="word" id="home-word">help</p>
+    <p class="ipa" id="home-ipa">/help/</p>
+    <p class="cn" id="home-cn">帮助</p>
+    <div class="sound">
+      <button type="button" class="say-main" id="home-say">
+        <span class="letter" id="home-letter">h</span>
+        <span>
+          <span class="txt" id="home-sound">/h/</span>
+          <span class="hint" id="home-sound-hint">　点我听一听</span>
+        </span>
+      </button>
+      <span class="slowwrap" id="home-say-slowwrap"></span>
+    </div>
+  </div>
+
+  <button class="btn primary" id="start-btn">开始今天 ✨</button>
+
+  <div class="review" id="home-review">
+    <h2>今天再看一眼</h2>
+    <p class="muted" id="review-sub">把动作再做一遍就行，不考试。</p>
+    <div id="review-list"></div>
+  </div>
+
+  <button class="btn ghost" id="parent-btn">👨‍👩‍👧 家长看这里</button>
+</div>
+
+<!-- ================= 学一学 ================= -->
+<div class="sheet" id="lesson" hidden>
+  <div class="sheet-top">
+    <button class="xbtn" id="lesson-close">✕</button>
+    <span class="steps" id="lesson-step-no">第 1 步 / 共 4 步</span>
+  </div>
+  <div class="sheet-body">
+
+    <!-- 第 1 步：读故事 -->
+    <div class="step on" id="step-1">
+      <span class="daytag" id="l-day">第 1 天</span>
+      <p class="word" id="l-word">help</p>
+      <p class="ipa" id="l-ipa">/help/</p>
+      <div id="l-cnrow"></div>
+      <div class="sayrow" id="l-sayrow"></div>
+      <div class="card" style="padding:16px">
+        <p class="muted" style="margin:0 0 10px">小故事 · 点 🔊 听，点 🎤 跟读这句</p>
+        <div id="l-story"></div>
+      </div>
+      <button class="btn primary" id="to-2">读完啦，下一步 →</button>
+    </div>
+
+    <!-- 第 2 步：动一动 -->
+    <div class="step" id="step-2">
+      <h1 style="margin:6px 0 12px">动一动 🕺</h1>
+      <div class="pic" id="l-act">伸出两只手，做一个"扶一把"的动作</div>
+      <button class="saybig" id="l-say2" style="margin-top:16px">🔊 再听一遍</button>
+      <button class="saybig" id="l-say2-slow" style="margin-top:8px;color:var(--warm);border-color:#f6c9a8">🐢 0.7X 慢速</button>
+      <button class="btn primary" id="to-3">做完啦，下一步 →</button>
+    </div>
+
+    <!-- 第 3 步：说给我听（主动回忆） -->
+    <div class="step" id="step-3">
+      <h1 style="margin:6px 0 12px">考考你 😊</h1>
+      <p class="muted" style="font-size:1.05rem">这个单词是什么意思？说给爸爸妈妈听，或者做那个动作也行。</p>
+      <button class="saybig" id="l-say3">🔊 再听一遍「<span id="l-word3">help</span>」</button>
+      <div id="l-answer-wrap" hidden>
+        <div class="card" style="padding:16px;text-align:center">
+          <p class="cn" id="l-cn3" style="margin:0">帮助</p>
+        </div>
+      </div>
+      <button class="btn" id="show-answer">想不起来，看看答案 👀</button>
+      <button class="btn primary" id="to-4">我说出来啦，下一步 →</button>
+    </div>
+
+    <!-- 第 4 步：跟我读（录音对比） -->
+    <div class="step" id="step-4">
+      <h1 style="margin:6px 0 12px">跟我读 🎤</h1>
+      <p class="muted" style="font-size:1.05rem">
+        先点「听原音」，再按「按住说话」跟着读一遍。<br>
+        然后来回听一听，像不像自己判断——<b>不打分、不算错</b>。
+      </p>
+      <p class="muted" id="l-recmode" hidden></p>
+
+      <div class="recword" id="l-recword">help</div>
+
+      <div class="sayrow">
+        <button class="saybig" id="l-rec-orig">🔊 听原音</button>
+        <button class="slowbtn" id="l-rec-orig-slow">🐢 0.7X</button>
+      </div>
+
+      <button class="recbtn" id="l-rec-btn">🎤 按住说话</button>
+      <p class="muted" id="l-rec-status" style="text-align:center;margin:6px 0 0"></p>
+
+      <div id="l-rec-result" hidden>
+        <div class="sayrow">
+          <button class="saybig" id="l-rec-play">▶️ 听我自己</button>
+          <button class="saybig" id="l-rec-again">🔁 重录</button>
+        </div>
+        <p class="muted" style="text-align:center;margin:0">来回听两遍，像不像？</p>
+      </div>
+
+      <button class="btn primary" id="to-5" style="margin-top:18px">读完啦，下一步 →</button>
+    </div>
+
+    <!-- 第 5 步：睡前想一想 + 收工 -->
+    <div class="step" id="step-5">
+      <h1 style="margin:6px 0 12px">睡前想一想 🌙</h1>
+      <div class="pic" id="l-pic">一只淋湿的小鸟和一只伸过去的小手</div>
+      <div class="askbox">
+        <p class="muted" style="margin:0">爸爸妈妈问一句</p>
+        <p class="ask" id="l-ask">你今天帮过谁呀？</p>
+      </div>
+      <button class="btn primary" id="finish-btn" style="margin-top:16px">学完啦，贴星星 ⭐</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= 家长看这里 ================= -->
+<div class="sheet" id="parent" hidden>
+  <div class="sheet-top">
+    <button class="xbtn" id="parent-close">✕</button>
+    <strong>家长看这里</strong>
+  </div>
+  <div class="sheet-body">
+
+    <div class="stat">
+      <div><b id="s-done">0</b><span>已学词数</span></div>
+      <div><b id="s-left">30</b><span>还剩</span></div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1rem;margin:0 0 4px">学习进度（30 天）</h2>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1rem;margin:0 0 8px">设置</h2>
+      <p class="muted" id="env-line" style="margin:0 0 10px">正在检查运行环境…</p>
+      <button class="btn small" id="set-zh">藏起中文</button>
+      <button class="btn small" id="set-big">字更大</button>
+      <button class="btn small" id="set-print">打印今天这张</button>
+      <button class="btn small" id="set-install">📱 装到手机主屏幕</button>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1rem;margin:0 0 8px">给家长的三条提醒</h2>
+      <ul class="rules">
+        <li>每天固定时间做，<b>睡前最好</b>，连续性比单日时长重要。</li>
+        <li><b>5 分钟就收</b>。孩子说不想，立刻停，今天不学也算完成。</li>
+        <li>第 3 步"考考你"<b>不要替他答</b>——那一步才是真正记牢的地方。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1rem;margin:0 0 8px">数据</h2>
+      <p class="muted">进度只存在这台设备上，不联网、不上传。</p>
+      <button class="btn small" id="set-reset">重新开始（清空进度）</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   每天一个小故事 · 6 岁强度背单词 APP
+   词库：30 词，每天 1 词；复习间隔 D-1 / D-3 / D-6
+   进度：localStorage，本机保存，不联网
+   ===================================================================== */
+
+var PLAN = [
+  ["help","帮助","h","/h/"],["run","跑","r","/r/"],["big","大的","b","/b/"],
+  ["happy","开心的","h","/h/"],["water","水","w","/w/"],["look","看","l","/l/"],
+  ["cat","猫","c","/k/"],["bird","小鸟","b","/b/"],["rain","雨","r","/r/"],
+  ["fly","飞","f","/f/"],["small","小的","s","/s/"],["eat","吃","e","/iː/"],
+  ["milk","牛奶","m","/m/"],["dog","小狗","d","/d/"],["open","打开","o","/əʊ/"],
+  ["close","关上","c","/k/"],["hand","手","h","/h/"],["tree","树","t","/t/"],
+  ["book","书","b","/b/"],["sing","唱歌","s","/s/"],["friend","朋友","f","/f/"],
+  ["smile","微笑","s","/s/"],["warm","暖和的","w","/w/"],["sleep","睡觉","s","/s/"],
+  ["walk","走路","w","/w/"],["flower","花","f","/f/"],["sun","太阳","s","/s/"],
+  ["thank","感谢","t","/θ/"],["home","家","h","/h/"],["love","爱","l","/l/"]
+];
+
+var STORIES = {
+  help:{s:[["I see a little bird.","我看见一只小鸟。"],
+           ["The bird cannot fly.","小鸟飞不起来。"],
+           ["I help the bird.","我帮帮这只小鸟。"],
+           ['"Thank you!" says the bird.','"谢谢你！"小鸟说。']],
+    act:'伸出两只手，做一个"扶一把"的动作，一边说：I help you!',
+    pic:"一只淋湿的小鸟 ⊙ᴥ⊙ 和一只伸过去的小手 🤚",
+    ask:"你今天帮过谁呀？"},
+  run:{s:[["Look at Tom.","看汤姆。"],
+          ["Tom can run fast.","汤姆跑得很快。"],
+          ["A dog runs with him.","一只小狗和他一起跑。"],
+          ["Run, run, run!","跑呀，跑呀，跑呀！"]],
+    act:"原地跑 10 步，一边跑一边喊：Run, run, run!",
+    pic:"一个跑步的小男孩 🏃 和一只跟着跑的小狗 🐕",
+    ask:"你跑得快，还是小狗跑得快？"},
+  big:{s:[["I have a big box.","我有一个大箱子。"],
+          ["What is in the big box?","大箱子里有什么呢？"],
+          ["A big bear!","一只大熊！"],
+          ['"Hello!" says the bear.','"你好！"大熊说。']],
+    act:"张开两只手，圈一个大大的圆，说：Big!",
+    pic:"一个大箱子 📦 和一只从里面探头的大熊 🐻",
+    ask:"家里什么东西最大？"},
+  happy:{s:[["The sun is up.","太阳出来了。"],
+            ["The bird is happy.","小鸟很开心。"],
+            ["I am happy too.","我也很开心。"],
+            ["Happy day!","开心的一天！"]],
+    act:"笑一个大大的笑，说：I am happy!",
+    pic:"一个笑眯眯的太阳 🌞 和一只笑眯眯的小鸟 🐦",
+    ask:"今天什么事让你最开心？"},
+  water:{s:[["The flower is thirsty.","花口渴了。"],
+            ["I give it water.","我给它水喝。"],
+            ["Now the flower is happy.","现在花开心了。"],
+            ["Water is good!","水真好！"]],
+    act:"假装拿小水壶，给身边的花浇一浇水，说：Water!",
+    pic:"一朵渴了的小花 🌷 和一滴滴下来的水 💧",
+    ask:"你今天喝水了吗？喝了几杯？"},
+  look:{s:[["Look up!","抬头看！"],
+           ["A bird is in the tree.","树上有只小鸟。"],
+           ["Look down!","低头看！"],
+           ["A cat is by my feet.","一只猫在我脚边。"]],
+    act:"先抬头，再低头，一边说：Look up! Look down!",
+    pic:"抬头看见树上小鸟 🐦，低头看见脚边小猫 🐈",
+    ask:"抬头看一看，你看到了什么？"},
+  cat:{s:[["I have a cat.","我有一只猫。"],
+          ["My cat is white and small.","我的猫又白又小。"],
+          ["The cat likes milk.","猫喜欢牛奶。"],
+          ['"Meow!" says my cat.','"喵！"我的猫说。']],
+    act:"学猫叫一声，说：Meow! I am a cat.",
+    pic:"一只又白又小、正在喝牛奶的猫 🐈🥛",
+    ask:"你想养一只什么样的小猫？"},
+  bird:{s:[["A bird is in the tree.","树上有只小鸟。"],
+           ["The bird can sing.","小鸟会唱歌。"],
+           ["It has two little wings.","它有一对小翅膀。"],
+           ["Fly, bird, fly!","飞吧，小鸟，飞吧！"]],
+    act:"两只手当翅膀，扇一扇，说：I am a bird!",
+    pic:"一只站在树枝上唱歌的小鸟 🐦🎵",
+    ask:"小鸟在树上做什么？"},
+  rain:{s:[["Look at the sky.","看看天。"],
+           ["It is going to rain.","要下雨了。"],
+           ["I hear the rain.","我听见雨声。"],
+           ["Rain, rain, go away!","雨呀雨呀，快走开！"]],
+    act:"手指在桌上轻轻敲，学下雨的声音：滴答滴答。",
+    pic:"天上灰灰的云 🌧️ 和地上圆圆的水圈 💧",
+    ask:"下雨天你喜欢做什么？"},
+  fly:{s:[["The bird can fly.","小鸟会飞。"],
+          ["A kite can fly too.","风筝也会飞。"],
+          ["I can fly in my dream.","我在梦里也会飞。"],
+          ["Fly high!","飞得高高的！"]],
+    act:"张开两只手，原地转一圈，说：I can fly!",
+    pic:"一只飞得高高的小鸟 🐦 和一只风筝 🪁",
+    ask:"还有什么东西会飞？"},
+  small:{s:[["I see a small cat.","我看见一只小猫。"],
+            ["The cat is very small.","这只猫非常小。"],
+            ["It sits in my hand.","它坐在我手上。"],
+            ["So small!","好小呀！"]],
+    act:"把手指捏在一起，比一个「很小很小」，说：So small!",
+    pic:"一只小到能坐在手掌上的猫 🐈🤲",
+    ask:"家里什么东西最小？"},
+  eat:{s:[["It is time to eat.","该吃饭啦。"],
+          ["I eat rice and eggs.","我吃米饭和鸡蛋。"],
+          ["My cat eats fish.","我的猫吃鱼。"],
+          ["We are happy!","我们都很开心！"]],
+    act:"假装拿勺子，吃一口，说：I eat!",
+    pic:"一碗米饭 🍚 和一条小鱼 🐟",
+    ask:"你今天吃了什么？"},
+  milk:{s:[["I have some milk.","我有一些牛奶。"],
+           ["The milk is white.","牛奶是白色的。"],
+           ["My cat likes milk.","我的猫喜欢牛奶。"],
+           ["Milk is good for me.","牛奶对我有好处。"]],
+    act:"假装拿杯子，喝一口牛奶，说：Milk!",
+    pic:"一杯白白的牛奶 🥛 和一只舔嘴的小猫 🐈",
+    ask:"你喜欢喝牛奶吗？"},
+  dog:{s:[["I have a dog.","我有一只小狗。"],
+          ["My dog can run and jump.","我的小狗会跑会跳。"],
+          ["It likes to play with me.","它喜欢和我玩。"],
+          ['"Woof!" says my dog.','"汪！"我的小狗说。']],
+    act:"学小狗叫一声，说：Woof! I am a dog.",
+    pic:"一只摇着尾巴的小狗 🐕 和一个球 ⚽",
+    ask:"小狗喜欢玩什么？"},
+  open:{s:[["Open the door.","把门打开。"],
+           ["Open the box.","把箱子打开。"],
+           ["Look, a little cat!","看，一只小猫！"],
+           ["What a surprise!","真是个惊喜！"]],
+    act:"两只手往外一推，做「开门」的动作，说：Open!",
+    pic:"一扇打开的门 🚪 和一只跳出来的小猫 🐈",
+    ask:"你能帮忙打开什么？"},
+  close:{s:[["Close the door.","把门关上。"],
+            ["Close your eyes.","把眼睛闭上。"],
+            ["Now open them again!","现在再睁开！"],
+            ["Peek-a-boo!","藏猫猫！"]],
+    act:"两只手合起来，做「关门」的动作，然后闭上眼睛，说：Close!",
+    pic:"一扇关上的门 🚪 和一双闭上的眼睛 😌",
+    ask:"关门的时候要注意什么？"},
+  hand:{s:[["This is my hand.","这是我的手。"],
+           ["I have two hands.","我有两只手。"],
+           ["My hands can clap.","我的手能拍手。"],
+           ["Clap, clap, clap!","拍拍拍！"]],
+    act:"举起两只手，拍三下，说：My hands!",
+    pic:"两只张开的小手 🤲 和拍手的动作 👏",
+    ask:"你的手今天做了什么？"},
+  tree:{s:[["I see a big tree.","我看见一棵大树。"],
+           ["The tree is green.","这棵树是绿色的。"],
+           ["A bird lives in the tree.","一只小鸟住在树上。"],
+           ["The tree is its home.","大树就是它的家。"]],
+    act:"站直，两臂张开像树枝，说：I am a tree!",
+    pic:"一棵大大的绿树 🌳 和树上的一只小鸟 🐦",
+    ask:"树的上面有什么？"},
+  book:{s:[["I have a book.","我有一本书。"],
+           ["The book is full of pictures.","书里有很多画。"],
+           ["I look at it every night.","我每天晚上都看它。"],
+           ["I love my book!","我爱我的书！"]],
+    act:"两只手合上像一本书，然后打开，说：Open my book!",
+    pic:"一本翻开的书 📖 和一颗小星星 ⭐",
+    ask:"你最喜欢哪本书？"},
+  sing:{s:[["I like to sing.","我喜欢唱歌。"],
+           ["I sing with my mom.","我和妈妈一起唱。"],
+           ["The bird sings too.","小鸟也唱。"],
+           ["Sing with me!","和我一起唱吧！"]],
+    act:"大声唱一小句你最喜欢的歌，然后说：I can sing!",
+    pic:"一个唱歌的小孩 🎤 和一只跟着唱的小鸟 🐦",
+    ask:"你会唱哪首歌？"},
+  friend:{s:[["This is my friend.","这是我的朋友。"],
+             ["We play together.","我们一起玩。"],
+             ["We share our toys.","我们分享玩具。"],
+             ["A friend is the best!","朋友是最好的！"]],
+    act:"拉起身边人的手，说：You are my friend!",
+    pic:"两个手拉手的小朋友 👫 和一个玩具 🧸",
+    ask:"你的好朋友叫什么名字？"},
+  smile:{s:[["Look at my face.","看看我的脸。"],
+            ["I have a big smile.","我有一个大大的笑容。"],
+            ["A smile makes people happy.","微笑让人开心。"],
+            ["Smile with me!","和我一起笑吧！"]],
+    act:"对着家里的人笑一个大大的笑，说：Smile!",
+    pic:"一张笑嘻嘻的脸 😊 和一朵小花 🌸",
+    ask:"今天谁对你笑了？"},
+  warm:{s:[["The sun is warm.","太阳暖暖的。"],
+           ["My hat is warm.","我的帽子很暖和。"],
+           ["I feel warm and happy.","我觉得又暖又开心。"],
+           ["What a warm day!","多么暖和的一天！"]],
+    act:"两只手抱住自己，说：I am warm!",
+    pic:"暖暖的太阳 ☀️ 和一顶毛线帽 🧣",
+    ask:"什么时候你会觉得暖和？"},
+  sleep:{s:[["It is night.","天黑了。"],
+            ["The moon is up.","月亮出来了。"],
+            ["It is time to sleep.","该睡觉啦。"],
+            ["Good night!","晚安！"]],
+    act:"假装打个哈欠，躺在床上，说：Good night!",
+    pic:"弯弯的月亮 🌙 和一张小床 🛏️",
+    ask:"你睡觉前会做什么？"},
+  walk:{s:[["I walk to school.","我走路去学校。"],
+           ["I walk with my dad.","我和爸爸一起走。"],
+           ["We see flowers on the way.","路上我们看见了花。"],
+           ["Walk, walk, walk!","走走走！"]],
+    act:"在房间里走三圈，一边走一边说：Walk, walk!",
+    pic:"一个走路的小朋友 🚶 和路边的小花 🌼",
+    ask:"你走路的时候看见过什么？"},
+  flower:{s:[["Look at the flower.","看看这朵花。"],
+             ["It is red and yellow.","它又红又黄。"],
+             ["The bee likes the flower.","小蜜蜂喜欢这朵花。"],
+             ["What a pretty flower!","多漂亮的花呀！"]],
+    act:"两只手托在下巴下，像一朵花，说：A flower!",
+    pic:"一朵红黄的小花 🌺 和一只小蜜蜂 🐝",
+    ask:"你最喜欢什么颜色的花？"},
+  sun:{s:[["The sun is up.","太阳升起来了。"],
+          ["The sun is yellow and round.","太阳又黄又圆。"],
+          ["It makes the day bright.","它让白天亮亮的。"],
+          ["Hello, sun!","你好，太阳！"]],
+    act:"两只手举过头顶，围成一个大圆，说：Hello, sun!",
+    pic:"一个圆圆的大太阳 ☀️ 和一片蓝天 🌤️",
+    ask:"太阳出来的时候，天是什么颜色？"},
+  thank:{s:[["I have a gift.","我有一份礼物。"],
+            ["My friend gives it to me.","我的朋友送给我的。"],
+            ["I say thank you.","我说谢谢。"],
+            ['"You are welcome!"','"不用谢！"']],
+    act:"双手接过一样东西，鞠一下躬，说：Thank you!",
+    pic:"一份小礼物 🎁 和两只递东西的手 🤲",
+    ask:"今天你想对谁说谢谢？"},
+  home:{s:[["This is my home.","这是我的家。"],
+           ["My home is warm.","我的家很温暖。"],
+           ["My mom and dad are here.","爸爸妈妈都在这里。"],
+           ["I love my home.","我爱我的家。"]],
+    act:"两只手在头顶搭一个小屋顶，说：My home!",
+    pic:"一栋有灯的小房子 🏠 和一颗爱心 ❤️",
+    ask:"你的家里有谁？"},
+  love:{s:[["I love my mom.","我爱我的妈妈。"],
+           ["I love my dad.","我爱我的爸爸。"],
+           ["They love me too.","他们也爱我。"],
+           ["Love is everywhere!","爱到处都是！"]],
+    act:"双手抱住自己，再抱住家里的人，说：I love you!",
+    pic:"一颗大大的爱心 ❤️ 和一家人的手 🤝",
+    ask:"你最想对谁说我爱你？"}
+};
+
+/* ---------------- 存储 ---------------- */
+var DKEY = "dsh-app-days-v1";
+var RKEY = "dsh-app-review-v1";
+var SKEY = "dsh-app-settings-v1";
+
+function load(k, d){ try { return JSON.parse(localStorage.getItem(k) || "null") || d; } catch(e){ return d; } }
+function save(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+
+var done = load(DKEY, {});        // { 天号: 1 }
+var marked = load(RKEY, {});      // { 天号: 1 } 今天已回看
+var settings = load(SKEY, { hidezh:false, big:false });
+
+/* ---------------- 状态 ---------------- */
+var curDay = 1;                   // 首页展示的"今天"
+var lessonDay = 1;                // 学一学里正在学的天
+var curAudio = null;              // 正在播放的音频，避免两个声音叠在一起
+
+/* ---------------- 语音：优先真人发音音频，失败再退回系统朗读 ---------------- */
+var AUDIO_DIR = "audio/";
+
+function audioSrc(name){ return AUDIO_DIR + name + ".mp3"; }
+function playFile(name, fallbackText, slow){
+  try {
+    stopAllAudio();
+    var au = new Audio(audioSrc(name));
+    au.preload = "auto";
+    applySlowRate(au, slow);
+    au.onerror = function(){ speakOrHint(fallbackText); };
+    curAudio = au;                 // 先挂上，保证下一条来时能停掉这一条（不叠音）
+    var pr = au.play();
+    if (pr && typeof pr.catch === "function") {
+      pr.catch(function(){ speakOrHint(fallbackText); });
+    }
+    return true;
+  } catch (e) {
+    speakOrHint(fallbackText);
+    return false;
+  }
+}
+function stopAllAudio(){
+  try { if (curAudio) { curAudio.pause(); curAudio = null; } } catch (e) {}
+  try { if (canSpeak()) speechSynthesis.cancel(); } catch (e) {}
+}
+
+/* =====================================================================
+   跟读（录音对比）
+   ---------------------------------------------------------------------
+   设计取舍：**不做机器打分**。
+   语音识别对 6 岁孩子的发音误判率很高，一旦报"错了"会直接打击积极性。
+   这里只做"录下来 → 和原音来回对比"，对不对由孩子和家长自己听。
+
+   注意：录音（getUserMedia）要求安全上下文，也就是 https 或 localhost。
+   所以跟读功能只在用 https 打开时可用；其他情况给明确提示而不是静默失败。
+   ===================================================================== */
+var REC_LIMIT_MS = 15000;      // 单次录音上限，防止按住不放
+var recState = "idle";         // idle | requesting | recording | ready
+var mediaRec = null;
+var recStream = null;
+var recChunks = [];
+var recUrl = null;             // 让用户回放的 blob 地址
+var recStopTimer = null;
+
+function micSupported(){
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia &&
+            typeof MediaRecorder !== "undefined");
+}
+function micBlockedReason(){
+  if (typeof MediaRecorder === "undefined") return "这个浏览器不支持录音。";
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return "这个浏览器不支持录音。";
+  if (typeof window !== "undefined" && window.isSecureContext === false) return "录音需要 https 打开才行。";
+  return "";
+}
+function pickMime(){
+  var cands = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus", "audio/ogg"];
+  if (typeof MediaRecorder === "undefined" || !MediaRecorder.isTypeSupported) return "";
+  for (var i = 0; i < cands.length; i++) {
+    try { if (MediaRecorder.isTypeSupported(cands[i])) return cands[i]; } catch (e) {}
+  }
+  return "";
+}
+function releaseRec(keepChunks){
+  try { if (recStream) { recStream.getTracks().forEach(function (t) { t.stop(); }); } } catch (e) {}
+  recStream = null;
+  mediaRec = null;
+  if (!keepChunks) recChunks = [];      // 停止时要先保住已录到的数据
+  if (recStopTimer) { clearTimeout(recStopTimer); recStopTimer = null; }
+}
+function revokeRecUrl(){
+  if (recUrl) { try { URL.revokeObjectURL(recUrl); } catch (e) {} recUrl = null; }
+}
+function stopRecording(){
+  try { if (mediaRec && mediaRec.state !== "inactive") mediaRec.stop(); } catch (e) {}
+  if (recStopTimer) { clearTimeout(recStopTimer); recStopTimer = null; }
+}
+function startRecording(onStatus){
+  if (recState === "recording") { stopRecording(); return; }
+  if (!micSupported()) { onStatus("blocked", micBlockedReason()); return; }
+  stopAllAudio();
+  revokeRecUrl();
+  recState = "requesting";
+  onStatus("requesting", "正在请求麦克风…");
+  var p;
+  try {
+    p = navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (e) {
+    recState = "idle";
+    onStatus("blocked", micBlockedReason() || "无法打开麦克风。");
+    return;
+  }
+  p.then(function(stream){
+    recStream = stream;
+    recChunks = [];
+    var mime = pickMime();
+    try {
+      mediaRec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+    } catch (e) {
+      releaseRec();
+      recState = "idle";
+      onStatus("blocked", "这台设备没法录音。");
+      return;
+    }
+    mediaRec.ondataavailable = function(ev){
+      if (ev && ev.data && ev.data.size > 0) recChunks.push(ev.data);
+    };
+    mediaRec.onstop = function(){
+      var mime = (mediaRec && mediaRec.mimeType) || "audio/webm";
+      releaseRec(true);                       // 先别清 chunks，下面要用
+      var chunks = recChunks;
+      recChunks = [];
+      if (chunks && chunks.length) {
+        try {
+          var blob = new Blob(chunks, { type: mime });
+          recUrl = URL.createObjectURL(blob);
+          recState = "ready";
+          onStatus("ready", "");
+        } catch (e) {
+          recState = "idle";
+          onStatus("error", "录音保存失败，再试一次吧。");
+        }
+      } else {
+        recState = "idle";
+        onStatus("error", "没录到声音，再试一次吧。");
+      }
+    };
+    mediaRec.start();
+    recState = "recording";
+    onStatus("recording", "");
+    recStopTimer = setTimeout(stopRecording, REC_LIMIT_MS);
+  }).catch(function(err){
+    releaseRec();
+    recState = "idle";
+    var name = (err && err.name) || "";
+    if (name === "NotAllowedError" || name === "SecurityError") {
+      onStatus("blocked", "麦克风没被允许。请在浏览器地址栏左边的锁/设置里允许麦克风，再试一次。");
+    } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+      onStatus("blocked", "没找到麦克风。");
+    } else {
+      onStatus("blocked", "打不开麦克风：" + (name || "未知原因"));
+    }
+  });
+}
+function playRecording(){
+  if (!recUrl) return false;
+  try {
+    stopAllAudio();
+    var au = new Audio(recUrl);
+    curAudio = au;
+    var pr = au.play();
+    if (pr && typeof pr.catch === "function") pr.catch(function(){});
+    return true;
+  } catch (e) { return false; }
+}
+
+function canSpeak(){ return typeof speechSynthesis !== "undefined" && !!speechSynthesis; }
+function speak(text){
+  if (!canSpeak()) return false;
+  try {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US"; u.rate = 0.8;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+    return true;
+  } catch(e){ return false; }
+}
+function speakOrHint(text){
+  if (!canSpeak()) alert("这台设备暂时不能朗读，请家长读给孩子听。");
+  else speak(text);
+}
+
+function sayWord(word, slow){ playFile((slow ? "w-" + word + "-slow" : "w-" + word), word, slow); }
+function saySentence(word, index, text){ playFile("s-" + word + "-" + index, text); }
+
+/* 慢速按钮：用 innerHTML 生成，绑定时 on 前面不会多出任何字符 */
+function slowBtnHtml(id, label){
+  return '<button type="button" class="slow" id="' + id + '">' + (label || "🐢 0.7X") + '</button>';
+}
+function homeSlowHtml(word){
+  return '<button type="button" class="slow" data-slowword="' + word + '">🐢 0.7X</button>';
+}
+
+/* 慢速播放的兜底：某些设备不支持预生成的慢速文件时，用播放速率降速 */
+function applySlowRate(au, slow){
+  if (!slow) return;
+  try { au.playbackRate = 0.7; } catch (e) {}
+}
+
+/* ---------------- 进度计算 ---------------- */
+function nextUndone(){
+  for (var i = 1; i <= PLAN.length; i++) { if (!done[i]) return i; }
+  return 0;                       // 0 = 全部学完
+}
+function doneCount(){
+  var n = 0;
+  for (var k in done) { if (done[k]) n++; }
+  return n;
+}
+function reviewDays(day){
+  var offs = [1, 3, 6], out = [];
+  for (var i = 0; i < offs.length; i++) {
+    var d = day - offs[i];
+    if (d >= 1 && done[d]) out.push({ day:d, gap:offs[i] });
+  }
+  return out;
+}
+
+/* ---------------- 渲染：首页 ---------------- */
+function renderHome(){
+  var all = doneCount();
+  document.getElementById("stars").textContent = "⭐ " + all + " / " + PLAN.length;
+  var wrap = document.getElementById("home-say-slowwrap");
+  if (wrap) {
+    if (curDay === 0) {
+      wrap.innerHTML = "";
+      wrap.onclick = null;
+    } else {
+      var homeWord = PLAN[curDay-1][0];
+      wrap.innerHTML = homeSlowHtml(homeWord);
+      // 用委托绑定：容器一定存在，避免个别环境取不到子元素时中断启动
+      wrap.onclick = function(ev){
+        var t = ev && ev.target;
+        if (t && t.getAttribute && t.getAttribute("data-slowword")) {
+          sayWord(t.getAttribute("data-slowword"), true);
+        }
+      };
+    }
+  }
+
+  if (curDay === 0) {
+    document.getElementById("day-tag").textContent = "全部学完啦 🎉";
+    document.getElementById("home-word").textContent = "🎉";
+    document.getElementById("home-ipa").textContent = "";
+    document.getElementById("home-cn").textContent = "30 个词都学完了，真棒！";
+    document.getElementById("home-letter").textContent = "★";
+    document.getElementById("home-sound").textContent = "";
+    document.getElementById("home-sound-hint").textContent = "　家长可以点下面重新开始";
+    document.getElementById("start-btn").textContent = "再玩一遍第 1 天";
+    document.getElementById("today-hint").textContent = "你已经学会了 30 个词";
+  } else {
+    var w = PLAN[curDay-1], st = STORIES[w[0]] || {};
+    document.getElementById("day-tag").textContent = "第 " + curDay + " 天";
+    document.getElementById("home-word").textContent = w[0];
+    document.getElementById("home-ipa").textContent = (st.ipa || "");
+    document.getElementById("home-cn").textContent = w[1];
+    document.getElementById("home-letter").textContent = w[2];
+    document.getElementById("home-sound").textContent = w[3];
+    document.getElementById("home-sound-hint").textContent = "　" + w[0] + " 的第一个音";
+    document.getElementById("start-btn").textContent = done[curDay] ? "再学一遍第 " + curDay + " 天" : "开始今天 ✨";
+    document.getElementById("today-hint").textContent = "一天一个词 · 5 分钟 · 不考试";
+  }
+  renderReview();
+  applySettings();
+}
+
+function renderReview(){
+  var list = document.getElementById("review-list");
+  if (curDay === 0) { list.innerHTML = '<p class="empty">全部学完啦，不用回看。</p>'; return; }
+  var items = reviewDays(curDay);
+  if (!items.length) {
+    list.innerHTML = '<p class="empty">今天没有要回看的词，专心学新的就好。</p>';
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < items.length; i++) {
+    var d = items[i].day, w = PLAN[d-1], isDone = !!marked[d];
+    html += '<div class="rrow' + (isDone ? " done" : "") + '" data-rd="' + d + '">' +
+              '<span><span class="rw">' + w[0] + '</span> <span class="rc">' + w[1] + '</span>' +
+              '<br><span class="rw2">' + items[i].gap + ' 天前学的</span></span>' +
+              '<span class="sps">' +
+                '<button class="sp" title="正常速">🔊</button>' +
+                '<button class="sp slow" title="0.7X 慢速">🐢</button>' +
+              '</span>' +
+              '<button class="ck' + (isDone ? " ok" : "") + '">' + (isDone ? "✓ 看过了" : "看过了") + '</button>' +
+            '</div>';
+  }
+  list.innerHTML = html;
+
+  var rows = list.querySelectorAll(".rrow");
+  for (var j = 0; j < rows.length; j++) {
+    (function(row){
+      var day = parseInt(row.getAttribute("data-rd"), 10);
+      var word = PLAN[day - 1][0];
+      var main = row.querySelector(".sp");
+      var slow = row.querySelector(".sp.slow");
+      if (main) main.onclick = function(){ sayWord(word); };
+      if (slow) slow.onclick = function(){ sayWord(word, true); };
+      row.querySelector(".ck").onclick = function(){
+        marked[day] = !marked[day];
+        save(RKEY, marked);
+        renderReview();
+      };
+    })(rows[j]);
+  }
+}
+
+/* ---------------- 渲染：学一学 ---------------- */
+var TOTAL_STEPS = 5;
+function showStep(n){
+  for (var i = 1; i <= TOTAL_STEPS; i++) {
+    var el = document.getElementById("step-" + i);
+    if (el) el.className = "step" + (i === n ? " on" : "");
+  }
+  document.getElementById("lesson-step-no").textContent = "第 " + n + " 步 / 共 " + TOTAL_STEPS + " 步";
+  if (n !== 4) stopRecording();          // 离开跟读步骤就停掉录音，别一直开着麦克风
+  var sheet = document.getElementById("lesson");
+  sheet.scrollTop = 0;
+}
+
+function openLesson(day){
+  lessonDay = day;
+  var w = PLAN[day-1], st = STORIES[w[0]];
+  document.getElementById("l-day").textContent = "第 " + day + " 天";
+  document.getElementById("l-word").textContent = w[0];
+  document.getElementById("l-ipa").textContent = st ? (st.ipa || "") : "";
+  document.getElementById("l-cnrow").innerHTML = '<p class="cn" id="l-cn">' + w[1] + '</p>';
+  document.getElementById("l-sayrow").innerHTML =
+    '<button class="saybig" id="l-say">🔊 读单词</button>' +
+    '<button class="slowbtn" id="l-say-slow">🐢 0.7X</button>';
+  document.getElementById("l-say").onclick = function(){ sayWord(w[0]); };
+  document.getElementById("l-say-slow").onclick = function(){ sayWord(w[0], true); };
+  document.getElementById("l-word3").textContent = w[0];
+  document.getElementById("l-cn3").textContent = w[1];
+  document.getElementById("l-act").textContent = st ? st.act : ("做一遍 " + w[0] + " 的动作");
+  document.getElementById("l-pic").textContent = st ? st.pic : "";
+  document.getElementById("l-ask").textContent = st ? st.ask : "";
+  document.getElementById("l-answer-wrap").hidden = true;
+
+  var lines = "";
+  if (st) {
+    for (var i = 0; i < st.s.length; i++) {
+      lines += '<div class="line" data-i="' + (i + 1) + '" data-say="' + st.s[i][0].replace(/"/g, "&quot;") + '">' +
+                 '<div class="linetop">' +
+                   '<span class="linesay" title="听这句">🔊</span>' +
+                   '<span class="linemic" title="跟读这句">🎤</span>' +
+                 '</div>' +
+                 '<p class="en">' + st.s[i][0] + '</p>' +
+                 '<p class="zh">' + st.s[i][1] + '</p>' +
+               '</div>';
+    }
+  } else {
+    lines = '<p class="empty">这个词的故事还在路上。</p>';
+  }
+  document.getElementById("l-story").innerHTML = lines;
+  var ls = document.getElementById("l-story").querySelectorAll(".line");
+  for (var k = 0; k < ls.length; k++) {
+    (function(lineEl, word, idx){
+      var sayBtn = lineEl.querySelector(".linesay");
+      var micBtn = lineEl.querySelector(".linemic");
+      if (sayBtn) sayBtn.onclick = function(ev){
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        saySentence(word, idx, lineEl.getAttribute("data-say") || "");
+      };
+      if (micBtn) micBtn.onclick = function(ev){
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        setRecSentence(word, idx, lineEl.getAttribute("data-say") || "");
+        showStep(4);                     // 直接跳到跟读步骤，孩子少点两下
+      };
+    })(ls[k], w[0], k + 1);
+  }
+
+  var fin = document.getElementById("finish-btn");
+  fin.textContent = done[day] ? "⭐ 已贴过星星（再贴一次）" : "学完啦，贴星星 ⭐";
+  fin.className = "btn primary" + (done[day] ? " off" : "");
+
+  resetRecStep(w[0]);                    // 每次打开都把跟读步骤复位
+
+  document.getElementById("lesson").hidden = false;
+  document.body.style.overflow = "hidden";
+  showStep(1);
+  applySettings();
+}
+
+/* ---------------- 跟读步骤 ---------------- */
+var recMode = "word";        // word | sentence
+var recSentence = null;      // { word, index, text }
+
+function recStatus(kind, msg){
+  var el = document.getElementById("l-rec-status");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.style.color = (kind === "blocked" || kind === "error") ? "var(--warm)" : "var(--soft)";
+}
+function renderRecUI(){
+  var btn = document.getElementById("l-rec-btn");
+  var result = document.getElementById("l-rec-result");
+  if (!btn) return;
+  var ok = micSupported() && !micBlockedReason();
+  btn.classList.toggle("off", !ok);
+  btn.classList.toggle("on", recState === "recording");
+  if (!ok) {
+    btn.textContent = "🎤 这台设备不能录音";
+  } else if (recState === "recording") {
+    btn.textContent = "⏺ 正在录… 松手就停";
+  } else if (recState === "requesting") {
+    btn.textContent = "🎤 正在打开麦克风…";
+  } else if (recState === "ready") {
+    btn.textContent = "🎤 再录一遍";
+  } else {
+    btn.textContent = "🎤 按住说话";
+  }
+  if (result && !result.hidden && recState !== "ready") result.hidden = true;
+}
+/* 把跟读目标设为某个单词 */
+function resetRecStep(word){
+  stopRecording();
+  releaseRec();
+  revokeRecUrl();
+  recState = "idle";
+  recMode = "word";
+  recSentence = null;
+  var wEl = document.getElementById("l-recword");
+  if (wEl) wEl.textContent = word || "";
+  var again = document.getElementById("l-rec-again");
+  if (again) again.style.display = "";
+  renderRecTarget();
+  var result = document.getElementById("l-rec-result");
+  if (result) result.hidden = true;
+  var reason = micBlockedReason();
+  if (reason) recStatus("blocked", reason + "（这个 App 的录音需要在 https 下打开）");
+  else if (!micSupported()) recStatus("blocked", "这个浏览器不支持录音，跟读这一步可以跳过。");
+  else recStatus("idle", "先听原音，再按住下面的大按钮跟着读，松开就停。");
+  renderRecUI();
+}
+/* 把跟读目标换成故事里的某一句 */
+function setRecSentence(word, index, text){
+  stopRecording();
+  releaseRec();
+  revokeRecUrl();
+  recState = "idle";
+  recMode = "sentence";
+  recSentence = { word: word, index: index, text: text };
+  var wEl = document.getElementById("l-recword");
+  if (wEl) wEl.textContent = text || "";
+  var again = document.getElementById("l-rec-again");
+  if (again) again.style.display = "none";     // 换句子请回故事里点
+  renderRecTarget();
+  var result = document.getElementById("l-rec-result");
+  if (result) result.hidden = true;
+  if (micBlockedReason()) recStatus("blocked", micBlockedReason());
+  else recStatus("idle", "听一遍这句，再按住跟读。");
+  renderRecUI();
+}
+/* 「听原音」按钮按当前目标决定放单词还是放句子 */
+function playRecTarget(slow){
+  if (recMode === "sentence" && recSentence) {
+    saySentence(recSentence.word, recSentence.index, recSentence.text);
+  } else {
+    sayWord(PLAN[lessonDay-1][0], slow);
+  }
+}
+function renderRecTarget(){
+  var orig = document.getElementById("l-rec-orig");
+  var slow = document.getElementById("l-rec-orig-slow");
+  var modeEl = document.getElementById("l-recmode");
+  if (!orig) return;
+  var isSent = (recMode === "sentence");
+  orig.textContent = isSent ? "🔊 听这句" : "🔊 听原音";
+  if (slow) slow.style.display = isSent ? "none" : "";
+  if (modeEl) {
+    modeEl.hidden = !isSent;
+    modeEl.textContent = isSent ? "正在跟读故事里的一句话（跟读完可以退回第 1 步换句子）" : "";
+  }
+}
+function onRecStatus(kind, msg){
+  if (kind === "ready") {
+    recStatus("idle", "录好啦！点「听我自己」和原音来回比一比。");
+    var result = document.getElementById("l-rec-result");
+    if (result) result.hidden = false;
+  } else if (kind === "recording") {
+    recStatus("recording", "正在录… 松开就停。");
+  } else {
+    recStatus(kind, msg);
+    var r2 = document.getElementById("l-rec-result");
+    if (r2 && kind !== "ready") r2.hidden = true;
+  }
+  renderRecUI();
+}
+function beginRec(){
+  if (!micSupported() || micBlockedReason()) { renderRecUI(); return; }
+  startRecording(function(kind, msg){ onRecStatus(kind, msg); });
+}
+function endRec(){
+  if (recState === "recording") stopRecording();
+}
+
+function closeLesson(){
+  stopRecording();
+  releaseRec();
+  revokeRecUrl();
+  recState = "idle";
+  document.getElementById("lesson").hidden = true;
+  document.body.style.overflow = "";
+}
+
+function finishToday(){
+  done[lessonDay] = 1;
+  save(DKEY, done);
+  closeLesson();
+  var nxt = nextUndone();
+  curDay = nxt;
+  renderHome();
+  window.scrollTo(0, 0);
+  alert("⭐ 太棒了！今天学完了。");
+}
+
+/* ---------------- 家长区 ---------------- */
+function renderGrid(){
+  var html = "";
+  for (var i = 1; i <= PLAN.length; i++) {
+    var w = PLAN[i-1], has = !!done[i];
+    html += '<div class="cell' + (has ? " has" : "") + '">' +
+              '<div class="st">' + (has ? "⭐" : "·") + '</div>' +
+              '<b>' + w[0] + '</b>' + w[1] +
+            '</div>';
+  }
+  document.getElementById("grid").innerHTML = html;
+}
+
+function renderParent(){
+  document.getElementById("s-done").textContent = doneCount();
+  document.getElementById("s-left").textContent = PLAN.length - doneCount();
+  renderGrid();
+  document.getElementById("set-zh").textContent = settings.hidezh ? "显示中文" : "藏起中文";
+  document.getElementById("set-big").textContent = settings.big ? "字还原" : "字更大";
+  renderEnv();
+}
+
+/* 运行环境诊断：安卓 Chrome 只允许 HTTPS / localhost 安装 PWA */
+function isInstalled(){
+  try {
+    return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)
+      || navigator.standalone === true;
+  } catch (e) { return false; }
+}
+function renderEnv(){
+  var el = document.getElementById("env-line");
+  var btn = document.getElementById("set-install");
+  if (!el) return;
+  var secure = (typeof window !== "undefined" && window.isSecureContext !== false);
+  var installed = isInstalled();
+  var env = !secure ? "HTTP 局域网地址" : (installed ? "已装到主屏幕" : "HTTPS");
+  el.textContent = "运行环境：" + env;
+  if (btn) {
+    if (installed) btn.textContent = "✅ 已经装好了";
+    else if (deferredPrompt) btn.textContent = "📱 一键安装到主屏幕";
+    else if (!secure) btn.textContent = "⚠️ 当前装不了，点我看原因";
+    else btn.textContent = "📱 装到手机主屏幕";
+  }
+}
+
+function applySettings(){
+  document.body.classList.toggle("hidezh", !!settings.hidezh);
+  document.body.style.fontSize = settings.big ? "19px" : "";
+  renderEnv();
+}
+
+/* ---------------- 事件绑定 ---------------- */
+document.getElementById("start-btn").onclick = function(){
+  var d = curDay === 0 ? 1 : curDay;
+  openLesson(d);
+};
+document.getElementById("home-say").onclick = function(){
+  if (curDay !== 0) sayWord(PLAN[curDay-1][0]);
+};
+document.getElementById("lesson-close").onclick = closeLesson;
+document.getElementById("to-2").onclick = function(){ showStep(2); };
+document.getElementById("to-3").onclick = function(){ showStep(3); };
+document.getElementById("to-4").onclick = function(){ showStep(4); };
+document.getElementById("to-5").onclick = function(){ showStep(5); };
+document.getElementById("show-answer").onclick = function(){
+  document.getElementById("l-answer-wrap").hidden = false;
+};
+document.getElementById("finish-btn").onclick = finishToday;
+document.getElementById("l-say2").onclick = function(){ sayWord(PLAN[lessonDay-1][0]); };
+document.getElementById("l-say2-slow").onclick = function(){ sayWord(PLAN[lessonDay-1][0], true); };
+document.getElementById("l-say3").onclick = function(){ sayWord(PLAN[lessonDay-1][0]); };
+
+/* ---- 跟读：按住说话，松开停 ---- */
+(function bindRec(){
+  var btn = document.getElementById("l-rec-btn");
+  if (!btn) return;
+
+  if (typeof btn.addEventListener !== "function") {
+    // 极简环境（或不支持事件监听的浏览器）：退化成"点一下开始、再点一下停"
+    btn.onclick = function(){
+      if (recState === "recording") endRec();
+      else beginRec();
+    };
+    return;
+  }
+
+  var pressing = false;
+  var usedPointer = false;
+  btn.addEventListener("pointerdown", function(ev){
+    usedPointer = true;
+    pressing = true;
+    if (ev && ev.preventDefault) ev.preventDefault();
+    beginRec();
+  });
+  btn.addEventListener("pointerup", function(ev){
+    pressing = false;
+    if (ev && ev.preventDefault) ev.preventDefault();
+    endRec();
+  });
+  btn.addEventListener("pointercancel", function(){ pressing = false; endRec(); });
+  btn.addEventListener("pointerleave", function(){ pressing = false; endRec(); });
+
+  /* 没有 pointer 事件的浏览器（部分旧 iOS / 旧安卓）：用触摸事件
+     并 preventDefault 防止浏览器把手势识别成滚动、提前发出 pointercancel */
+  if (typeof window !== "undefined" && window.PointerEvent === undefined) {
+    btn.addEventListener("touchstart", function(ev){
+      usedPointer = true; pressing = true;
+      if (ev && ev.cancelable && ev.preventDefault) ev.preventDefault();
+      beginRec();
+    }, { passive: false });
+    btn.addEventListener("touchend", function(ev){
+      usedPointer = true; pressing = false;
+      if (ev && ev.cancelable && ev.preventDefault) ev.preventDefault();
+      endRec();
+    }, { passive: false });
+    btn.addEventListener("touchcancel", function(){ pressing = false; endRec(); });
+  }
+
+  /* 兜底：鼠标/键盘/无障碍点击。轻点一下开始录音，再点一下结束 */
+  btn.onclick = function(){
+    if (usedPointer) { usedPointer = false; return; }   // 交给 pointer/touch 处理
+    if (pressing) return;
+    if (recState === "recording") endRec();
+    else if (recState === "ready") {
+      revokeRecUrl();
+      recState = "idle";
+      var result = document.getElementById("l-rec-result");
+      if (result) result.hidden = true;
+      recStatus("idle", "再按住说一次吧。");
+      renderRecUI();
+    } else beginRec();
+  };
+})();
+document.getElementById("l-rec-orig").onclick = function(){ playRecTarget(false); };
+document.getElementById("l-rec-orig-slow").onclick = function(){ playRecTarget(true); };
+document.getElementById("l-rec-play").onclick = function(){
+  if (!playRecording()) recStatus("error", "还没录到音，先按「按住说话」录一遍。");
+};
+document.getElementById("l-rec-again").onclick = function(){
+  revokeRecUrl();
+  recState = "idle";
+  var result = document.getElementById("l-rec-result");
+  if (result) result.hidden = true;
+  recStatus("idle", "再按住说一次吧。");
+  renderRecUI();
+};
+
+document.getElementById("parent-btn").onclick = function(){
+  renderParent();
+  document.getElementById("parent").hidden = false;
+  document.body.style.overflow = "hidden";
+};
+document.getElementById("parent-close").onclick = function(){
+  document.getElementById("parent").hidden = true;
+  document.body.style.overflow = "";
+};
+document.getElementById("set-zh").onclick = function(){
+  settings.hidezh = !settings.hidezh; save(SKEY, settings); renderParent(); applySettings();
+};
+document.getElementById("set-big").onclick = function(){
+  settings.big = !settings.big; save(SKEY, settings); renderParent(); applySettings();
+};
+document.getElementById("set-print").onclick = function(){ window.print(); };
+document.getElementById("set-install").onclick = function(){
+  if (isInstalled()) { alert("已经装好啦，从主屏幕图标打开就行。"); return; }
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt = null;
+    return;
+  }
+  var secure = (typeof window !== "undefined" && window.isSecureContext !== false);
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    alert("在 iPhone / iPad 上装到主屏幕：\n\n1. 用 Safari 打开这个页面\n2. 点底部的「分享」按钮\n3. 选「添加到主屏幕」\n4. 点「添加」\n\n之后从主屏幕图标打开，就是全屏 App。");
+    return;
+  }
+  if (!secure) {
+    alert("现在装不了，原因在这里 👇\n\n" +
+      "安卓 Chrome 只允许在 HTTPS 网站或 localhost 上安装 App。" +
+      "现在打开的是局域网的 HTTP 地址（http://192.168.x.x），所以浏览器不给装。\n\n" +
+      "三个办法，任选一个：\n\n" +
+      "① 最省事：用手机自带浏览器（小米/华为/QQ 等）打开同一地址，" +
+      "在它的菜单里找「添加到主屏幕」。出来的是快捷方式，也能一键进，但不是全屏。\n\n" +
+      "② 最完整：让电脑改用 HTTPS 服务器，手机访问 https:// 地址，" +
+      "第一次点「高级 → 继续前往」证书警告，之后就能真正安装、全屏、离线可用。\n" +
+      "（电脑上跑 python serve.py，详见 README）\n\n" +
+      "③ 用电脑的 Chrome 打开电脑上的 http://localhost:8765 也能装，" +
+      "但那装的是电脑，不是手机。");
+    return;
+  }
+  alert("在这个浏览器里没找到安装入口。\n\n可以在浏览器菜单里找「安装应用」或「添加到主屏幕」。");
+};
+document.getElementById("set-reset").onclick = function(){
+  if (confirm("清空全部学习进度？清空后要重新从第 1 天开始。")) {
+    done = {}; marked = {}; save(DKEY, done); save(RKEY, marked);
+    curDay = nextUndone(); renderParent(); renderHome();
+  }
+};
+
+/* ---------------- PWA：Service Worker ---------------- */
+var deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+  renderEnv();
+});
+window.addEventListener("appinstalled", function(){
+  deferredPrompt = null;
+  renderEnv();
+});
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("./sw.js").catch(function(e){
+      console.log("SW 注册失败（不影响使用）:", e.message);
+    });
+  });
+}
+
+/* ---------------- 启动 ---------------- */
+curDay = nextUndone();
+renderHome();
+</script>
+</body>
+</html>

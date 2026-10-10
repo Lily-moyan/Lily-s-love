@@ -1,7 +1,39 @@
-# 部署密钥等本地文件，不提交
+# ===== 凭据 / 密钥（绝不提交）=====
 .deploy/
+wechat-config.json
+dryrun-body.json
+*.pem
+*.key
+背单词APP/.certs/
 
-# 临时文件
+# ===== 临时文件 =====
 _check.js
 .DS_Store
 Thumbs.db
+.tmp/
+.tmp-mask/
+.render_work/
+.ffmpeg_path.txt
+~$*
+
+# ===== 依赖与构建产物（体积大，可重建）=====
+node_modules/
+.pnpm-store/
+.npm-cache/
+.npm-libs/
+.pip-cache/
+.next/
+out/
+dist/
+build/
+coverage/
+__pycache__/
+*.pyc
+.uv-cache/
+.tts-libs/
+.venv/
+venv/
+*.tsbuildinfo
+
+# ===== 本机运行态（按需重建，不必入库）=====
+.dsh/

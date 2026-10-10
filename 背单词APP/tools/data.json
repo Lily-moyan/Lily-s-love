@@ -1,0 +1,876 @@
+{
+  "PLAN": [
+    [
+      "help",
+      "帮助",
+      "h",
+      "/h/"
+    ],
+    [
+      "run",
+      "跑",
+      "r",
+      "/r/"
+    ],
+    [
+      "big",
+      "大的",
+      "b",
+      "/b/"
+    ],
+    [
+      "happy",
+      "开心的",
+      "h",
+      "/h/"
+    ],
+    [
+      "water",
+      "水",
+      "w",
+      "/w/"
+    ],
+    [
+      "look",
+      "看",
+      "l",
+      "/l/"
+    ],
+    [
+      "cat",
+      "猫",
+      "c",
+      "/k/"
+    ],
+    [
+      "bird",
+      "小鸟",
+      "b",
+      "/b/"
+    ],
+    [
+      "rain",
+      "雨",
+      "r",
+      "/r/"
+    ],
+    [
+      "fly",
+      "飞",
+      "f",
+      "/f/"
+    ],
+    [
+      "small",
+      "小的",
+      "s",
+      "/s/"
+    ],
+    [
+      "eat",
+      "吃",
+      "e",
+      "/iː/"
+    ],
+    [
+      "milk",
+      "牛奶",
+      "m",
+      "/m/"
+    ],
+    [
+      "dog",
+      "小狗",
+      "d",
+      "/d/"
+    ],
+    [
+      "open",
+      "打开",
+      "o",
+      "/əʊ/"
+    ],
+    [
+      "close",
+      "关上",
+      "c",
+      "/k/"
+    ],
+    [
+      "hand",
+      "手",
+      "h",
+      "/h/"
+    ],
+    [
+      "tree",
+      "树",
+      "t",
+      "/t/"
+    ],
+    [
+      "book",
+      "书",
+      "b",
+      "/b/"
+    ],
+    [
+      "sing",
+      "唱歌",
+      "s",
+      "/s/"
+    ],
+    [
+      "friend",
+      "朋友",
+      "f",
+      "/f/"
+    ],
+    [
+      "smile",
+      "微笑",
+      "s",
+      "/s/"
+    ],
+    [
+      "warm",
+      "暖和的",
+      "w",
+      "/w/"
+    ],
+    [
+      "sleep",
+      "睡觉",
+      "s",
+      "/s/"
+    ],
+    [
+      "walk",
+      "走路",
+      "w",
+      "/w/"
+    ],
+    [
+      "flower",
+      "花",
+      "f",
+      "/f/"
+    ],
+    [
+      "sun",
+      "太阳",
+      "s",
+      "/s/"
+    ],
+    [
+      "thank",
+      "感谢",
+      "t",
+      "/θ/"
+    ],
+    [
+      "home",
+      "家",
+      "h",
+      "/h/"
+    ],
+    [
+      "love",
+      "爱",
+      "l",
+      "/l/"
+    ]
+  ],
+  "STORIES": {
+    "help": {
+      "s": [
+        [
+          "I see a little bird.",
+          "我看见一只小鸟。"
+        ],
+        [
+          "The bird cannot fly.",
+          "小鸟飞不起来。"
+        ],
+        [
+          "I help the bird.",
+          "我帮帮这只小鸟。"
+        ],
+        [
+          "\"Thank you!\" says the bird.",
+          "\"谢谢你！\"小鸟说。"
+        ]
+      ],
+      "act": "伸出两只手，做一个\"扶一把\"的动作，一边说：I help you!",
+      "pic": "一只淋湿的小鸟 ⊙ᴥ⊙ 和一只伸过去的小手 🤚",
+      "ask": "你今天帮过谁呀？"
+    },
+    "run": {
+      "s": [
+        [
+          "Look at Tom.",
+          "看汤姆。"
+        ],
+        [
+          "Tom can run fast.",
+          "汤姆跑得很快。"
+        ],
+        [
+          "A dog runs with him.",
+          "一只小狗和他一起跑。"
+        ],
+        [
+          "Run, run, run!",
+          "跑呀，跑呀，跑呀！"
+        ]
+      ],
+      "act": "原地跑 10 步，一边跑一边喊：Run, run, run!",
+      "pic": "一个跑步的小男孩 🏃 和一只跟着跑的小狗 🐕",
+      "ask": "你跑得快，还是小狗跑得快？"
+    },
+    "big": {
+      "s": [
+        [
+          "I have a big box.",
+          "我有一个大箱子。"
+        ],
+        [
+          "What is in the big box?",
+          "大箱子里有什么呢？"
+        ],
+        [
+          "A big bear!",
+          "一只大熊！"
+        ],
+        [
+          "\"Hello!\" says the bear.",
+          "\"你好！\"大熊说。"
+        ]
+      ],
+      "act": "张开两只手，圈一个大大的圆，说：Big!",
+      "pic": "一个大箱子 📦 和一只从里面探头的大熊 🐻",
+      "ask": "家里什么东西最大？"
+    },
+    "happy": {
+      "s": [
+        [
+          "The sun is up.",
+          "太阳出来了。"
+        ],
+        [
+          "The bird is happy.",
+          "小鸟很开心。"
+        ],
+        [
+          "I am happy too.",
+          "我也很开心。"
+        ],
+        [
+          "Happy day!",
+          "开心的一天！"
+        ]
+      ],
+      "act": "笑一个大大的笑，说：I am happy!",
+      "pic": "一个笑眯眯的太阳 🌞 和一只笑眯眯的小鸟 🐦",
+      "ask": "今天什么事让你最开心？"
+    },
+    "water": {
+      "s": [
+        [
+          "The flower is thirsty.",
+          "花口渴了。"
+        ],
+        [
+          "I give it water.",
+          "我给它水喝。"
+        ],
+        [
+          "Now the flower is happy.",
+          "现在花开心了。"
+        ],
+        [
+          "Water is good!",
+          "水真好！"
+        ]
+      ],
+      "act": "假装拿小水壶，给身边的花浇一浇水，说：Water!",
+      "pic": "一朵渴了的小花 🌷 和一滴滴下来的水 💧",
+      "ask": "你今天喝水了吗？喝了几杯？"
+    },
+    "look": {
+      "s": [
+        [
+          "Look up!",
+          "抬头看！"
+        ],
+        [
+          "A bird is in the tree.",
+          "树上有只小鸟。"
+        ],
+        [
+          "Look down!",
+          "低头看！"
+        ],
+        [
+          "A cat is by my feet.",
+          "一只猫在我脚边。"
+        ]
+      ],
+      "act": "先抬头，再低头，一边说：Look up! Look down!",
+      "pic": "抬头看见树上小鸟 🐦，低头看见脚边小猫 🐈",
+      "ask": "抬头看一看，你看到了什么？"
+    },
+    "cat": {
+      "s": [
+        [
+          "I have a cat.",
+          "我有一只猫。"
+        ],
+        [
+          "My cat is white and small.",
+          "我的猫又白又小。"
+        ],
+        [
+          "The cat likes milk.",
+          "猫喜欢牛奶。"
+        ],
+        [
+          "\"Meow!\" says my cat.",
+          "\"喵！\"我的猫说。"
+        ]
+      ],
+      "act": "学猫叫一声，说：Meow! I am a cat.",
+      "pic": "一只又白又小、正在喝牛奶的猫 🐈🥛",
+      "ask": "你想养一只什么样的小猫？"
+    },
+    "bird": {
+      "s": [
+        [
+          "A bird is in the tree.",
+          "树上有只小鸟。"
+        ],
+        [
+          "The bird can sing.",
+          "小鸟会唱歌。"
+        ],
+        [
+          "It has two little wings.",
+          "它有一对小翅膀。"
+        ],
+        [
+          "Fly, bird, fly!",
+          "飞吧，小鸟，飞吧！"
+        ]
+      ],
+      "act": "两只手当翅膀，扇一扇，说：I am a bird!",
+      "pic": "一只站在树枝上唱歌的小鸟 🐦🎵",
+      "ask": "小鸟在树上做什么？"
+    },
+    "rain": {
+      "s": [
+        [
+          "Look at the sky.",
+          "看看天。"
+        ],
+        [
+          "It is going to rain.",
+          "要下雨了。"
+        ],
+        [
+          "I hear the rain.",
+          "我听见雨声。"
+        ],
+        [
+          "Rain, rain, go away!",
+          "雨呀雨呀，快走开！"
+        ]
+      ],
+      "act": "手指在桌上轻轻敲，学下雨的声音：滴答滴答。",
+      "pic": "天上灰灰的云 🌧️ 和地上圆圆的水圈 💧",
+      "ask": "下雨天你喜欢做什么？"
+    },
+    "fly": {
+      "s": [
+        [
+          "The bird can fly.",
+          "小鸟会飞。"
+        ],
+        [
+          "A kite can fly too.",
+          "风筝也会飞。"
+        ],
+        [
+          "I can fly in my dream.",
+          "我在梦里也会飞。"
+        ],
+        [
+          "Fly high!",
+          "飞得高高的！"
+        ]
+      ],
+      "act": "张开两只手，原地转一圈，说：I can fly!",
+      "pic": "一只飞得高高的小鸟 🐦 和一只风筝 🪁",
+      "ask": "还有什么东西会飞？"
+    },
+    "small": {
+      "s": [
+        [
+          "I see a small cat.",
+          "我看见一只小猫。"
+        ],
+        [
+          "The cat is very small.",
+          "这只猫非常小。"
+        ],
+        [
+          "It sits in my hand.",
+          "它坐在我手上。"
+        ],
+        [
+          "So small!",
+          "好小呀！"
+        ]
+      ],
+      "act": "把手指捏在一起，比一个「很小很小」，说：So small!",
+      "pic": "一只小到能坐在手掌上的猫 🐈🤲",
+      "ask": "家里什么东西最小？"
+    },
+    "eat": {
+      "s": [
+        [
+          "It is time to eat.",
+          "该吃饭啦。"
+        ],
+        [
+          "I eat rice and eggs.",
+          "我吃米饭和鸡蛋。"
+        ],
+        [
+          "My cat eats fish.",
+          "我的猫吃鱼。"
+        ],
+        [
+          "We are happy!",
+          "我们都很开心！"
+        ]
+      ],
+      "act": "假装拿勺子，吃一口，说：I eat!",
+      "pic": "一碗米饭 🍚 和一条小鱼 🐟",
+      "ask": "你今天吃了什么？"
+    },
+    "milk": {
+      "s": [
+        [
+          "I have some milk.",
+          "我有一些牛奶。"
+        ],
+        [
+          "The milk is white.",
+          "牛奶是白色的。"
+        ],
+        [
+          "My cat likes milk.",
+          "我的猫喜欢牛奶。"
+        ],
+        [
+          "Milk is good for me.",
+          "牛奶对我有好处。"
+        ]
+      ],
+      "act": "假装拿杯子，喝一口牛奶，说：Milk!",
+      "pic": "一杯白白的牛奶 🥛 和一只舔嘴的小猫 🐈",
+      "ask": "你喜欢喝牛奶吗？"
+    },
+    "dog": {
+      "s": [
+        [
+          "I have a dog.",
+          "我有一只小狗。"
+        ],
+        [
+          "My dog can run and jump.",
+          "我的小狗会跑会跳。"
+        ],
+        [
+          "It likes to play with me.",
+          "它喜欢和我玩。"
+        ],
+        [
+          "\"Woof!\" says my dog.",
+          "\"汪！\"我的小狗说。"
+        ]
+      ],
+      "act": "学小狗叫一声，说：Woof! I am a dog.",
+      "pic": "一只摇着尾巴的小狗 🐕 和一个球 ⚽",
+      "ask": "小狗喜欢玩什么？"
+    },
+    "open": {
+      "s": [
+        [
+          "Open the door.",
+          "把门打开。"
+        ],
+        [
+          "Open the box.",
+          "把箱子打开。"
+        ],
+        [
+          "Look, a little cat!",
+          "看，一只小猫！"
+        ],
+        [
+          "What a surprise!",
+          "真是个惊喜！"
+        ]
+      ],
+      "act": "两只手往外一推，做「开门」的动作，说：Open!",
+      "pic": "一扇打开的门 🚪 和一只跳出来的小猫 🐈",
+      "ask": "你能帮忙打开什么？"
+    },
+    "close": {
+      "s": [
+        [
+          "Close the door.",
+          "把门关上。"
+        ],
+        [
+          "Close your eyes.",
+          "把眼睛闭上。"
+        ],
+        [
+          "Now open them again!",
+          "现在再睁开！"
+        ],
+        [
+          "Peek-a-boo!",
+          "藏猫猫！"
+        ]
+      ],
+      "act": "两只手合起来，做「关门」的动作，然后闭上眼睛，说：Close!",
+      "pic": "一扇关上的门 🚪 和一双闭上的眼睛 😌",
+      "ask": "关门的时候要注意什么？"
+    },
+    "hand": {
+      "s": [
+        [
+          "This is my hand.",
+          "这是我的手。"
+        ],
+        [
+          "I have two hands.",
+          "我有两只手。"
+        ],
+        [
+          "My hands can clap.",
+          "我的手能拍手。"
+        ],
+        [
+          "Clap, clap, clap!",
+          "拍拍拍！"
+        ]
+      ],
+      "act": "举起两只手，拍三下，说：My hands!",
+      "pic": "两只张开的小手 🤲 和拍手的动作 👏",
+      "ask": "你的手今天做了什么？"
+    },
+    "tree": {
+      "s": [
+        [
+          "I see a big tree.",
+          "我看见一棵大树。"
+        ],
+        [
+          "The tree is green.",
+          "这棵树是绿色的。"
+        ],
+        [
+          "A bird lives in the tree.",
+          "一只小鸟住在树上。"
+        ],
+        [
+          "The tree is its home.",
+          "大树就是它的家。"
+        ]
+      ],
+      "act": "站直，两臂张开像树枝，说：I am a tree!",
+      "pic": "一棵大大的绿树 🌳 和树上的一只小鸟 🐦",
+      "ask": "树的上面有什么？"
+    },
+    "book": {
+      "s": [
+        [
+          "I have a book.",
+          "我有一本书。"
+        ],
+        [
+          "The book is full of pictures.",
+          "书里有很多画。"
+        ],
+        [
+          "I look at it every night.",
+          "我每天晚上都看它。"
+        ],
+        [
+          "I love my book!",
+          "我爱我的书！"
+        ]
+      ],
+      "act": "两只手合上像一本书，然后打开，说：Open my book!",
+      "pic": "一本翻开的书 📖 和一颗小星星 ⭐",
+      "ask": "你最喜欢哪本书？"
+    },
+    "sing": {
+      "s": [
+        [
+          "I like to sing.",
+          "我喜欢唱歌。"
+        ],
+        [
+          "I sing with my mom.",
+          "我和妈妈一起唱。"
+        ],
+        [
+          "The bird sings too.",
+          "小鸟也唱。"
+        ],
+        [
+          "Sing with me!",
+          "和我一起唱吧！"
+        ]
+      ],
+      "act": "大声唱一小句你最喜欢的歌，然后说：I can sing!",
+      "pic": "一个唱歌的小孩 🎤 和一只跟着唱的小鸟 🐦",
+      "ask": "你会唱哪首歌？"
+    },
+    "friend": {
+      "s": [
+        [
+          "This is my friend.",
+          "这是我的朋友。"
+        ],
+        [
+          "We play together.",
+          "我们一起玩。"
+        ],
+        [
+          "We share our toys.",
+          "我们分享玩具。"
+        ],
+        [
+          "A friend is the best!",
+          "朋友是最好的！"
+        ]
+      ],
+      "act": "拉起身边人的手，说：You are my friend!",
+      "pic": "两个手拉手的小朋友 👫 和一个玩具 🧸",
+      "ask": "你的好朋友叫什么名字？"
+    },
+    "smile": {
+      "s": [
+        [
+          "Look at my face.",
+          "看看我的脸。"
+        ],
+        [
+          "I have a big smile.",
+          "我有一个大大的笑容。"
+        ],
+        [
+          "A smile makes people happy.",
+          "微笑让人开心。"
+        ],
+        [
+          "Smile with me!",
+          "和我一起笑吧！"
+        ]
+      ],
+      "act": "对着家里的人笑一个大大的笑，说：Smile!",
+      "pic": "一张笑嘻嘻的脸 😊 和一朵小花 🌸",
+      "ask": "今天谁对你笑了？"
+    },
+    "warm": {
+      "s": [
+        [
+          "The sun is warm.",
+          "太阳暖暖的。"
+        ],
+        [
+          "My hat is warm.",
+          "我的帽子很暖和。"
+        ],
+        [
+          "I feel warm and happy.",
+          "我觉得又暖又开心。"
+        ],
+        [
+          "What a warm day!",
+          "多么暖和的一天！"
+        ]
+      ],
+      "act": "两只手抱住自己，说：I am warm!",
+      "pic": "暖暖的太阳 ☀️ 和一顶毛线帽 🧣",
+      "ask": "什么时候你会觉得暖和？"
+    },
+    "sleep": {
+      "s": [
+        [
+          "It is night.",
+          "天黑了。"
+        ],
+        [
+          "The moon is up.",
+          "月亮出来了。"
+        ],
+        [
+          "It is time to sleep.",
+          "该睡觉啦。"
+        ],
+        [
+          "Good night!",
+          "晚安！"
+        ]
+      ],
+      "act": "假装打个哈欠，躺在床上，说：Good night!",
+      "pic": "弯弯的月亮 🌙 和一张小床 🛏️",
+      "ask": "你睡觉前会做什么？"
+    },
+    "walk": {
+      "s": [
+        [
+          "I walk to school.",
+          "我走路去学校。"
+        ],
+        [
+          "I walk with my dad.",
+          "我和爸爸一起走。"
+        ],
+        [
+          "We see flowers on the way.",
+          "路上我们看见了花。"
+        ],
+        [
+          "Walk, walk, walk!",
+          "走走走！"
+        ]
+      ],
+      "act": "在房间里走三圈，一边走一边说：Walk, walk!",
+      "pic": "一个走路的小朋友 🚶 和路边的小花 🌼",
+      "ask": "你走路的时候看见过什么？"
+    },
+    "flower": {
+      "s": [
+        [
+          "Look at the flower.",
+          "看看这朵花。"
+        ],
+        [
+          "It is red and yellow.",
+          "它又红又黄。"
+        ],
+        [
+          "The bee likes the flower.",
+          "小蜜蜂喜欢这朵花。"
+        ],
+        [
+          "What a pretty flower!",
+          "多漂亮的花呀！"
+        ]
+      ],
+      "act": "两只手托在下巴下，像一朵花，说：A flower!",
+      "pic": "一朵红黄的小花 🌺 和一只小蜜蜂 🐝",
+      "ask": "你最喜欢什么颜色的花？"
+    },
+    "sun": {
+      "s": [
+        [
+          "The sun is up.",
+          "太阳升起来了。"
+        ],
+        [
+          "The sun is yellow and round.",
+          "太阳又黄又圆。"
+        ],
+        [
+          "It makes the day bright.",
+          "它让白天亮亮的。"
+        ],
+        [
+          "Hello, sun!",
+          "你好，太阳！"
+        ]
+      ],
+      "act": "两只手举过头顶，围成一个大圆，说：Hello, sun!",
+      "pic": "一个圆圆的大太阳 ☀️ 和一片蓝天 🌤️",
+      "ask": "太阳出来的时候，天是什么颜色？"
+    },
+    "thank": {
+      "s": [
+        [
+          "I have a gift.",
+          "我有一份礼物。"
+        ],
+        [
+          "My friend gives it to me.",
+          "我的朋友送给我的。"
+        ],
+        [
+          "I say thank you.",
+          "我说谢谢。"
+        ],
+        [
+          "\"You are welcome!\"",
+          "\"不用谢！\""
+        ]
+      ],
+      "act": "双手接过一样东西，鞠一下躬，说：Thank you!",
+      "pic": "一份小礼物 🎁 和两只递东西的手 🤲",
+      "ask": "今天你想对谁说谢谢？"
+    },
+    "home": {
+      "s": [
+        [
+          "This is my home.",
+          "这是我的家。"
+        ],
+        [
+          "My home is warm.",
+          "我的家很温暖。"
+        ],
+        [
+          "My mom and dad are here.",
+          "爸爸妈妈都在这里。"
+        ],
+        [
+          "I love my home.",
+          "我爱我的家。"
+        ]
+      ],
+      "act": "两只手在头顶搭一个小屋顶，说：My home!",
+      "pic": "一栋有灯的小房子 🏠 和一颗爱心 ❤️",
+      "ask": "你的家里有谁？"
+    },
+    "love": {
+      "s": [
+        [
+          "I love my mom.",
+          "我爱我的妈妈。"
+        ],
+        [
+          "I love my dad.",
+          "我爱我的爸爸。"
+        ],
+        [
+          "They love me too.",
+          "他们也爱我。"
+        ],
+        [
+          "Love is everywhere!",
+          "爱到处都是！"
+        ]
+      ],
+      "act": "双手抱住自己，再抱住家里的人，说：I love you!",
+      "pic": "一颗大大的爱心 ❤️ 和一家人的手 🤝",
+      "ask": "你最想对谁说我爱你？"
+    }
+  }
+}
