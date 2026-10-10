@@ -1,0 +1,184 @@
+/* 营销落地页。和首页那版是两套动线：
+   首页解释机制，这页只做一件事——把人推到"免费开始写"。
+   所以：单一 CTA 重复三次、每节只讲一个点、密度比首页低一档。
+   类名统一 pm- 前缀，和 landing.css 的 lp- 完全隔开，各改各的。 */
+
+body.pm { margin: 0; background: var(--bg); color: var(--ink); }
+.pm-in { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+.pm .grow { flex: 1; }
+
+/* ---- 导航。营销页不放二级链接，少一个出口就多一分转化 ---- */
+.pm-nav {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: saturate(1.6) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.pm-nav .pm-in { display: flex; align-items: center; gap: 14px; height: 60px; }
+.pm-link { color: var(--muted); text-decoration: none; font-size: 14px; }
+.pm-link:hover { color: var(--accent-ink); }
+
+/* ---- 首屏 ---- */
+.pm-hero { position: relative; overflow: hidden; padding: 88px 0 76px; text-align: center; }
+.pm-glow {
+  position: absolute; inset: -30% -10% auto; height: 700px; pointer-events: none;
+  background:
+    radial-gradient(700px 340px at 50% 0%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%),
+    radial-gradient(460px 260px at 20% 18%, color-mix(in srgb, var(--signal) 11%, transparent), transparent 72%);
+}
+.pm-hero > .pm-in { position: relative; }
+.pm-eyebrow {
+  display: inline-block; margin-bottom: 22px; font-size: 12.5px; letter-spacing: .05em;
+  padding: 5px 14px; border-radius: 999px; color: var(--accent-ink);
+  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  backdrop-filter: blur(8px);
+}
+.pm-hero h1 {
+  text-wrap: balance;
+  margin: 0 0 20px; font-size: 54px; line-height: 1.18; letter-spacing: -.02em;
+  font-weight: 800;
+}
+.pm-lead {
+  max-width: 640px; margin: 0 auto 30px; font-size: 17.5px; line-height: 1.8; color: var(--muted);
+}
+.pm-lead b { color: var(--ink); }
+.pm-cta { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.btn.lg { padding: 14px 34px; font-size: 16.5px; font-weight: 700; border-radius: 11px; }
+.pm-ghost { color: var(--muted); font-size: 15px; text-decoration: none; border-bottom: 1px solid var(--line-strong); padding-bottom: 2px; }
+.pm-ghost:hover { color: var(--accent-ink); border-color: var(--accent); }
+.pm-risk { margin: 22px 0 0; font-size: 13px; color: var(--faint); }
+.pm-risk a { color: var(--accent-ink); }
+
+/* ---- 通用分节 ---- */
+.pm-band { background: var(--panel); border-block: 1px solid var(--border); }
+main > .pm-in, .pm-band > .pm-in { padding-block: 84px; }
+.pm-h2 {
+  text-wrap: balance;
+  margin: 0 0 12px; font-size: 34px; line-height: 1.3; letter-spacing: -.015em;
+  text-align: center; font-weight: 800;
+}
+.pm-sub { margin: 0 auto 40px; max-width: 640px; text-align: center; color: var(--muted); font-size: 15.5px; line-height: 1.8; }
+.pm-note {
+  margin: 26px auto 0; max-width: 680px; text-align: center;
+  font-size: 12.5px; line-height: 1.8; color: var(--faint);
+}
+
+/* ---- 一条选题扇出五份产物。这页最主要的证据 ---- */
+.pm-fan { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 34px; align-items: start; }
+.pm-seed {
+  position: sticky; top: 88px;
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  background: var(--accent-soft); border-radius: var(--radius-lg); padding: 20px 22px;
+}
+.pm-seed-k { font-size: 11px; letter-spacing: .1em; color: var(--accent-ink); font-weight: 700; }
+.pm-seed b { display: block; margin: 10px 0 12px; font-size: 17px; line-height: 1.55; }
+.pm-seed i { font-style: normal; font-size: 12.5px; color: var(--muted); }
+
+.pm-out { display: grid; gap: 10px; }
+.pm-o {
+  position: relative; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--panel); padding: 15px 18px 15px 22px;
+  transition: transform .16s, box-shadow .16s;
+}
+.pm-band .pm-o { background: var(--panel-2); }
+.pm-o:hover { transform: translateX(3px); box-shadow: var(--shadow); }
+/* 左侧一道彩条，暗示这几份是从同一个源头分出来的 */
+.pm-o::before {
+  content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px;
+  border-radius: 0 3px 3px 0; background: var(--accent);
+}
+.pm-o header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.pm-o-p { font-size: 13px; font-weight: 700; }
+.pm-o-p.wx { color: #07a35a; } .pm-o-p.xhs { color: #ff2e4d; }
+.pm-o-p.wb { color: #e6a817; } .pm-o-p.tts { color: var(--accent-ink); }
+.pm-o-p.vo { color: #0a84c4; }
+.pm-o-n {
+  font-size: 11.5px; color: var(--muted); background: var(--bg);
+  border: 1px solid var(--border); border-radius: 999px; padding: 1px 9px;
+}
+.pm-o p { margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--muted); }
+
+/* ---- 三步 ---- */
+.pm-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.pm-steps li { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--panel); padding: 24px 22px 26px; }
+.pm-step-n {
+  display: block; font-size: 13px; font-weight: 800; letter-spacing: .08em;
+  color: var(--accent); margin-bottom: 12px;
+}
+.pm-steps h3 { margin: 0 0 8px; font-size: 18px; }
+.pm-steps p { margin: 0; font-size: 14px; line-height: 1.8; color: var(--muted); }
+
+.pm-mid-cta { margin-top: 44px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.pm-mid-cta span { font-size: 13px; color: var(--faint); }
+
+/* ---- 步骤对比 ---- */
+.pm-vs { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.pm-vs-c { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px 24px; background: var(--panel-2); }
+.pm-vs-c.next { border-color: color-mix(in srgb, var(--accent) 40%, transparent); background: var(--panel); }
+.pm-vs-c h3 { margin: 0 0 14px; font-size: 17px; display: flex; align-items: baseline; gap: 10px; }
+.pm-vs-c h3 i {
+  font-style: normal; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px;
+  background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+}
+.pm-vs-c.next h3 i { background: var(--accent-soft); border-color: transparent; color: var(--accent-ink); }
+.pm-vs-c ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; color: var(--muted); }
+.pm-vs-c li.dup { color: var(--signal); }
+.pm-vs-c li.one { color: var(--accent-ink); font-weight: 600; }
+.pm-vs-c > p { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+
+/* ---- 顾虑 ---- */
+.pm-faq { max-width: 760px; margin: 0 auto; display: grid; gap: 8px; }
+.pm-faq details {
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel);
+  padding: 2px 20px;
+}
+.pm-faq summary {
+  cursor: pointer; list-style: none; padding: 16px 0; font-size: 15.5px; font-weight: 600;
+  display: flex; align-items: center; gap: 12px;
+}
+.pm-faq summary::-webkit-details-marker { display: none; }
+.pm-faq summary::after {
+  content: "+"; margin-left: auto; color: var(--faint); font-weight: 400; font-size: 20px; line-height: 1;
+}
+.pm-faq details[open] summary::after { content: "−"; }
+.pm-faq details[open] summary { color: var(--accent-ink); }
+.pm-faq p { margin: 0 0 18px; font-size: 14px; line-height: 1.85; color: var(--muted); }
+.pm-faq p b { color: var(--ink); }
+.pm-faq a { color: var(--accent-ink); }
+
+/* ---- 收尾 ---- */
+.pm-end { text-align: center; padding: 92px 0 100px; background: var(--panel); border-top: 1px solid var(--border); }
+.pm-end h2 { text-wrap: balance; margin: 0 0 12px; font-size: 32px; letter-spacing: -.015em; font-weight: 800; }
+.pm-end > .pm-in > p { margin: 0 0 26px; color: var(--muted); font-size: 15.5px; }
+
+.pm-foot { border-top: 1px solid var(--border); background: var(--bg); }
+.pm-foot .pm-in { display: flex; align-items: center; gap: 18px; height: 62px; font-size: 13px; color: var(--faint); }
+.pm-foot a { color: var(--muted); text-decoration: none; }
+.pm-foot a:hover { color: var(--accent-ink); }
+
+/* ---- 渐入。和首页一样：默认可见，JS 确认可用才接管 ---- */
+.js-anim .pm-rv { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
+.js-anim .pm-rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .js-anim .pm-rv { opacity: 1; transform: none; transition: none; } }
+
+/* ---- 窄屏 ---- */
+@media (max-width: 900px) {
+  .pm-fan { grid-template-columns: 1fr; }
+  .pm-seed { position: static; }
+  .pm-steps { grid-template-columns: 1fr; }
+  .pm-vs { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  main > .pm-in, .pm-band > .pm-in { padding-block: 56px; }
+  .pm-hero { padding: 56px 0 48px; }
+  .pm-hero h1 { font-size: 34px; }
+  .pm-lead { font-size: 16px; text-align: left; }
+  .pm-h2 { font-size: 23px; }
+  .pm-sub { text-align: left; }
+  .pm-end h2 { font-size: 24px; }
+  .pm-cta { flex-direction: column; gap: 14px; }
+  .pm-cta .btn.lg { width: 100%; }
+  .pm-nav .pm-link { display: none; }   /* 窄屏只留一个出口 */
+  .pm-foot .pm-in { height: auto; padding-block: 18px; flex-wrap: wrap; gap: 12px; }
+}

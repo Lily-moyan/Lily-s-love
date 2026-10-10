@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ee">
+<title>六岁这一年：从大班到一年级的家园共育方案</title>
+<style>
+  :root{
+    --bg:#f7f4ee;
+    --paper:#fffdf9;
+    --ink:#221f1c;
+    --muted:#6d6560;
+    --line:#e4ddd3;
+    --accent:#0f6b62;
+    --accent-soft:#e6f0ee;
+    --warn:#8a4b13;
+    --warn-soft:#fbf0e2;
+    --quote:#f1ece4;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14161a;
+      --paper:#1c1f24;
+      --ink:#e9e6e1;
+      --muted:#9c968f;
+      --line:#2e333a;
+      --accent:#6ec7bb;
+      --accent-soft:#1d2f2d;
+      --warn:#e0a86a;
+      --warn-soft:#2c2419;
+      --quote:#23272d;
+    }
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    padding:0 0 4rem;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+    font-size:17px;
+    line-height:1.85;
+    letter-spacing:.01em;
+  }
+  .wrap{max-width:44rem;margin:0 auto;padding:0 1.15rem;}
+
+  /* ---------- 封面 ---------- */
+  header{
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    padding:2.6rem 0 2rem;
+    margin-bottom:2rem;
+  }
+  header .kicker{
+    color:var(--accent);
+    font-size:.78rem;
+    letter-spacing:.22em;
+    font-weight:700;
+    margin:0 0 .8rem;
+  }
+  header h1{
+    font-size:1.72rem;
+    line-height:1.4;
+    margin:0 0 .5rem;
+    letter-spacing:-.01em;
+  }
+  header .sub{color:var(--muted);font-size:.92rem;margin:0;}
+  .meta{
+    display:flex;flex-wrap:wrap;gap:.45rem .7rem;
+    margin-top:1.4rem;font-size:.82rem;color:var(--muted);
+  }
+  .meta span{
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:.22rem .7rem;
+  }
+
+  /* ---------- 核心句 ---------- */
+  .core{
+    background:var(--accent-soft);
+    border-left:4px solid var(--accent);
+    border-radius:.5rem;
+    padding:1.05rem 1.15rem;
+    margin:0 0 2.4rem;
+    font-size:.95rem;
+  }
+  .core strong{color:var(--accent);}
+
+  /* ---------- 章节 ---------- */
+  section{margin:0 0 3rem;}
+  h2{
+    font-size:1.22rem;
+    margin:0 0 .3rem;
+    padding-top:1.6rem;
+    border-top:1px solid var(--line);
+    letter-spacing:-.005em;
+  }
+  h2 .n{
+    display:inline-block;
+    color:var(--accent);
+    font-size:.82rem;
+    font-weight:800;
+    letter-spacing:.14em;
+    vertical-align:.12em;
+    margin-right:.55rem;
+  }
+  h3{
+    font-size:1rem;
+    margin:2rem 0 .7rem;
+    color:var(--ink);
+  }
+  h3::before{
+    content:"";
+    display:inline-block;
+    width:.42rem;height:.42rem;
+    background:var(--accent);
+    border-radius:2px;
+    margin-right:.5rem;
+    vertical-align:.12em;
+  }
+  p{margin:.7rem 0;}
+  .lead{color:var(--muted);font-size:.92rem;margin:.4rem 0 1.2rem;}
+
+  /* ---------- 决策卡 ---------- */
+  .cards{display:grid;gap:.6rem;margin:1.1rem 0;}
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:.6rem;
+    padding:.85rem .95rem;
+  }
+  .card .k{
+    font-size:.78rem;
+    font-weight:700;
+    color:var(--accent);
+    letter-spacing:.06em;
+    margin:0 0 .28rem;
+  }
+  .card .v{font-size:1rem;font-weight:600;margin:0;}
+  .card .note{
+    font-size:.84rem;
+    color:var(--muted);
+    margin:.35rem 0 0;
+    line-height:1.7;
+  }
+
+  /* ---------- 两轨对照 ---------- */
+  .tracks{display:grid;gap:.7rem;margin:1.1rem 0;}
+  .track{
+    background:var(--paper);border:1px solid var(--line);
+    border-radius:.6rem;padding:.95rem;display:grid;gap:.5rem;
+  }
+  .track .t{font-weight:700;font-size:1rem;}
+  .track .goal{font-size:.9rem;color:var(--ink);}
+  .track .act{font-size:.9rem;color:var(--muted);}
+  .track .act b{color:var(--accent);}
+
+  /* ---------- 有序清单 ---------- */
+  ol.steps{margin:1rem 0;padding:0;list-style:none;counter-reset:s;}
+  ol.steps li{
+    counter-increment:s;
+    position:relative;
+    padding:.5rem 0 .5rem 2.1rem;
+    font-size:.95rem;
+    border-bottom:1px dashed var(--line);
+  }
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{
+    content:counter(s);
+    position:absolute;left:0;top:.55rem;
+    width:1.45rem;height:1.45rem;
+    background:var(--accent);color:#fff;
+    border-radius:50%;
+    font-size:.74rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    line-height:1;
+  }
+  @media (prefers-color-scheme: dark){ ol.steps li::before{color:#10231f;} }
+
+  ul.plain{margin:.8rem 0;padding-left:1.15rem;}
+  ul.plain li{margin:.4rem 0;font-size:.95rem;}
+
+  /* ---------- 提示框 ---------- */
+  .warn{
+    background:var(--warn-soft);
+    border-left:4px solid var(--warn);
+    border-radius:.5rem;
+    padding:.9rem 1rem;
+    margin:1.1rem 0;
+    font-size:.9rem;
+  }
+  .warn .h{
+    font-weight:700;color:var(--warn);
+    font-size:.8rem;letter-spacing:.1em;
+    margin:0 0 .3rem;
+  }
+  .tip{
+    background:var(--quote);
+    border-radius:.5rem;
+    padding:.9rem 1rem;
+    margin:1.1rem 0;
+    font-size:.9rem;
+  }
+  .quote{
+    border-left:3px solid var(--line);
+    padding:.2rem 0 .2rem 1rem;
+    margin:1.1rem 0;
+    color:var(--muted);
+    font-size:.92rem;
+  }
+  .quote b{color:var(--ink);font-weight:600;}
+  .big{
+    font-size:1.02rem;font-weight:700;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:.6rem;
+    padding:1rem 1.1rem;
+    margin:1.1rem 0;
+  }
+
+  /* ---------- 时间表 ---------- */
+  .tl{margin:1.1rem 0;}
+  .tl .r{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:.15rem;
+    padding:.75rem 0;
+    border-bottom:1px solid var(--line);
+  }
+  .tl .r:last-child{border-bottom:none;}
+  .tl .when{
+    font-size:.82rem;font-weight:700;color:var(--accent);
+    letter-spacing:.04em;
+  }
+  .tl .what{font-size:.95rem;}
+
+  /* ---------- 洞 ---------- */
+  .holes{counter-reset:h;margin:1.1rem 0;padding:0;list-style:none;}
+  .holes li{
+    counter-increment:h;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:.6rem;
+    padding:.9rem 1rem .95rem 1rem;
+    margin-bottom:.6rem;
+  }
+  .holes li .t{font-weight:700;font-size:.98rem;margin:0 0 .3rem;}
+  .holes li .t::before{
+    content:"洞 " counter(h);
+    display:inline-block;
+    font-size:.7rem;font-weight:800;letter-spacing:.08em;
+    color:var(--warn);
+    background:var(--warn-soft);
+    border-radius:.28rem;
+    padding:.12rem .4rem;
+    margin-right:.5rem;
+    vertical-align:.1em;
+  }
+  .holes li p{margin:.25rem 0 0;font-size:.9rem;color:var(--muted);}
+
+  footer{
+    max-width:44rem;margin:3rem auto 0;
+    padding:1.4rem 1.15rem 0;
+    border-top:1px solid var(--line);
+    color:var(--muted);font-size:.82rem;
+    line-height:1.8;
+  }
+
+  @media (min-width:620px){
+    body{font-size:17.5px;}
+    header h1{font-size:2rem;}
+    .tracks{grid-template-columns:1fr 1fr;}
+    .cards{grid-template-columns:1fr 1fr;}
+    .tl .r{grid-template-columns:9.5rem 1fr;gap:.8rem;align-items:baseline;}
+  }
+  @media print{
+    body{background:#fff;color:#000;font-size:12pt;}
+    header{background:#fff;}
+    .card,.track,.holes li,.big{break-inside:avoid;}
+    h2{break-after:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="kicker">家 园 共 育 方 案</p>
+    <h1>六岁这一年<br>从大班到一年级</h1>
+    <p class="sub">目标：内驱力——不让他上小学后变成只会等指令的孩子</p>
+    <div class="meta">
+      <span>6 岁 · 大班</span>
+      <span>2026.9 – 2027.7 大班</span>
+      <span>2027.9 小学一年级</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="core">
+    <strong>一句话核心：</strong>这套方案的成败不在你会不会跟园方谈——你全程都不打算跟园方谈。成败在你<strong>每天晚上那半小时</strong>，和<strong>一年级接他时说的第一句话</strong>。这两处是全年频率最高的干预点，其他都是配套。
+  </div>
+
+  <!-- 一 -->
+  <section>
+    <h2><span class="n">01</span>目标：一句话和两轨</h2>
+    <p class="lead">内驱力在这个孩子身上拆成两轨，两轨的培养动作几乎相反，不能混着做。</p>
+
+    <div class="tracks">
+      <div class="track">
+        <div class="t">玩 / 探索这一轨</div>
+        <div class="goal">目标：他自己发起</div>
+        <div class="act">你的动作：<b>少介入</b>——忍住不安排、容忍他发呆、等他自己起头</div>
+      </div>
+      <div class="track">
+        <div class="t">任务这一轨</div>
+        <div class="goal">目标：他配合，做完有成就感</div>
+        <div class="act">你的动作：<b>多设计</b>——切成他能做的台阶、做完让他看见进步</div>
+      </div>
+    </div>
+
+    <div class="warn">
+      <p class="h">最容易的失败模式</p>
+      把"任务模式"的催和评带进玩里，一秒钟就把第一轨毁掉。
+    </div>
+
+    <p>另外要防一个替代品：养出一个<strong>"很配合、但没人发指令就什么都不做"的乖孩子</strong>——那是内驱力的反面。</p>
+  </section>
+
+  <!-- 二 -->
+  <section>
+    <h2><span class="n">02</span>大班这一年（2026.9–2027.7）</h2>
+
+    <h3>决策清单</h3>
+    <div class="cards">
+      <div class="card">
+        <p class="k">自发领域</p>
+        <p class="v">建构动手（搭、拼、做）</p>
+        <p class="note">这是他自己钻进去的那件事。</p>
+      </div>
+      <div class="card">
+        <p class="k">现有资源</p>
+        <p class="v">每天 30 分钟以上不被打断的整块时间</p>
+        <p class="note">对大班来说不算少，要护住的是它不被切碎。</p>
+      </div>
+      <div class="card">
+        <p class="k">园方定性</p>
+        <p class="v">盟友——园里管学业，家里管兴趣</p>
+        <p class="note">园里确实在教小学内容，硬顶没意义，分工才有用。</p>
+      </div>
+      <div class="card">
+        <p class="k">边界</p>
+        <p class="v">作业不能吃掉晚上的留白</p>
+        <p class="note">唯一的底线。</p>
+      </div>
+      <div class="card">
+        <p class="k">时间安排</p>
+        <p class="v">时到即停，牺牲完成度</p>
+        <p class="note">睡眠、留白、老师关系三选一里，牺牲作业完成度。</p>
+      </div>
+      <div class="card">
+        <p class="k">未完成处理</p>
+        <p class="v">没做完就不交</p>
+        <p class="note">老师收本子但不点名、不写评语，风险低。</p>
+      </div>
+      <div class="card">
+        <p class="k">跟老师沟通</p>
+        <p class="v">不提前说</p>
+        <p class="note">既然不点名，这一仗确实不用打。</p>
+      </div>
+      <div class="card">
+        <p class="k">"完成"由谁确认</p>
+        <p class="v">你——只看完成，不看对错</p>
+        <p class="note">有人在场确认"你完成了"，这是留白之外的另一半。</p>
+      </div>
+      <div class="card">
+        <p class="k">9·29 会议角色</p>
+        <p class="v">以委员身份把班级建构区/游戏资源做起来</p>
+        <p class="note">唯一不需要冲突的杠杆。</p>
+      </div>
+      <div class="card">
+        <p class="k">进班方式</p>
+        <p class="v">当志愿者 ⚠️ 角色不可逆</p>
+        <p class="note">第一次以什么形象出现，期待就定型了。</p>
+      </div>
+    </div>
+
+    <h3>承重点</h3>
+    <div class="big">
+      你每天晚上从"检查他"变成"确认他做完了"。
+    </div>
+    <p>三个动作必须同时成立，缺一个另外两个都会漏：</p>
+    <ol class="steps">
+      <li><strong>时间盒是物理的</strong>——几点开始、多长、表放在他面前，到点收摊。</li>
+      <li><strong>作业时段你不纠错、不评分、不签字式验收</strong>——对错交给老师。</li>
+      <li><strong>收摊前只做一件事</strong>——让他看见今天做出来的东西。</li>
+    </ol>
+
+    <h3>已确认的背景事实</h3>
+    <ul class="plain">
+      <li>幼儿园在教小学内容，<strong>有要求、有验收</strong>。</li>
+      <li>有书面练习带回家，<strong>家长要陪要签</strong>。</li>
+      <li>老师<strong>会收本子，但不点名、不写评语</strong>。</li>
+    </ul>
+
+    <div class="warn">
+      <p class="h">一个必须知道的陷阱</p>
+      "只改自己"极容易变成"什么都没改"。作业必须做完、必须签字这两件事只要不动，你能改的只剩表情和语气——而孩子读得懂表情。
+    </div>
+
+    <h3>内在冲突及其解法</h3>
+    <p>"时到即停"会教他"任务可以半途停下"，这撞上另一轨的"任务要完成、要有成就感"。</p>
+    <p><strong>解法：</strong>停这个动作由时间盒决定，不由你的判决决定；并且每次停之前先让一个小单元收尾，保证他每次都有一个"完成"的体验。</p>
+  </section>
+
+  <!-- 三 -->
+  <section>
+    <h2><span class="n">03</span>一年级（2027.9 起）</h2>
+
+    <h3>要挡的那台机器</h3>
+    <p><strong>评价机器——成就感被外接。</strong></p>
+    <p>一年级的评价机器不是分数，是<strong>小红花和星星</strong>：它比分数来得更早、更频繁、更贴身，而且是设计出来让孩子主动去追的（坐得直有、举手有、作业工整有）。孩子很快学会：做的事本身不重要，重要的是能不能换来那颗星。</p>
+    <div class="tip">
+      <strong>好消息：</strong>你家里从没用过积分、贴纸或条件式承诺，<strong>家庭侧放大器不存在</strong>，这一头不用拆。
+    </div>
+
+    <h3>四道防线</h3>
+    <div class="cards">
+      <div class="card">
+        <p class="k">接他时第一句</p>
+        <p class="v">"今天有什么好玩的事？"</p>
+        <p class="note">挡住：你不做学校评价体系的家庭中继。</p>
+      </div>
+      <div class="card">
+        <p class="k">他自己的刻度</p>
+        <p class="v">每周他说一句"我这周做成了什么"</p>
+        <p class="note">挡住：星不再是唯一刻度。</p>
+      </div>
+      <div class="card">
+        <p class="k">你怎么回应</p>
+        <p class="v">复述他的话，不评价</p>
+        <p class="note">挡住：刻度被他交回到你手上。</p>
+      </div>
+      <div class="card">
+        <p class="k">作业放哪里</p>
+        <p class="v">校内课后服务做完，回家全归他</p>
+        <p class="note">挡住：时间被切碎、留白归零。</p>
+      </div>
+      <div class="card">
+        <p class="k">跟一年级老师</p>
+        <p class="v">开学初主动说一次</p>
+        <p class="note">挡住：老师把他读成"这家长不跟进"。</p>
+      </div>
+    </div>
+
+    <div class="warn">
+      <p class="h">最脆的一环</p>
+      他说"我这周搭了个停车场"，你回"真棒"——刻度一秒就从他手上回到你手上，他下次说给你听只是为了那句话。三次之后，自评记录变成一项新的表演任务。
+    </div>
+
+    <h3>为什么是"复述"</h3>
+    <div class="quote">
+      他说：<b>我这周把停车场加了两层。</b><br>
+      你说：<b>你这周把停车场加了两层。</b><br>
+      只描述，不评价。他知道你听懂了，就够了。
+    </div>
+  </section>
+
+  <!-- 四 -->
+  <section>
+    <h2><span class="n">04</span>入学路径：不是选择问题，是情报问题</h2>
+
+    <p><strong>现实：</strong>只有对口公办一条路。</p>
+    <p>所以你要操作的不是"选哪所学校"，而是<strong>在这所学校里还剩多少空间</strong>。而这套方案的四条防线<strong>全部押在一所你现在了解为零的学校</strong>上。</p>
+    <p>其中第二条防线（作业死在学校）只有一个支点：<strong>课后服务是不是真的能把作业吃掉。</strong>如果那所学校的课后服务只是看管到五点半、作业照样带回家，你这套一年级设计从第一天就在漏。</p>
+
+    <h3>你有两个别人没有的渠道</h3>
+    <ol class="steps">
+      <li><strong>家委会委员身份</strong>——开口不突兀。</li>
+      <li><strong>孩子的幼儿园老师</strong>——每年送走一批孩子进这所小学，还会收到上届家长回头反馈。</li>
+    </ol>
+    <p class="lead">这才是委员身份真正的用处，比在会上提任何诉求都值钱。</p>
+
+    <h3>摸底六条（只问行为，不问评价）</h3>
+    <p>问"那所小学好不好"，答案永远是"还好，看孩子"。要拿到能核对的事实，问到这六条就够：</p>
+    <ol class="steps">
+      <li>一年级课后服务到几点？<strong>作业是校内完成，还是照样带回家？</strong></li>
+      <li>每天书面作业大概多少分钟？谁检查？家长要不要签字？</li>
+      <li>有没有单元测、分数？班里会不会公开排名、发小红花或星星？</li>
+      <li>家长群里主要发什么？会不会晒作业、晒成绩？</li>
+      <li>班主任是什么风格——强制统一，还是允许差异？</li>
+      <li>一年级上学期，孩子一般几点能睡？</li>
+    </ol>
+
+    <h3>问法纪律</h3>
+    <ul class="plain">
+      <li><strong>借别人的嘴</strong>："上一届去那所的家长，后来跟您说过什么？"——老师转述别人的话，不承担判断责任，说的概率高得多。</li>
+      <li>一次问两三个，分几次问，<strong>别做成问卷</strong>。</li>
+      <li>全程不评价、不表态。</li>
+    </ul>
+  </section>
+
+  <!-- 五 -->
+  <section>
+    <h2><span class="n">05</span>时间表</h2>
+    <div class="tl">
+      <div class="r">
+        <div class="when">本学期内</div>
+        <div class="what">摸底六条；定下大班时间盒（几点、多长、谁计时）和"完成确认"那句话</div>
+      </div>
+      <div class="r">
+        <div class="when">本学期内</div>
+        <div class="what">跟配偶／老人对齐："时到即停、不纠错、回家全归他"</div>
+      </div>
+      <div class="r">
+        <div class="when">2027 年 3–5 月</div>
+        <div class="what">报名时确认：课后服务是否开班、能不能报、到几点</div>
+      </div>
+      <div class="r">
+        <div class="when">一年级开学头两周</div>
+        <div class="what">主动找老师说一次</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 六 -->
+  <section>
+    <h2><span class="n">06</span>还剩四个洞</h2>
+    <p class="lead">这四个不是细节，是会让前面全部白做的那种。按危险程度排。</p>
+
+    <ol class="holes">
+      <li>
+        <p class="t">挫败预案（最危险）</p>
+        <p>你设计了"不给他外部刻度"，但没设计<strong>"别人硬塞给他刻度"的那天晚上</strong>。他不领先是必然会发生的。那时他会拿谁的刻度看自己，取决于你当天晚上说了什么。</p>
+      </li>
+      <li>
+        <p class="t">不纠错的长期成本</p>
+        <p>老师不写评语、你也不看对错——书写和拼音的错误会一路累积，集中爆发时纠正强度远超现在。这个账还没算。</p>
+      </li>
+      <li>
+        <p class="t">全家一致性</p>
+        <p>一年级是全家参与度最高的阶段。"不追星级、回家全归他"只要配偶或老人问一句"今天得了几颗星"，上面四条会同时打折。</p>
+      </li>
+      <li>
+        <p class="t">进班的角色不可逆</p>
+        <p>你选的是"当志愿者自己带"，而"先试一次"在这里成本最高：第一次以什么形象出现，期待就定型了，第二次想退回角落会显得你不上心。</p>
+        <p>另外：你带一群 6 岁孩子时，唯一省力的组织方式就是"大家看这里、跟着做"——你会亲手把自由游戏变成集体教学，而且是以"帮忙"的名义。</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 附 -->
+  <section>
+    <h2><span class="n">附</span>今晚就能做的三件事</h2>
+    <ol class="steps">
+      <li>定下时间盒：几点开始、多长、<strong>表放在他面前</strong>。</li>
+      <li>定下"完成确认"那句话——只看完成，不看对错。</li>
+      <li>跟家里另一个大人说一遍："时到即停、不纠错、回家全归他。"只要有一方偷偷加码或偷偷纠错，前三条会同时失效。</li>
+    </ol>
+  </section>
+
+</div>
+
+<footer>
+  本方案由 2026 年的一次对话整理而成，全部决策来自你自己的选择。<br>
+  最早的关键时间点是 2027 年 3–5 月的报名，那之前必须完成摸底。
+</footer>
+
+</body>
+</html>

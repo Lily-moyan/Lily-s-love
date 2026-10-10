@@ -1,0 +1,18 @@
+{
+  "name": "industry-report-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "多用户行业研究与报告生成工作台 —— 给议题，出三个分析角度，选一个，生成完整报告",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.0"
+  }
+}

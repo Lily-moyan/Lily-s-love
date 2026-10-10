@@ -1,0 +1,14 @@
+{
+  "name": "emotional-strategy-card",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "情感策略卡 —— AI 接待 + 真人盖章的一页式关系决策支持",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "dev": "node --watch src/server.mjs"
+  }
+}

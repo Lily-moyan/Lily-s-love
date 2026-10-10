@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>简历改写 eval · 数据查看器</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 14px/1.6 system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0; padding: 16px 20px 60px; }
+  h1 { font-size: 18px; margin: 0 0 12px; }
+  .bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .bar label { font-size: 13px; opacity: .8; }
+  button { padding: 5px 12px; border-radius: 6px; border: 1px solid #8884; background: #8882; cursor: pointer; font: inherit; }
+  button.on-pass { background: #1a7f3722; border-color: #1a7f37; font-weight: 600; }
+  button.on-fail { background: #b3261e22; border-color: #b3261e; font-weight: 600; }
+  .card { border: 1px solid #8883; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+  .card.fail { border-color: #b3261e66; }
+  .row { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; }
+  .tag { font-size: 12px; padding: 1px 8px; border-radius: 99px; border: 1px solid #8884; }
+  .muted { opacity: .65; font-size: 13px; }
+  .before { color: #888; text-decoration: line-through; text-decoration-color: #8886; }
+  .after { font-weight: 600; }
+  .crit { font-size: 13px; border-left: 3px solid #8884; padding: 4px 10px; margin-top: 6px; }
+  .flex-spacer { flex: 1; }
+  .stats { font-size: 13px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<h1>简历改写 eval · 数据查看器</h1>
+<div class="bar">
+  <label>outputs.jsonl <input type="file" id="outputs" accept=".jsonl" /></label>
+  <label>judged.jsonl <input type="file" id="judged" accept=".jsonl" /></label>
+  <span class="flex-spacer"></span>
+  <label>只显示 <select id="filter">
+    <option value="all">全部</option>
+    <option value="fail">有失败的</option>
+    <option value="disagree">只看未标注</option>
+  </select></label>
+  <button id="export">导出 labels.jsonl</button>
+</div>
+<div class="stats" id="stats">先选两个文件（都在 runs/&lt;时间戳&gt;/ 里）</div>
+<div id="list"></div>
+
+<script>
+const state = { outputs: [], judged: [], labels: new Map() }
+const readJsonl = (file) => file.text().then((text) => text.split(/\r?\n/).filter((line) => line.trim()).map((line) => JSON.parse(line)))
+const keyOf = (record) => `${record.variant}|${record.case_id}|${record.repeat || 0}`
+
+function render() {
+  const filter = document.getElementById('filter').value
+  const list = document.getElementById('list')
+  const byKey = new Map()
+  for (const record of state.judged) {
+    const key = keyOf(record)
+    if (!byKey.has(key)) byKey.set(key, [])
+    byKey.get(key).push(record)
+  }
+  const rows = state.outputs.filter((output) => {
+    const verdicts = byKey.get(keyOf(output)) || []
+    if (filter === 'fail') return verdicts.some((v) => v.verdict === 'fail')
+    if (filter === 'disagree') return !state.labels.has(keyOf(output))
+    return true
+  })
+  const passCount = state.outputs.filter((output) => (byKey.get(keyOf(output)) || []).every((v) => v.verdict === 'pass')).length
+  document.getElementById('stats').textContent =
+    `${state.outputs.length} 条生成 ｜ 全过 ${passCount} 条（${Math.round((passCount / Math.max(state.outputs.length, 1)) * 100)}%） ｜ 已人工标注 ${state.labels.size} 条`
+
+  list.innerHTML = ''
+  for (const output of rows) {
+    const verdicts = byKey.get(keyOf(output)) || []
+    const failed = verdicts.some((v) => v.verdict === 'fail')
+    const card = document.createElement('div')
+    card.className = 'card' + (failed ? ' fail' : '')
+    const label = state.labels.get(keyOf(output)) || ''
+    card.innerHTML = `
+      <div class="row">
+        <span class="tag">${output.variant}</span>
+        <span class="tag">${output.case_id}</span>
+        <span class="muted">${output.section || ''}</span>
+        <span class="flex-spacer"></span>
+        ${verdicts.map((v) => `<span class="tag">${v.assertion}: <b>${v.verdict}</b></span>`).join('')}
+      </div>
+      <div class="muted before">${output.before || ''}</div>
+      <div class="after">${output.after || '(空)'}</div>
+      <div class="muted">理由：${output.reason || ''}　风险：${output.riskWarning || ''}</div>
+      ${verdicts.map((v) => `<div class="crit"><b>${v.assertion}</b> · ${v.critique}<br><span class="muted">证据：${v.evidence || ''}</span></div>`).join('')}
+      <div class="row" style="margin-top:8px">
+        <button class="${label === 'pass' ? 'on-pass' : ''}" data-key="${keyOf(output)}" data-verdict="pass">人工 pass</button>
+        <button class="${label === 'fail' ? 'on-fail' : ''}" data-key="${keyOf(output)}" data-verdict="fail">人工 fail</button>
+      </div>`
+    list.appendChild(card)
+  }
+  for (const button of list.querySelectorAll('button[data-verdict]')) {
+    button.onclick = () => {
+      const key = button.dataset.key
+      if (state.labels.get(key) === button.dataset.verdict) state.labels.delete(key)
+      else state.labels.set(key, button.dataset.verdict)
+      render()
+    }
+  }
+  void passCount
+}
+
+document.getElementById('outputs').onchange = async (event) => { state.outputs = await readJsonl(event.target.files[0]); render() }
+document.getElementById('judged').onchange = async (event) => { state.judged = await readJsonl(event.target.files[0]); render() }
+document.getElementById('filter').onchange = render
+document.getElementById('export').onclick = () => {
+  const lines = [...state.labels.entries()].map(([key, verdict]) => {
+    const [variant, case_id] = key.split('|')
+    return JSON.stringify({ variant, case_id, verdict })
+  })
+  const blob = new Blob([lines.join('\n') + '\n'], { type: 'application/jsonl' })
+  const anchor = document.createElement('a')
+  anchor.href = URL.createObjectURL(blob)
+  anchor.download = 'labels.jsonl'
+  anchor.click()
+}
+</script>
+</body>
+</html>

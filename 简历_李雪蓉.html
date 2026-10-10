@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>李雪蓉 · AI 应用产品经理 · 简历</title>
+<style>
+    :root {
+        --ink: #1a1a1a;
+        --muted: #5a6270;
+        --line: #d6dae0;
+        --accent: #1f5c3d;
+        --mark: #fff3bf;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC",
+                     "Microsoft YaHei", "PingFang SC", sans-serif;
+        color: var(--ink);
+        background: #eef0f3;
+        line-height: 1.62;
+        font-size: 14px;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== 工具栏（打印时隐藏）===== */
+    .toolbar {
+        position: sticky; top: 0; z-index: 10;
+        background: #fff; border-bottom: 1px solid var(--line);
+        padding: 12px 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+        font-size: 13px;
+    }
+    .toolbar button {
+        padding: 8px 18px; border: none; border-radius: 999px;
+        background: var(--accent); color: #fff; font-size: 13px;
+        font-weight: 500; cursor: pointer;
+    }
+    .toolbar .tip { color: var(--muted); }
+    .toolbar kbd {
+        background: #f1f3f5; border: 1px solid var(--line); border-radius: 4px;
+        padding: 1px 5px; font-size: 12px; font-family: inherit;
+    }
+
+    /* ===== A4 纸张 ===== */
+    .page {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 20px auto 40px;
+        background: #fff;
+        padding: 16mm 16mm 14mm;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+    }
+
+    /* ===== 抬头 ===== */
+    .name-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    h1 { font-size: 25px; letter-spacing: 2px; font-weight: 700; }
+    .target { font-size: 14px; color: var(--accent); font-weight: 600; }
+    .contact {
+        margin-top: 7px; font-size: 12.5px; color: var(--muted);
+        display: flex; flex-wrap: wrap; gap: 4px 14px;
+    }
+    .contact span::before { content: ''; }
+
+    /* ===== 分区 ===== */
+    section { margin-top: 15px; }
+    h2 {
+        font-size: 13.5px; font-weight: 700; color: var(--accent);
+        letter-spacing: 1px; padding-bottom: 4px;
+        border-bottom: 1.5px solid var(--accent);
+        margin-bottom: 9px;
+    }
+
+    /* ===== 条目 ===== */
+    .item { margin-bottom: 9px; }
+    .item:last-child { margin-bottom: 0; }
+    .item-head {
+        display: flex; justify-content: space-between;
+        align-items: baseline; gap: 10px; flex-wrap: wrap;
+    }
+    .item-title { font-weight: 600; font-size: 13.5px; }
+    .item-sub { font-size: 12.5px; color: var(--muted); }
+    .item-date { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+    ul { list-style: none; margin-top: 3px; }
+    li { position: relative; padding-left: 12px; margin-bottom: 1.5px; font-size: 13px; }
+    li::before {
+        content: ''; position: absolute; left: 2px; top: 0.62em;
+        width: 3px; height: 3px; border-radius: 50%; background: #9aa3af;
+    }
+    p { font-size: 13px; }
+    .proj-desc { font-size: 12.8px; margin-top: 2px; color: #2b3038; }
+
+    /* 待填占位：打印时也会显示，强制你去替换 */
+    .fill { background: var(--mark); padding: 0 4px; border-radius: 3px; font-weight: 600; }
+    a { color: var(--accent); text-decoration: none; word-break: break-all; }
+
+    /* ===== 打印 ===== */
+    @page { size: A4; margin: 13mm 15mm; }
+    @media print {
+        body { background: #fff; font-size: 10.6pt; line-height: 1.5; }
+        .toolbar { display: none !important; }
+        .page {
+            width: auto; min-height: auto; margin: 0; padding: 0;
+            box-shadow: none;
+        }
+        section { margin-top: 9pt; }
+        h1 { font-size: 19pt; }
+        h2 { font-size: 11pt; margin-bottom: 5pt; padding-bottom: 2pt; }
+        li, p, .proj-desc { font-size: 9.9pt; }
+        .item { margin-bottom: 6pt; break-inside: avoid; }
+        section { break-inside: auto; }
+        h2 { break-after: avoid; }
+        a { color: var(--accent); }
+    }
+    @media (max-width: 900px) {
+        .page { width: auto; margin: 12px; padding: 20px 18px; min-height: auto; }
+    }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button onclick="window.print()">打印 / 导出 PDF</button>
+    <span class="tip">
+        在打印对话框里选「另存为 PDF」，纸张 A4、边距「默认」、勾选「背景图形」。
+        或直接按 <kbd>Ctrl</kbd>+<kbd>P</kbd>。
+    </span>
+</div>
+
+<div class="page">
+
+    <!-- ================= 抬头 ================= -->
+    <div class="name-row">
+        <h1>李雪蓉</h1>
+        <div class="target">求职意向：AI 应用产品经理（toB 方向）</div>
+    </div>
+    <div class="contact">
+        <span>重庆 · 巴南</span>
+        <span>13452804877</span>
+        <span>382508589@qq.com</span>
+        <span>34 岁</span>
+        <span>本科</span>
+    </div>
+
+    <!-- ================= 职业摘要 ================= -->
+    <section>
+        <h2>职业摘要</h2>
+        <p>
+            12 年 B2B 一线销售（大三实习起，覆盖建筑工程与工业测控等行业），
+            累计推动 <strong>30+ 项目</strong>成交闭环（单项目 5 万–50 万元），
+            长期维护 <strong>100+ 在跟企业客户</strong>与 <strong>50+ 家设计院及设计师合作资源</strong>；
+            带教 4 名新人实现独立签单。
+        </p>
+        <p style="margin-top:4px;">
+            2026 年 6–9 月，独立设计并落地 <strong>7 个 AI 工作台</strong>，覆盖行业调研、投标技术方案生成、
+            智能客服、Agent 式入职助手等场景。其中为行业调研场景设计三级证据分级（A/B/C）与对抗式校验机制，
+            用于压制大模型的编造行为；为客服场景实现流式对话与中断-恢复双端点机制。
+        </p>
+        <p style="margin-top:4px;">
+            <strong>定位：</strong>懂 toB 成单链路的 AI 应用产品经理——知道客户在哪个环节不买单，也知道 AI 目前能替代哪一段。
+        </p>
+    </section>
+
+    <!-- ================= AI 产品实践 ================= -->
+    <section>
+        <h2>AI 产品实践</h2>
+
+        <div class="item">
+            <div class="item-head">
+                <div class="item-title">行业分析工作台<span class="item-sub">　独立设计</span></div>
+                <div class="item-date">2026.09 ｜ <a href="https://ai-pm-lixuerong-hangyefenxi.netlify.app/">ai-pm-lixuerong-hangyefenxi.netlify.app</a></div>
+            </div>
+            <div class="proj-desc">
+                把行业调研从「问模型要答案」改造为<strong>可验证的结构化流程</strong>。设计 6 步分析链
+                （边界切分 → 产业链分层 → 三流追踪 → 议价能力 → 约束/节奏/异常 → 对抗式校验）；
+                建立<strong>三级证据分级机制</strong>（A 公开可查须给出文件名与年份 / B 推断须写出推断链 /
+                C 纯推测不得进入正文），强制模型在查不到时输出「未获取」而非用推测填充。
+                已封装为可安装 PWA，内置演示模式，无需配置即可查看完整输出结构。
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-head">
+                <div class="item-title">AI 投标技术方案生成工作台<span class="item-sub">　独立设计与实现</span></div>
+                <div class="item-date">2026.08 ｜ <a href="https://ai-pm-lixuerong-toubiaogongzuotai.netlify.app/">ai-pm-lixuerong-toubiaogongzuotai.netlify.app</a></div>
+            </div>
+            <div class="proj-desc">
+                面向 toB 投标场景，打通<strong>招标文件解析 → 技术方案框架 → 正文生成 → 交付物输出</strong>全链路
+                （React 18 + 工作流编排）。产出已用于本公司营销与投标物料：公司简介、服务承诺书、
+                拍摄脚本、发布物料等。已部署为公开演示版（内置交付样例：12 项物料清单与脱敏片段）。
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-head">
+                <div class="item-title">智能客服系统<span class="item-sub">　独立设计与实现</span></div>
+                <div class="item-date">2026.09 ｜ <a href="https://github.com/Lily-moyan/coze-customer-service">github.com/Lily-moyan/coze-customer-service</a></div>
+            </div>
+            <div class="proj-desc">
+                基于 Next.js 14 + TypeScript 实现流式对话；自研按「工作流节点 + 轮次」的多气泡分组，
+                并实现<strong>中断-恢复双端点机制</strong>，支持工作流在人工介入后继续执行。
+                同步沉淀 DESIGN.md（设计语言规范）与 AGENTS.md（工程指南）。
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 工作经历 ================= -->
+    <section>
+        <h2>工作经历</h2>
+
+        <div class="item">
+            <div class="item-head">
+                <div><span class="item-title">北京金德创业测控</span><span class="item-sub">　销售工程师</span></div>
+                <div class="item-date">2025.01 – 至今</div>
+            </div>
+            <ul>
+                <li>面向工厂、企业客户及项目方销售工业测控仪表，负责客户开发、产品介绍、报价、项目跟进、签单与回款。</li>
+                <li>独立跟进客户需求与项目推进，目前单笔项目金额以几千至几万元为主；长期维护在跟客户 100+。</li>
+                <li>建立项目台账化管理制度，定期输出市场情报与竞品分析，完成阶段性销售指标。</li>
+            </ul>
+        </div>
+
+        <div class="item">
+            <div class="item-head">
+                <div><span class="item-title">重庆吉每家 / 得照建筑工程有限公司</span><span class="item-sub">　大区经理</span></div>
+                <div class="item-date">2022.02 – 2025.01</div>
+            </div>
+            <ul>
+                <li>负责重庆主城区域装饰公司、设计师工作室等客户资源开发与维护，长期维护 50+ 家合作资源。</li>
+                <li>围绕土建改造需求开展现场勘察、方案沟通、报价推进与商务谈判，独立推动成交与回款闭环。</li>
+                <li>月均完成 1–2 单、高峰月最高 4 单，累计推动 30+ 项目成交，单项目合同金额 5 万–50 万元区间。</li>
+                <li>跟进施工阶段客户需求与现场协调，挖掘增项、复购及转介绍机会。</li>
+                <li>负责 4–6 人团队的新人带教、客户陪访及产品与流程培训，累计带教 <strong>4 名新人实现独立签单</strong>。</li>
+                <li>参与团队月度、季度目标及执行计划制定，并结合项目推进情况做过程管理与复盘。</li>
+            </ul>
+        </div>
+
+        <div class="item">
+            <div class="item-head">
+                <div><span class="item-title">重庆瑞永汽车服务</span><span class="item-sub">　销售内勤</span></div>
+                <div class="item-date">2018.08 – 2021.04</div>
+            </div>
+            <ul>
+                <li>负责订单下达、厂家对接、生产进度跟踪及交付协调，支持销售流程推进。</li>
+                <li>协助客户准备按揭资料并完成基础审核，配合销售支持与业务流程衔接。</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ================= 代表案例 ================= -->
+    <section>
+        <h2>代表案例</h2>
+
+        <div class="item">
+            <div class="item-head">
+                <div class="item-title">别墅整体土建改造项目<span class="item-sub">　客户来源：装饰公司推荐</span></div>
+            </div>
+            <ul>
+                <li>现场勘察后与设计师确认土建方案可落地性与可拆改范围，结合设计图推进方案调整，带客户参观匹配工地增强信任。</li>
+                <li>首单合同金额约 10 万–20 万元；后续带动客户邻居打包签约，新增约 20 万–30 万元；项目顺利回款并产生增项。</li>
+                <li>难点：方案多次反复修改。通过技术出图、客户签字确认及增减项流程推进，最终促成签约与落地。</li>
+            </ul>
+        </div>
+
+        <div class="item">
+            <div class="item-head">
+                <div class="item-title">设计师长期合作与转介绍<span class="item-sub">　渠道经营</span></div>
+            </div>
+            <ul>
+                <li>通过前期项目推进顺畅、施工稳定、沟通响应及时获得设计师认可，形成长期合作关系。</li>
+                <li>设计师多次重复介绍客户，介绍项目中有多个成功签约，单个项目金额多在 5 万元以内。</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ================= 教育背景 ================= -->
+    <section>
+        <h2>教育背景</h2>
+        <div class="item">
+            <div class="item-head">
+                <div><span class="item-title">重庆交通大学</span><span class="item-sub">　艺术设计 · 本科</span></div>
+                <div class="item-date">2010.09 – 2014.07</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 技能工具 ================= -->
+    <section>
+        <h2>技能工具</h2>
+        <p>
+            <strong>设计工具：</strong>CAD、Photoshop、CorelDRAW、剪映　｜　
+            <strong>办公软件：</strong>WPS、Word、Excel、PowerPoint　｜　
+            <strong>其他：</strong>C1 驾驶证、新媒体运营初级证书
+        </p>
+    </section>
+
+</div>
+
+</body>
+</html>

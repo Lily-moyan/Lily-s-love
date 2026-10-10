@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试工具 - 检查配置</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #9b59b6;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+        }
+        .error {
+            background: #ffebee;
+            color: #e74c3c;
+            border-left: 4px solid #e74c3c;
+        }
+        .warning {
+            background: #fff3e0;
+            color: #f39c12;
+            border-left: 4px solid #f39c12;
+        }
+        .info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #1976d2;
+        }
+        button {
+            background: #9b59b6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #8e44ad;
+        }
+        button.secondary {
+            background: #666;
+        }
+        button.secondary:hover {
+            background: #555;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .label {
+            font-weight: bold;
+            color: #666;
+            margin-right: 10px;
+        }
+        .value {
+            color: #333;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 调试工具 - 检查配置</h1>
+
+        <!-- 配置状态 -->
+        <div class="section">
+            <h3>📊 配置状态</h3>
+            <div id="configStatus"></div>
+        </div>
+
+        <!-- Coze 工作流配置 -->
+        <div class="section">
+            <h3>🔑 Coze 工作流配置</h3>
+            <div id="cozeConfig"></div>
+        </div>
+
+        <!-- 项目数据 -->
+        <div class="section">
+            <h3>📁 项目数据</h3>
+            <div id="projectData"></div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="section">
+            <h3>🛠️ 操作</h3>
+            <button onclick="autoConfigure()">✨ 自动配置 Coze 工作流</button>
+            <button onclick="clearAllData()">🗑️ 清除所有数据</button>
+            <button onclick="openMainApp()">🚀 打开主应用</button>
+            <button class="secondary" onclick="refreshStatus()">🔄 刷新状态</button>
+        </div>
+
+        <!-- 控制台输出 -->
+        <div class="section">
+            <h3>💻 控制台输出</h3>
+            <pre id="consoleOutput"></pre>
+        </div>
+    </div>
+
+    <script>
+        let consoleMessages = [];
+
+        // 重写 console.log 以捕获输出
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addConsoleMessage('log', args);
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addConsoleMessage('warn', args);
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addConsoleMessage('error', args);
+        };
+
+        function addConsoleMessage(type, args) {
+            const message = args.map(arg => {
+                if (typeof arg === 'object') {
+                    return JSON.stringify(arg, null, 2);
+                }
+                return String(arg);
+            }).join(' ');
+
+            consoleMessages.push({ type, message, time: new Date().toLocaleTimeString() });
+            updateConsoleOutput();
+        }
+
+        function updateConsoleOutput() {
+            const output = document.getElementById('consoleOutput');
+            output.innerHTML = consoleMessages.map(msg => {
+                const color = msg.type === 'error' ? '#e74c3c' : msg.type === 'warn' ? '#f39c12' : '#333';
+                return `<div style="color: ${color}; margin: 5px 0;">[${msg.time}] ${msg.message}</div>`;
+            }).join('');
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function refreshStatus() {
+            checkConfigStatus();
+            console.log('✅ 状态已刷新');
+        }
+
+        function checkConfigStatus() {
+            // 检查 Coze 工作流配置
+            const cozeConfig = localStorage.getItem('ai-pm-workbench-connection');
+            const cozeConfigDiv = document.getElementById('cozeConfig');
+
+            if (!cozeConfig) {
+                cozeConfigDiv.innerHTML = '<div class="status error">❌ 未找到 Coze 工作流配置</div>';
+            } else {
+                try {
+                    const parsed = JSON.parse(cozeConfig);
+                    if (parsed && parsed.workflowId && parsed.patToken) {
+                        cozeConfigDiv.innerHTML = `
+                            <div class="status success">✅ Coze 工作流配置有效</div>
+                            <div class="item"><span class="label">工作流 ID:</span><span class="value">${parsed.workflowId}</span></div>
+                            <div class="item"><span class="label">访问令牌:</span><span class="value">${parsed.patToken.substring(0, 20)}...</span></div>
+                        `;
+                    } else {
+                        cozeConfigDiv.innerHTML = '<div class="status warning">⚠️ Coze 工作流配置不完整</div>';
+                    }
+                } catch (e) {
+                    cozeConfigDiv.innerHTML = `<div class="status error">❌ Coze 工作流配置解析失败: ${e.message}</div>`;
+                }
+            }
+
+            // 检查项目数据
+            const projects = localStorage.getItem('ai-pm-workbench-projects');
+            const projectDataDiv = document.getElementById('projectData');
+
+            if (!projects) {
+                projectDataDiv.innerHTML = '<div class="status info">ℹ️ 未找到项目数据</div>';
+            } else {
+                try {
+                    const parsed = JSON.parse(projects);
+                    projectDataDiv.innerHTML = `
+                        <div class="status success">✅ 找到 ${parsed.length} 个项目</div>
+                        ${parsed.map(p => `
+                            <div class="item">
+                                <div><span class="label">项目名称:</span><span class="value">${p.name}</span></div>
+                                <div><span class="label">项目 ID:</span><span class="value">${p.id}</span></div>
+                            </div>
+                        `).join('')}
+                    `;
+                } catch (e) {
+                    projectDataDiv.innerHTML = `<div class="status error">❌ 项目数据解析失败: ${e.message}</div>`;
+                }
+            }
+
+            // 配置状态总结
+            const configStatusDiv = document.getElementById('configStatus');
+            const hasCozeConfig = cozeConfig && JSON.parse(cozeConfig)?.workflowId && JSON.parse(cozeConfig)?.patToken;
+            const hasProjects = projects && JSON.parse(projects)?.length > 0;
+
+            if (hasCozeConfig && hasProjects) {
+                configStatusDiv.innerHTML = '<div class="status success">✅ 所有配置正常，可以开始使用</div>';
+            } else if (!hasCozeConfig) {
+                configStatusDiv.innerHTML = '<div class="status error">❌ Coze 工作流未配置，请点击"自动配置"按钮</div>';
+            } else if (!hasProjects) {
+                configStatusDiv.innerHTML = '<div class="status warning">⚠️ 未创建项目，打开主应用后会自动创建演示项目</div>';
+            }
+        }
+
+        function autoConfigure() {
+            console.log('🚀 开始自动配置 Coze 工作流...');
+
+            const config = {
+                workflowId: '7676832175183282239',
+                patToken: 'pat_cO2mlw4Q7rHW5s6DhpfgDTKLerNdjtjNdvbvZ0duYCw7ESiTuNwNwaY8YJdWkdrR'
+            };
+
+            try {
+                localStorage.setItem('ai-pm-workbench-connection', JSON.stringify(config));
+                console.log('✅ Coze 工作流配置已保存');
+                refreshStatus();
+                alert('✅ Coze 工作流配置成功！');
+            } catch (e) {
+                console.error('❌ 配置保存失败:', e);
+                alert('❌ 配置保存失败: ' + e.message);
+            }
+        }
+
+        function clearAllData() {
+            if (!confirm('确定要清除所有数据吗？此操作不可撤销。')) {
+                return;
+            }
+
+            console.log('🗑️ 开始清除所有数据...');
+
+            const keys = [
+                'ai-pm-workbench-projects',
+                'ai-pm-workbench-currentProject',
+                'ai-pm-workbench-connection'
+            ];
+
+            keys.forEach(key => {
+                localStorage.removeItem(key);
+                console.log(`✅ 已清除: ${key}`);
+            });
+
+            refreshStatus();
+            alert('✅ 所有数据已清除！');
+        }
+
+        function openMainApp() {
+            console.log('🚀 正在打开主应用...');
+            window.location.href = 'index.html';
+        }
+
+        // 页面加载时自动检查状态
+        window.addEventListener('load', () => {
+            console.log('📱 调试工具已加载');
+            refreshStatus();
+        });
+    </script>
+</body>
+</html>

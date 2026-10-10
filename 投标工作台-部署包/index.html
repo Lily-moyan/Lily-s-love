@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 投标技术方案生成工作台</title>
+  <script type="module" crossorigin src="./assets/index-X3-X13mS.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BFAgXtVw.css">
+</head>
+<body>
+    <div id="portfolio-intro">
+      <div class="pi-box">
+        <div class="pi-title">AI 投标技术方案生成工作台<span class="pi-tag">作品集 · 演示模式</span></div>
+        <div class="pi-body">
+          面向 <b>toB 投标场景</b>：把"读招标文件 → 写技术方案 → 产出配套物料"做成一个工作台。<br />
+          当前为<b>演示模式</b>，不调用真实工作流，但完整体验全部交互流程；
+          最终结果页的链接指向<b>真实交付样例</b>（12 项物料清单 + 脱敏片段）。<br />
+          <span class="pi-author">李雪蓉 ｜ AI 应用产品经理（toB 方向）</span>
+        </div>
+        <button id="pi-close">开始体验</button>
+      </div>
+    </div>
+    <style>
+      #portfolio-intro{position:fixed;inset:0;z-index:9999;background:rgba(15,19,28,.72);
+        display:flex;align-items:center;justify-content:center;padding:20px;
+        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","Microsoft YaHei",sans-serif}
+      #portfolio-intro .pi-box{background:#fff;color:#1a1a1a;border-radius:14px;padding:26px 28px;
+        max-width:520px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.35);line-height:1.75;font-size:14px}
+      #portfolio-intro .pi-title{font-size:18px;font-weight:700;margin-bottom:12px}
+      #portfolio-intro .pi-tag{font-size:11px;font-weight:500;background:#eef2ff;color:#4054b2;
+        border-radius:999px;padding:2px 9px;margin-left:8px;vertical-align:middle}
+      #portfolio-intro .pi-body{color:#3b4252;font-size:13.5px}
+      #portfolio-intro .pi-author{display:inline-block;margin-top:10px;color:#5a6270;font-size:12.5px}
+      #portfolio-intro button{margin-top:20px;width:100%;padding:11px;border:none;border-radius:9px;
+        background:#2b4c8c;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+      #portfolio-intro button:hover{background:#223d73}
+    </style>
+    <script>
+      document.getElementById('pi-close').addEventListener('click', function () {
+        document.getElementById('portfolio-intro').style.display = 'none';
+      });
+    </script>
+  <div id="root"></div>
+</body>
+</html>

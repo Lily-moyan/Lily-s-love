@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-09-23T02:44:52.142Z",
+  "counts": {
+    "v1-baseline": {
+      "no_fabrication": {
+        "pass": 2,
+        "total": 2
+      },
+      "jd_alignment": {
+        "pass": 0,
+        "total": 2
+      }
+    },
+    "v2-evidence": {
+      "no_fabrication": {
+        "pass": 2,
+        "total": 2
+      },
+      "jd_alignment": {
+        "pass": 2,
+        "total": 2
+      }
+    }
+  }
+}

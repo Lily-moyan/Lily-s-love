@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<meta name="color-scheme" content="light">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#fdf6e8">
+<title>每日一个小故事 · 轻松工作台</title>
+<style>
+  :root{
+    --cream:#fdf6e8;
+    --card:#ffffff;
+    --ink:#2d3142;
+    --soft:#8a8f9e;
+    --blue:#2b6cb0;
+    --warm:#e8590c;
+    --green:#2f9e63;
+    --line:#eae2d4;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC","Segoe UI",system-ui,sans-serif;
+    line-height:1.7;
+    padding:18px 16px 60px;
+    -webkit-text-size-adjust:100%;
+    overscroll-behavior-y:contain;
+  }
+  header{max-width:1080px;margin:0 auto 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header h1{font-size:1.45rem;margin:0}
+  header .sub{color:var(--soft);font-size:.92rem}
+  header .stars{margin-left:auto;background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 16px;font-weight:700}
+  main{max-width:1080px;margin:0 auto;display:flex;gap:20px;align-items:flex-start}
+
+  aside{
+    flex:0 0 220px;background:#fff;border:2px solid var(--line);
+    border-radius:22px;padding:14px;max-height:78vh;overflow:auto;
+  }
+  aside h2{font-size:.95rem;margin:2px 0 10px;color:var(--soft);font-weight:600}
+  .item{
+    display:flex;align-items:center;gap:8px;width:100%;text-align:left;
+    border:none;background:#faf7f0;border-radius:14px;
+    padding:9px 12px;margin-bottom:7px;font-size:1rem;cursor:pointer;
+    font-family:inherit;color:var(--ink);
+  }
+  .item:hover{background:#f2ece0}
+  .item .no{color:var(--soft);font-size:.85rem;min-width:2.2em}
+  .item .w{font-weight:700}
+  .item .mark{margin-left:auto}
+  .item.active{background:#e7f1fb;outline:2px solid #bcd8f2}
+  .item.todo{opacity:.5}
+  .item.todo .w{font-weight:400;color:var(--soft)}
+
+  section.card{
+    flex:1 1 auto;background:var(--card);border:2px solid var(--line);
+    border-radius:26px;padding:26px 30px 30px;box-shadow:0 8px 24px rgba(80,70,50,.06);
+    min-height:60vh;
+  }
+  .daytag{display:inline-block;background:#fff4e6;color:var(--warm);border-radius:999px;padding:4px 14px;font-weight:700;font-size:.9rem}
+  .wordrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:14px 0 2px}
+  .word{font-size:clamp(2.6rem,8vw,4rem);font-weight:800;color:var(--blue);letter-spacing:.5px;line-height:1.1}
+  .ipa{color:var(--soft);font-size:1.05rem}
+  .cn{color:var(--warm);font-size:1.5rem;font-weight:700;margin:2px 0 6px}
+  .tip{display:inline-block;background:#eefaf1;color:var(--green);border-radius:12px;padding:6px 14px;font-weight:700;margin-bottom:18px}
+
+  .story{border-top:2px dashed var(--line);padding-top:16px;margin-top:6px}
+  .story h3,.box h3{font-size:.95rem;color:var(--soft);font-weight:600;margin:0 0 10px}
+  .line{margin:0 0 12px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  .line .en{font-size:1.32rem;font-weight:600;margin:0}
+  .line .en:hover{color:var(--blue)}
+  .line .zh{margin:2px 0 0;color:var(--soft)}
+  body.hidezh .line .zh{opacity:0;user-select:none}
+  .speakhint{font-size:.82rem;color:var(--soft);margin-top:2px}
+
+  #review{margin-top:22px;border-top:2px dashed var(--line);padding-top:16px}
+  #review h3{font-size:.95rem;color:var(--soft);font-weight:600;margin:0 0 4px}
+  #review .rsub{font-size:.86rem;color:var(--soft);margin:0 0 12px}
+  .ritem{display:flex;align-items:center;gap:12px;background:#fbfaf6;border:2px solid var(--line);border-radius:16px;padding:9px 12px;margin-bottom:7px;flex-wrap:wrap}
+  .ritem .rwx{font-weight:800;color:var(--blue);font-size:1.15rem}
+  .ritem .rcn{color:var(--warm);font-weight:700}
+  .ritem .rwhen{color:var(--soft);font-size:.82rem}
+  .ritem .ract{color:var(--soft);font-size:.88rem;flex:1 1 100%}
+  .rbtn{margin-left:auto;font-family:inherit;font-size:.95rem;font-weight:700;border:2px solid var(--line);background:#fff;border-radius:12px;padding:6px 13px;cursor:pointer;color:var(--ink)}
+  .rbtn.ok{background:var(--green);border-color:var(--green);color:#fff}
+  .rdone{color:var(--green);font-weight:700;margin:0}
+
+
+  .grid{display:flex;gap:16px;flex-wrap:wrap;margin-top:18px}
+  .box{flex:1 1 240px;background:#fbfaf6;border:2px solid var(--line);border-radius:18px;padding:14px 16px}
+  .box p{margin:0;font-size:1.05rem}
+
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;align-items:center}
+  button.big{
+    font-family:inherit;font-size:1.02rem;font-weight:700;border:2px solid var(--line);
+    background:#fff;border-radius:16px;padding:11px 20px;cursor:pointer;color:var(--ink);
+    touch-action:manipulation;
+  }
+  button.big:hover{background:#faf7f0}
+  button.big.primary{background:var(--green);border-color:var(--green);color:#fff}
+  button.big.primary.on{background:#fff;color:var(--green)}
+  button.big:disabled{opacity:.4;cursor:default}
+  .nav{display:flex;justify-content:space-between;margin-top:18px}
+
+  .todo-card{text-align:center;padding:40px 10px}
+  .todo-card .big-emoji{font-size:3rem}
+  .todo-card h2{font-size:1.6rem;margin:12px 0 6px}
+  .todo-card p{color:var(--soft);margin:6px 0 0}
+
+  @media (max-width:760px){
+    main{flex-direction:column}
+    aside{flex:1 1 auto;width:100%;max-height:none;order:2}
+    section.card{padding:20px 18px 24px;border-radius:20px}
+    .wordrow{gap:8px}
+    .word{font-size:clamp(3rem,15vw,4rem)}
+    .line .en{font-size:1.24rem;line-height:1.5}
+    button.big{padding:14px 16px;font-size:1.06rem;flex:1 1 auto;text-align:center}
+    .nav{gap:10px}
+  }
+  @media print{
+    aside,header .stars,.actions,.nav,.speakhint{display:none !important}
+    body{background:#fff;padding:0}
+    section.card{border:none;box-shadow:none}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🌞 每日一个小故事</h1>
+  <span class="sub">一天 1 个词 · 5 分钟 · 不考试</span>
+  <span class="stars" id="stars">⭐ 0 / 7</span>
+</header>
+
+<main>
+  <aside>
+    <h2>故事目录（30 天）</h2>
+    <div id="list"></div>
+  </aside>
+  <section class="card">
+    <div id="card"></div>
+    <div id="review"></div>
+  </section>
+</main>
+
+<script>
+/* ---------- 30 天词单（第 1–7 天已有故事，其余在路上） ---------- */
+var PLAN = [
+  ["help","帮助"],["run","跑"],["big","大的"],["happy","开心的"],["water","水"],
+  ["look","看"],["cat","猫"],["bird","小鸟"],["rain","雨"],["fly","飞"],
+  ["small","小的"],["eat","吃"],["milk","牛奶"],["dog","小狗"],["open","打开"],
+  ["close","关上"],["hand","手"],["tree","树"],["book","书"],["sing","唱歌"],
+  ["friend","朋友"],["smile","微笑"],["warm","暖和的"],["sleep","睡觉"],["walk","走路"],
+  ["flower","花"],["sun","太阳"],["thank","感谢"],["home","家"],["love","爱"]
+];
+
+/* ---------- 故事库 ---------- */
+var STORIES = {
+  help:{
+    ipa:"/help/", emoji:"🐦🤚",
+    s:[["I see a little bird.","我看见一只小鸟。"],
+       ["The bird cannot fly.","小鸟飞不起来。"],
+       ["I help the bird.","我帮帮这只小鸟。"],
+       ['"Thank you!" says the bird.','"谢谢你！"小鸟说。']],
+    act:'伸出两只手，做一个"扶一把"的动作，一边说：I help you!',
+    pic:"一只淋湿的小鸟 ⊙ᴥ⊙ 和一只伸过去的小手 🤚",
+    ask:"你今天帮过谁呀？",
+    tip:"help = 帮一把"
+  },
+  run:{
+    ipa:"/rʌn/", emoji:"🏃🐕",
+    s:[["Look at Tom.","看汤姆。"],
+       ["Tom can run fast.","汤姆跑得很快。"],
+       ["A dog runs with him.","一只小狗和他一起跑。"],
+       ["Run, run, run!","跑呀，跑呀，跑呀！"]],
+    act:'原地跑 10 步，一边跑一边喊：Run, run, run!',
+    pic:"一个跑步的小男孩 🏃 和一只跟着跑的小狗 🐕",
+    ask:"你跑得快，还是小狗跑得快？",
+    tip:"run = 跑"
+  },
+  big:{
+    ipa:"/bɪɡ/", emoji:"📦🐻",
+    s:[["I have a big box.","我有一个大箱子。"],
+       ["What is in the big box?","大箱子里有什么呢？"],
+       ["A big bear!","一只大熊！"],
+       ['"Hello!" says the bear.','"你好！"大熊说。']],
+    act:"张开两只手，圈一个大大的圆，说：Big!",
+    pic:"一个大箱子 📦 和一只从里面探头的大熊 🐻",
+    ask:"家里什么东西最大？",
+    tip:"big = 大的"
+  },
+  happy:{
+    ipa:"/ˈhæpi/", emoji:"☀️🐦",
+    s:[["The sun is up.","太阳出来了。"],
+       ["The bird is happy.","小鸟很开心。"],
+       ["I am happy too.","我也很开心。"],
+       ["Happy day!","开心的一天！"]],
+    act:"笑一个大大的笑，说：I am happy!",
+    pic:"一个笑眯眯的太阳 🌞 和一只笑眯眯的小鸟 🐦",
+    ask:"今天什么事让你最开心？",
+    tip:"happy = 开心的"
+  },
+  water:{
+    ipa:"/ˈwɔːtə/", emoji:"💧🌷",
+    s:[["The flower is thirsty.","花口渴了。"],
+       ["I give it water.","我给它水喝。"],
+       ["Now the flower is happy.","现在花开心了。"],
+       ["Water is good!","水真好！"]],
+    act:"假装拿小水壶，给身边的花浇一浇水，说：Water!",
+    pic:"一朵渴了的小花 🌷 和一滴滴下来的水 💧",
+    ask:"你今天喝水了吗？喝了几杯？",
+    tip:"water = 水"
+  },
+  look:{
+    ipa:"/lʊk/", emoji:"⬆️🐦",
+    s:[["Look up!","抬头看！"],
+       ["A bird is in the tree.","树上有只小鸟。"],
+       ["Look down!","低头看！"],
+       ["A cat is by my feet.","一只猫在我脚边。"]],
+    act:"先抬头，再低头，一边说：Look up! Look down!",
+    pic:"抬头看见树上小鸟 🐦，低头看见脚边小猫 🐈",
+    ask:"抬头看一看，你看到了什么？",
+    tip:"look = 看"
+  },
+  cat:{
+    ipa:"/kæt/", emoji:"🐈🥛",
+    s:[["I have a cat.","我有一只猫。"],
+       ["My cat is white and small.","我的猫又白又小。"],
+       ["The cat likes milk.","猫喜欢牛奶。"],
+       ['"Meow!" says my cat.','"喵！"我的猫说。']],
+    act:'学猫叫一声，说：Meow! I am a cat.',
+    pic:"一只又白又小、正在喝牛奶的猫 🐈🥛",
+    ask:"你想养一只什么样的小猫？",
+    tip:"cat = 猫"
+  }
+};
+
+/* ---------- 进度（贴星星） ---------- */
+var KEY = "dsh-easy-story-days-v1";
+var done = {};
+try { done = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { done = {}; }
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {}
+}
+function doneCount(){
+  var n = 0;
+  for (var k in done) { if (done[k]) n++; }
+  return n;
+}
+
+/* ---------- 今天再看一眼（间隔复习 D+1 / D+3 / D+7） ---------- */
+var RKEY = "dsh-easy-review-days-v1";
+var mark = {};
+try { mark = JSON.parse(localStorage.getItem(RKEY) || "{}") || {}; } catch (e) { mark = {}; }
+function saveMark(){
+  try { localStorage.setItem(RKEY, JSON.stringify(mark)); } catch (e) {}
+}
+
+var curDay = 1;
+var listEl = document.getElementById("list");
+var cardEl = document.getElementById("card");
+
+function canSpeak(){ return "speechSynthesis" in window; }
+function speak(text){
+  if (!canSpeak()) return;
+  try {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    u.rate = 0.8;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+function firstNotDone(){
+  for (var i = 1; i <= PLAN.length; i++) { if (!done[i]) return i; }
+  return 1;
+}
+
+function renderList(){
+  var html = "";
+  for (var i = 0; i < PLAN.length; i++) {
+    var day = i + 1, w = PLAN[i][0], cn = PLAN[i][1];
+    var has = !!STORIES[w];
+    var cls = "item";
+    if (day === curDay) cls += " active";
+    if (!has) cls += " todo";
+    html += '<button class="' + cls + '" data-day="' + day + '">' +
+              '<span class="no">第' + day + '天</span>' +
+              '<span class="w">' + (has ? w : "· · ·") + '</span>' +
+              '<span class="mark">' + (done[day] ? "⭐" : "") + '</span>' +
+            '</button>';
+  }
+  listEl.innerHTML = html;
+  var btns = listEl.querySelectorAll("button");
+  for (var j = 0; j < btns.length; j++) {
+    btns[j].onclick = function(){ go(parseInt(this.getAttribute("data-day"), 10)); };
+  }
+  document.getElementById("stars").textContent = "⭐ " + doneCount() + " / " + Object.keys(STORIES).length;
+}
+
+function renderCard(){
+  var w = PLAN[curDay - 1][0], cn = PLAN[curDay - 1][1];
+  var st = STORIES[w];
+
+  if (!st) {
+    cardEl.innerHTML =
+      '<div class="todo-card">' +
+        '<div class="big-emoji">🐣</div>' +
+        '<h2>第 ' + curDay + ' 天 · ' + w + '（' + cn + '）</h2>' +
+        '<p>这个故事还在路上，明天来讲。</p>' +
+        '<p class="speakhint">想提前拿到它？跟大朋友说一声"写第 ' + curDay + ' 天"，故事马上就到。</p>' +
+        '<div class="nav">' +
+          '<button class="big" id="prev">← 上一个</button>' +
+          '<button class="big" id="next">下一个 →</button>' +
+        '</div>' +
+      '</div>';
+  } else {
+    var lines = "";
+    for (var i = 0; i < st.s.length; i++) {
+      lines += '<div class="line" data-say="' + st.s[i][0].replace(/"/g, "&quot;") + '">' +
+                 '<p class="en">' + st.s[i][0] + '</p>' +
+                 '<p class="zh">' + st.s[i][1] + '</p>' +
+               '</div>';
+    }
+    cardEl.innerHTML =
+      '<span class="daytag">第 ' + curDay + ' 天</span>' +
+      '<div class="wordrow">' +
+        '<span class="word">' + w + '</span>' +
+        '<span class="ipa">' + st.ipa + '</span>' +
+        (canSpeak() ? '<button class="big" id="say">🔊 读单词</button>' : '') +
+      '</div>' +
+      '<div class="cn">' + cn + '</div>' +
+      '<div class="tip">' + st.tip + '</div>' +
+
+      '<div class="story">' +
+        '<h3>小故事 · 点句子听读</h3>' + lines +
+        '<div class="speakhint">🔊 点英文句子就能听；听不清再点一次。</div>' +
+      '</div>' +
+
+      '<div class="grid">' +
+        '<div class="box"><h3>动一动</h3><p>' + st.act + '</p></div>' +
+        '<div class="box"><h3>睡前想一想</h3><p>' + st.pic + '</p></div>' +
+        '<div class="box"><h3>爸爸妈妈问一句</h3><p>' + st.ask + '</p></div>' +
+      '</div>' +
+
+      '<div class="actions">' +
+        '<button class="big primary' + (done[curDay] ? " on" : "") + '" id="finish">' +
+          (done[curDay] ? "⭐ 今天学完啦" : "学完啦，贴星星") + '</button>' +
+        '<button class="big" id="zh">藏起中文</button>' +
+        '<button class="big" id="print">打印今天这张</button>' +
+      '</div>' +
+
+      '<div class="nav">' +
+        '<button class="big" id="prev"' + (curDay <= 1 ? " disabled" : "") + '>← 上一个</button>' +
+        '<button class="big" id="next"' + (curDay >= PLAN.length ? " disabled" : "") + '>下一个 →</button>' +
+      '</div>';
+  }
+
+  bind();
+  renderReview();
+}
+
+/* ---------- 今天再看一眼 ---------- */
+function renderReview(){
+  var box = document.getElementById("review");
+  if (!box) return;
+
+  var offsets = [1, 3, 6];
+  var items = "";
+  for (var i = 0; i < offsets.length; i++) {
+    var d = curDay - offsets[i];
+    if (d < 1) continue;
+    if (!done[d]) continue;
+    var w = PLAN[d - 1][0], cn = PLAN[d - 1][1], st = STORIES[w];
+    var act = st ? st.act : "做一遍这个词的动作，说一声 " + w;
+    items += '<div class="ritem" data-rd="' + d + '">' +
+               '<span class="rwx">' + w + '</span>' +
+               '<span class="rcn">' + cn + '</span>' +
+               '<span class="rwhen">' + offsets[i] + ' 天前学的</span>' +
+               '<span class="ract">' + act + '</span>' +
+               (mark[d] ? '<button class="rbtn ok">✓ 看过了</button>'
+                         : '<button class="rbtn">看过了</button>') +
+             '</div>';
+  }
+
+  if (!items) {
+    box.innerHTML = '<h3>今天再看一眼</h3>' +
+      '<p class="rsub">今天没有要回看的词，专心学新的就好。</p>';
+    return;
+  }
+
+  box.innerHTML = '<h3>今天再看一眼（做完点一下）</h3>' +
+    '<p class="rsub">把动作再做一遍、把词再说一声就算完成。不考试、不打分。</p>' + items;
+
+  var rows = box.querySelectorAll(".ritem");
+  for (var j = 0; j < rows.length; j++) {
+    rows[j].querySelector(".rbtn").onclick = function(){
+      var d = parseInt(this.parentNode.getAttribute("data-rd"), 10);
+      mark[d] = !mark[d];
+      saveMark();
+      renderReview();
+    };
+  }
+}
+
+
+function bind(){
+  var say = document.getElementById("say");
+  if (say) say.onclick = function(){ speak(PLAN[curDay - 1][0]); };
+
+  var lines = cardEl.querySelectorAll(".line");
+  for (var i = 0; i < lines.length; i++) {
+    lines[i].onclick = function(){ speak(this.getAttribute("data-say")); };
+  }
+
+  var fin = document.getElementById("finish");
+  if (fin) fin.onclick = function(){
+    done[curDay] = !done[curDay];
+    save(); renderList(); renderCard();
+  };
+
+  var zh = document.getElementById("zh");
+  if (zh) zh.onclick = function(){
+    document.body.classList.toggle("hidezh");
+    this.textContent = document.body.classList.contains("hidezh") ? "显示中文" : "藏起中文";
+  };
+
+  var pr = document.getElementById("print");
+  if (pr) pr.onclick = function(){ window.print(); };
+
+  var prev = document.getElementById("prev");
+  if (prev) prev.onclick = function(){ go(curDay - 1); };
+  var next = document.getElementById("next");
+  if (next) next.onclick = function(){ go(curDay + 1); };
+}
+
+function go(day){
+  if (day < 1 || day > PLAN.length) return;
+  curDay = day;
+  renderList();
+  renderCard();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.addEventListener("keydown", function(e){
+  if (e.key === "ArrowLeft") go(curDay - 1);
+  if (e.key === "ArrowRight") go(curDay + 1);
+});
+
+curDay = firstNotDone();
+renderList();
+renderCard();
+</script>
+</body>
+</html>

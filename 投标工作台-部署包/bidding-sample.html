@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 投标技术方案生成工作台 · 交付样例</title>
+<meta name="theme-color" content="#1f5c3d">
+<style>
+    :root {
+        --bg: #fafafa; --card: #ffffff; --ink: #1a1a1a; --muted: #5a6270;
+        --line: #e3e6ea; --accent: #1f5c3d; --warn: #fff8e1;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root { --bg:#0f131c; --card:#1b2130; --ink:#e6e9ef; --muted:#9aa3af; --line:#2c3444; --accent:#5fbf8a; --warn:#2a2415; }
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC",
+                     "Microsoft YaHei", "PingFang SC", sans-serif;
+        background: var(--bg); color: var(--ink); line-height: 1.7; font-size: 14px;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    header { margin-bottom: 26px; }
+    h1 { font-size: 23px; letter-spacing: .5px; }
+    .sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+    .notice {
+        margin-top: 16px; background: var(--warn); border-left: 4px solid #f0b429;
+        border-radius: 8px; padding: 12px 16px; font-size: 13px; line-height: 1.65;
+    }
+
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 22px; margin-bottom: 18px; }
+    h2 { font-size: 16px; margin-bottom: 12px; padding-bottom: 7px; border-bottom: 1.5px solid var(--accent); }
+    h3 { font-size: 14px; margin: 16px 0 7px; color: var(--accent); }
+    h3:first-of-type { margin-top: 0; }
+    p { margin-bottom: 9px; }
+    ul, ol { margin-left: 20px; }
+    li { margin-bottom: 4px; font-size: 13.5px; }
+    strong { font-weight: 600; }
+    code { background: rgba(128,128,128,.16); padding: 1px 5px; border-radius: 4px; font-family: Consolas, monospace; font-size: 12.5px; }
+    pre {
+        background: rgba(128,128,128,.10); border: 1px solid var(--line);
+        border-radius: 8px; padding: 14px; overflow-x: auto;
+        font-family: Consolas, "Courier New", monospace; font-size: 12.5px; line-height: 1.65;
+        white-space: pre-wrap; word-break: break-word;
+    }
+    .flow { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:10px 0 4px; font-size:13px; }
+    .flow span { background: rgba(128,128,128,.12); border-radius: 6px; padding: 5px 11px; }
+    .flow i { color: var(--muted); font-style: normal; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+    .grid > div { background: var(--bg); border-radius: 8px; padding: 13px 15px; }
+    .grid h4 { font-size: 13px; margin-bottom: 6px; color: var(--accent); }
+    .tag { display:inline-block; font-size:11.5px; background: rgba(128,128,128,.15); border-radius: 999px; padding: 1px 9px; margin-left:6px; color: var(--muted); vertical-align: middle; }
+    .sample-note { font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+    footer { text-align:center; color: var(--muted); font-size: 12.5px; margin-top: 30px; }
+    a { color: var(--accent); }
+    @media (max-width: 640px) {
+        .wrap { padding: 18px 14px 40px; }
+        .card { padding: 16px; border-radius: 10px; }
+        h1 { font-size: 20px; }
+        pre { font-size: 12px; padding: 11px; }
+    }
+    @media print {
+        body { background:#fff; font-size: 10.5pt; }
+        .notice { background:#fff8e1; }
+        .card { border:1px solid #ddd; break-inside: avoid; }
+        .wrap { max-width:none; padding:0; }
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <header>
+        <h1>AI 投标技术方案生成工作台</h1>
+        <div class="sub">一次 toB 投标交付的产出结构与样例片段 ｜ 2026.08 ｜ 独立设计与实现</div>
+        <div class="notice">
+            <strong>脱敏说明：</strong>本页展示该工作台在一次真实投标交付中产出的物料结构与方法论，
+            <strong>客户名称与商业信息已做脱敏处理</strong>，仅保留格式、结构与工作流设计。
+        </div>
+    </header>
+
+    <!-- ========== 一、产品做什么 ========== -->
+    <div class="card">
+        <h2>一、这个产品做什么</h2>
+        <p>面向 <strong>toB 投标场景</strong>：把"读招标文件 → 写技术方案 → 产出配套物料"这条链路做成一个工作台。</p>
+        <div class="flow">
+            <span>上传招标文件</span><i>→</i>
+            <span>解析评分项</span><i>→</i>
+            <span>生成方案框架</span><i>→</i>
+            <span>分章节撰写正文</span><i>→</i>
+            <span>输出飞书文档</span>
+        </div>
+        <p style="margin-top:12px;font-size:13px;color:var(--muted)">
+            技术栈：React 18 + Vite + 工作流编排；支持 PDF / DOC / DOCX / XLS / XLSX 上传（≤50MB），
+            支持拖拽上传、提交前摘要确认、实时进度、失败原因区分与修改重试。
+        </p>
+    </div>
+
+    <!-- ========== 二、完成度自检 ========== -->
+    <div class="card">
+        <h2>二、核心流程完成度自检 <span class="tag">10 / 10</span></h2>
+        <ol>
+            <li>创建投标项目（项目列表 → 新建）</li>
+            <li>填写项目信息（名称、招标单位、截标时间、负责人、备注）</li>
+            <li>上传招标文件（点击上传 / 拖拽上传 / 删除 / 重新上传）</li>
+            <li>填写撰写要求（默认模板 + 6 个快捷要求标签）</li>
+            <li>提交前摘要确认（显示完整信息供核对）</li>
+            <li>启动 AI 生成（连接工作流）</li>
+            <li>实时显示生成状态与运行时长</li>
+            <li>成功 / 失败状态区分（成功给文档链接，失败给具体原因）</li>
+            <li>打开文档 / 复制链接</li>
+            <li>失败后修改信息重新生成</li>
+        </ol>
+        <p style="margin-top:10px;font-size:13px;color:var(--muted)">
+            另含防重复提交、未配置密钥时可用的演示模式、AI 生成内容的人工审核提醒。
+        </p>
+    </div>
+
+    <!-- ========== 三、产出清单 ========== -->
+    <div class="card">
+        <h2>三、一次交付的完整产出清单 <span class="tag">12 项</span></h2>
+
+        <h3>投标主件</h3>
+        <ol>
+            <li>招标文件专用公司简介</li>
+            <li>服务承诺书</li>
+            <li>技术方案正文（AI 生成初稿 → 人工补充资质与案例）</li>
+        </ol>
+
+        <h3>品牌与营销物料</h3>
+        <ol start="4">
+            <li>全套营销材料</li>
+            <li>全场景文案优化方案（售前 / 客服 / 售后 / 朋友圈等场景分列）</li>
+            <li>宣传词优化方案</li>
+            <li>公司介绍文案（修正版）</li>
+        </ol>
+
+        <h3>视频物料</h3>
+        <ol start="8">
+            <li>口播脚本（提词器专用版，含停顿点与动作提示）</li>
+            <li>拍摄指导手册（提词器 App 推荐、设备清单、场景布置、1 小时拍摄流程）</li>
+            <li>剪辑教程（剪映）</li>
+            <li>视频封面设计方案（3 套方案，含布局稿与制作步骤）</li>
+            <li>发布文案与话题标签（小红书 / 抖音分平台方案）</li>
+        </ol>
+
+        <p style="margin-top:12px;font-size:13px">
+            <strong>这份清单本身就是产品判断：</strong>AI 的价值不只在于"把方案正文写出来"，
+            而在于把"投标准备"当成一条完整工作流来拆解——从资质文件一直做到发布物料。
+        </p>
+    </div>
+
+    <!-- ========== 四、样例片段 ========== -->
+    <div class="card">
+        <h2>四、样例片段</h2>
+
+        <h3>样例 1：口播脚本（提词器格式）</h3>
+        <div class="sample-note">提词器脚本的关键不是文字，而是<strong>可念性</strong>——停顿位置、动作提示、重音标记。</div>
+        <pre>【使用说明】
+- "/" 表示停顿换气点
+- "（）" 内是动作提示，不要念出来
+- 加粗文字是重点，要强调
+
+==================================================
+
+凌晨两点 /
+我还在办公室赶标书 /
+旁边同事 / 已经通宵第三天了
+
+（表情：疲惫，摇头）
+
+一个标书 / 至少一百页招标文件 /
+评分项 / 藏得到处都是 /
+
+（停顿）
+
+AI 会自动帮你 / 提取所有评分项 /
+生成完整的技术方案框架 /
+
+（手势：数手指配合）
+
+记住 /
+AI 生成的是初稿 /
+最终还是要人工审核的 /
+咱们是提升效率 / 不是偷懒
+
+（表情：认真）</pre>
+
+        <h3>样例 2：视频封面设计方案（含布局稿）</h3>
+        <div class="sample-note">封面方案用 ASCII 布局稿表达视觉意图，让非设计背景的人也能照着做出来。</div>
+        <pre>方案一：对比冲击型（推荐）
+
+┌─────────────────────────────────────┐
+│                                     │
+│   ❌ 3天           ✅ 25分钟        │
+│   (加班到崩溃)      (准时下班)      │
+│                                     │
+│   【大字标题】                       │
+│   做投标的都懂！AI 25分钟           │
+│   搞定技术方案                       │
+│                                     │
+│   【人物表情】                       │
+│   左边：疲惫 → 右边：轻松            │
+│                                     │
+└─────────────────────────────────────┘
+
+制作步骤：
+1. 从视频中截取一帧（你的正面镜头）
+2. 用剪映 / 美图秀秀编辑
+   文字（顶部）：「❌ 3天  vs  ✅ 25分钟」
+   字体：思源黑体 加粗 ／ 大小：占画面 1/5</pre>
+
+        <h3>样例 3：拍摄指导手册（设备与场景清单）</h3>
+        <pre>准备阶段（15 分钟）
+
+设备检查
+  ✅ 手机充满电（或连接充电器）
+  ✅ 清理手机镜头
+  ✅ 安装提词器 App
+  ✅ 准备手机支架 / 三脚架
+  ✅ 准备补光灯（或台灯）
+  ✅ 准备领夹麦克风（如果有）
+
+场景布置
+  位置：靠窗位置（自然光充足），避免逆光
+  背景：书架（最佳，显专业）
+
+提词器设置
+  字号：调到最大，能在 1.5 米外看清
+  滚动速度：匹配语速，多试几次
+  背景：黑底白字，减少反光</pre>
+    </div>
+
+    <!-- ========== 五、方法论 ========== -->
+    <div class="card">
+        <h2>五、从这次交付里沉淀的方法</h2>
+        <div class="grid">
+            <div>
+                <h4>① 交付物要成套，不要单件</h4>
+                客户要的不是"一份文案"，而是"这套物料能不能直接用"。
+                所以脚本、拍摄、剪辑、封面、发布文案要一起给。
+            </div>
+            <div>
+                <h4>② 给执行者留操作空间</h4>
+                提词器脚本标注停顿与动作，封面方案给 ASCII 布局稿——
+                让不懂设计的人也能照着做出来，物料才真的会被用。
+            </div>
+            <div>
+                <h4>③ 明确 AI 的边界</h4>
+                脚本里写死一句「AI 生成的是初稿，最终还是要人工审核」。
+                这不是免责，是把预期管理前置，反而更容易被采纳。
+            </div>
+            <div>
+                <h4>④ 把流程本身当产品</h4>
+                从招标文件到发布物料是一条链。
+                拆清楚每一环的输入输出，才能判断哪一环该交给 AI。
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>李雪蓉 ｜ AI 应用产品经理（toB 方向）</p>
+        <p style="margin-top:6px;">
+            另一个作品：<a href="./index.html">行业分析工作台</a>（含可交互演示，无需配置）
+        </p>
+    </footer>
+
+</div>
+</body>
+</html>

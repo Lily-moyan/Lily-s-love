@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 产品经理工作台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧项目区 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1 class="app-title">AI 产品经理工作台</h1>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索项目或任务...">
+            </div>
+            
+            <div class="section-title">
+                <span>项目列表</span>
+                <button class="btn-icon" id="newProjectBtn" title="新建项目">+</button>
+            </div>
+            
+            <div class="project-list" id="projectList">
+                <!-- 项目列表动态生成 -->
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="sidebar-btn" id="connectionSettingsBtn">
+                    <span>⚙️</span> 连接设置
+                </button>
+                <button class="sidebar-btn" id="helpCenterBtn">
+                    <span>❓</span> 帮助中心
+                </button>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部项目区 -->
+            <header class="top-bar" id="topBar">
+                <div class="top-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+                    <h2 class="project-title" id="currentProjectName">未选择项目</h2>
+                </div>
+                <div class="top-right">
+                    <span class="status-badge" id="workflowStatus">未配置</span>
+                    <button class="btn-secondary" id="topNewProjectBtn">新建项目</button>
+                    <button class="btn-secondary" id="topConnectionBtn">连接设置</button>
+                    <button class="btn-secondary" id="topHelpBtn">帮助</button>
+                </div>
+            </header>
+            
+            <!-- 中央工作区 -->
+            <div class="workspace">
+                <!-- 四类工作路径 -->
+                <div class="task-types" id="taskTypes">
+                    <button class="task-type-btn" data-type="smart">
+                        <span class="task-icon">🎯</span>
+                        <span class="task-name">智能识别</span>
+                    </button>
+                    <button class="task-type-btn" data-type="requirement">
+                        <span class="task-icon">📋</span>
+                        <span class="task-name">需求分析</span>
+                    </button>
+                    <button class="task-type-btn" data-type="solution">
+                        <span class="task-icon">🤖</span>
+                        <span class="task-name">AI 方案设计</span>
+                    </button>
+                    <button class="task-type-btn" data-type="prd">
+                        <span class="task-icon">📝</span>
+                        <span class="task-name">PRD 草稿</span>
+                    </button>
+                    <button class="task-type-btn" data-type="competitive">
+                        <span class="task-icon">🔍</span>
+                        <span class="task-name">竞品分析</span>
+                    </button>
+                </div>
+                
+                <!-- 当前项目背景 -->
+                <div class="project-background" id="projectBackground">
+                    <div class="section-header">
+                        <h3>项目背景</h3>
+                        <button class="btn-text" id="editBackgroundBtn">编辑</button>
+                    </div>
+                    <div class="background-content" id="backgroundContent">
+                        <p>请选择或创建一个项目以查看背景信息</p>
+                    </div>
+                </div>
+                
+                <!-- 任务输入区 -->
+                <div class="task-input-section" id="taskInputSection">
+                    <div class="task-header">
+                        <h3 id="taskTypeTitle">需求分析</h3>
+                        <p class="task-description" id="taskDescription">描述您的需求，系统将分析并生成需求分析文档</p>
+                    </div>
+                    
+                    <div class="input-area">
+                        <textarea 
+                            id="taskInput" 
+                            placeholder="请详细描述您的业务需求..."
+                            rows="6"
+                        ></textarea>
+                        <div class="input-footer">
+                            <span class="char-count" id="charCount">0 字</span>
+                            <div class="input-actions">
+                                <button class="btn-secondary" id="clearInputBtn">清空</button>
+                                <button class="btn-primary" id="startAnalysisBtn">开始分析</button>
+                                <button class="btn-danger hidden" id="cancelTaskBtn">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 示例 -->
+                    <div class="examples-section">
+                        <p class="examples-title">示例：</p>
+                        <div class="example-buttons">
+                            <button class="example-btn" data-example="requirement">售后流程需求分析</button>
+                            <button class="example-btn" data-example="solution">AI 客服 MVP 方案</button>
+                            <button class="example-btn" data-example="prd">订单查询 PRD</button>
+                            <button class="example-btn" data-example="competitive">AI 客服竞品分析</button>
+                        </div>
+                    </div>
+                    
+                    <p class="security-warning">⚠️ 请勿输入未经授权的个人信息、商业秘密或生产凭证。</p>
+                </div>
+                
+                <!-- 运行状态 -->
+                <div class="running-status hidden" id="runningStatus">
+                    <div class="status-steps">
+                        <div class="status-step" id="step1">
+                            <div class="step-icon">🔍</div>
+                            <div class="step-text">理解任务</div>
+                        </div>
+                        <div class="status-step" id="step2">
+                            <div class="step-icon">📚</div>
+                            <div class="step-text">整理资料</div>
+                        </div>
+                        <div class="status-step" id="step3">
+                            <div class="step-icon">✍️</div>
+                            <div class="step-text">生成交付物</div>
+                        </div>
+                        <div class="status-step" id="step4">
+                            <div class="step-icon">✅</div>
+                            <div class="step-text">风险与事实检查</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 结果文档 -->
+                <div class="result-section hidden" id="resultSection">
+                    <div class="result-header">
+                        <div class="result-meta">
+                            <span class="result-type" id="resultType">需求分析</span>
+                            <span class="result-project" id="resultProject">项目名称</span>
+                            <span class="result-time" id="resultTime">生成时间</span>
+                        </div>
+                        <div class="result-actions">
+                            <button class="btn-secondary btn-sm" id="viewEvidenceBtn">查看证据</button>
+                            <button class="btn-secondary btn-sm" id="copyResultBtn">复制全文</button>
+                            <button class="btn-secondary btn-sm" id="saveResultBtn">保存到项目</button>
+                            <button class="btn-secondary btn-sm" id="editResultBtn">继续编辑</button>
+                            <button class="btn-secondary btn-sm" id="regenerateBtn">重新生成</button>
+                            <button class="btn-primary btn-sm" id="nextTaskBtn">继续下一项</button>
+                        </div>
+                    </div>
+                    
+                    <div class="demo-banner hidden" id="demoBanner">
+                        ⚠️ 当前内容为演示数据，用于体验页面能力，并非工作流真实运行结果。
+                    </div>
+                    
+                    <div class="result-status" id="resultStatus">
+                        <span class="status-badge success">已完成</span>
+                    </div>
+                    
+                    <div class="result-content" id="resultContent">
+                        <!-- 结果内容 -->
+                    </div>
+                    
+                    <!-- 编辑模式 -->
+                    <div class="edit-mode hidden" id="editMode">
+                        <textarea id="editTextarea" rows="20"></textarea>
+                        <div class="edit-actions">
+                            <button class="btn-secondary" id="cancelEditBtn">取消</button>
+                            <button class="btn-primary" id="saveEditBtn">保存</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 版本历史 -->
+                <div class="version-history hidden" id="versionHistory">
+                    <div class="section-header">
+                        <h3>版本历史</h3>
+                    </div>
+                    <div class="version-list" id="versionList">
+                        <!-- 版本列表动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 证据侧边栏 -->
+        <aside class="evidence-panel hidden" id="evidencePanel">
+            <div class="evidence-header">
+                <h3>证据与假设</h3>
+                <button class="close-btn" id="closeEvidenceBtn">×</button>
+            </div>
+            <div class="evidence-content">
+                <div class="evidence-section">
+                    <h4>已确认事实</h4>
+                    <div id="confirmedFacts">
+                        <p class="empty-text">暂无数据</p>
+                    </div>
+                </div>
+                <div class="evidence-section">
+                    <h4>资料支持</h4>
+                    <div id="supportingData">
+                        <p class="empty-text">暂无数据</p>
+                    </div>
+                </div>
+                <div class="evidence-section">
+                    <h4>分析建议</h4>
+                    <div id="analysisSuggestions">
+                        <p class="empty-text">暂无数据</p>
+                    </div>
+                </div>
+                <div class="evidence-section">
+                    <h4>待验证假设</h4>
+                    <div id="unverifiedHypotheses">
+                        <p class="empty-text">暂无数据</p>
+                    </div>
+                </div>
+                <div class="evidence-section">
+                    <h4>风险与人工确认点</h4>
+                    <div id="riskPoints">
+                        <p class="empty-text">暂无数据</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+    
+    <!-- 新建项目模态框 -->
+    <div class="modal hidden" id="newProjectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>新建项目</h3>
+                <button class="close-btn" id="closeNewProjectModal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="newProjectForm">
+                    <div class="form-group">
+                        <label>项目名称 *</label>
+                        <input type="text" id="projectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>业务对象</label>
+                        <input type="text" id="businessObject">
+                    </div>
+                    <div class="form-group">
+                        <label>目标用户</label>
+                        <input type="text" id="targetUsers">
+                    </div>
+                    <div class="form-group">
+                        <label>当前阶段</label>
+                        <select id="currentPhase">
+                            <option value="需求分析">需求分析</option>
+                            <option value="方案设计">方案设计</option>
+                            <option value="开发实施">开发实施</option>
+                            <option value="测试验证">测试验证</option>
+                            <option value="上线运营">上线运营</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>已确认范围</label>
+                        <textarea id="confirmedScope" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>关键约束</label>
+                        <textarea id="keyConstraints" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>待确认事项</label>
+                        <textarea id="pendingItems" rows="2"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancelNewProject">取消</button>
+                        <button type="submit" class="btn-primary">创建项目</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 编辑项目背景模态框 -->
+    <div class="modal hidden" id="editBackgroundModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑项目背景</h3>
+                <button class="close-btn" id="closeEditBackgroundModal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="editBackgroundForm">
+                    <div class="form-group">
+                        <label>项目名称</label>
+                        <input type="text" id="editProjectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>业务对象</label>
+                        <textarea id="editBusinessObject" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>目标用户</label>
+                        <textarea id="editTargetUsers" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>当前阶段</label>
+                        <select id="editCurrentPhase">
+                            <option value="需求分析">需求分析</option>
+                            <option value="方案设计">方案设计</option>
+                            <option value="开发实施">开发实施</option>
+                            <option value="测试验证">测试验证</option>
+                            <option value="上线运营">上线运营</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>已确认范围</label>
+                        <textarea id="editConfirmedScope" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>关键约束</label>
+                        <textarea id="editKeyConstraints" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>待确认事项</label>
+                        <textarea id="editPendingItems" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="deleteProjectBtn" style="margin-right: auto;">删除项目</button>
+                        <button type="button" class="btn-secondary" id="cancelEditBackground">取消</button>
+                        <button type="submit" class="btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 连接设置模态框 -->
+    <div class="modal hidden" id="connectionSettingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>连接设置</h3>
+                <button class="close-btn" id="closeConnectionModal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="connectionForm">
+                    <div class="form-group">
+                        <label>工作流 ID</label>
+                        <input type="text" id="workflowId" placeholder="输入 Coze 工作流 ID">
+                    </div>
+                    <div class="form-group">
+                        <label>个人访问令牌 (PAT)</label>
+                        <input type="password" id="patToken" placeholder="输入 Coze 个人访问令牌">
+                        <p class="form-hint">您的令牌将安全保存在本地浏览器中，不会上传到其他服务器。</p>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancelConnection">取消</button>
+                        <button type="button" class="btn-secondary" id="testConnectionBtn">测试连接</button>
+                        <button type="submit" class="btn-primary">保存配置</button>
+                    </div>
+                </form>
+                <div class="connection-status" id="connectionStatus"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 帮助中心模态框 -->
+    <div class="modal hidden" id="helpCenterModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>帮助中心</h3>
+                <button class="close-btn" id="closeHelpModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-content">
+                    <h4>如何新建项目</h4>
+                    <p>点击左侧的"+"按钮或顶部"新建项目"按钮，填写项目名称、业务对象、目标用户等信息，然后点击"创建项目"。</p>
+                    
+                    <h4>如何选择任务类型</h4>
+                    <p>在工作区上方有五种任务类型可供选择：智能识别、需求分析、AI 方案设计、PRD 草稿、竞品分析。点击对应按钮即可切换任务类型。</p>
+                    
+                    <h4>如何连接工作流</h4>
+                    <p>点击"连接设置"按钮，输入您的 Coze 工作流 ID 和个人访问令牌 (PAT)，然后点击"测试连接"验证配置是否正确。</p>
+                    
+                    <h4>如何查看结果</h4>
+                    <p>任务完成后，结果会在页面下方显示。您可以复制全文、保存到项目、继续编辑或重新生成。点击"查看证据"可以查看分析依据和假设。</p>
+                    
+                    <h4>如何保存交付物</h4>
+                    <p>任务完成后点击"保存到项目"按钮，交付物将保存到当前项目中，可以在版本历史中查看和管理。</p>
+                    
+                    <h4>演示数据和真实结果有什么区别</h4>
+                    <p>演示数据是预置的示例内容，用于让您快速了解页面功能和界面布局。演示数据会明确标注，不会与真实结果混淆。</p>
+                    
+                    <h4>为什么不能输入未经授权的信息</h4>
+                    <p>为了保护您和他人的隐私和安全，请勿在系统中输入未经授权的个人信息、商业秘密或生产凭证。这些信息可能被永久记录在系统中。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 确认删除模态框 -->
+    <div class="modal hidden" id="confirmDeleteModal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>确认删除</h3>
+                <button class="close-btn" id="closeConfirmDelete">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmDeleteMessage">确定要删除吗？此操作不可恢复。</p>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelDelete">取消</button>
+                    <button type="button" class="btn-danger" id="confirmDeleteBtn">确定删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

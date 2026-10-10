@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清除数据并重新配置</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+        }
+        .warning {
+            background: #fff3e0;
+            color: #f39c12;
+            border-left: 4px solid #f39c12;
+        }
+        button {
+            background: #9b59b6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #8e44ad;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .step {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .step-number {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            background: #9b59b6;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 清除数据并重新配置</h1>
+
+        <p>这个页面将帮助您清除浏览器中的旧数据，并自动配置 Coze 工作流。</p>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>清除所有应用数据</strong>
+            <p style="margin: 10px 0 0 35px; color: #999;">这将删除所有项目、任务和配置信息</p>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>自动配置 Coze 工作流</strong>
+            <p style="margin: 10px 0 0 35px; color: #999;">填入您提供的工作流 ID 和访问令牌</p>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>自动打开主应用</strong>
+            <p style="margin: 10px 0 0 35px; color: #999;">清除和配置完成后自动跳转</p>
+        </div>
+
+        <div id="status" class="status warning">
+            准备就绪，请点击下方按钮开始
+        </div>
+
+        <button id="clearBtn" onclick="clearAndConfigure()">
+            🚀 清除数据并重新配置
+        </button>
+
+        <p style="margin-top: 20px; font-size: 12px; color: #999;">
+            ⚠️ 此操作不可撤销，请确认后继续
+        </p>
+    </div>
+
+    <script>
+        function clearAndConfigure() {
+            const btn = document.getElementById('clearBtn');
+            const status = document.getElementById('status');
+            
+            // 禁用按钮
+            btn.disabled = true;
+            btn.textContent = '⏳ 正在清除数据...';
+            
+            // 清除所有应用相关的 localStorage 数据
+            const keysToRemove = [
+                'ai-pm-workbench-projects',
+                'ai-pm-workbench-currentProject',
+                'ai-pm-workbench-connection'
+            ];
+            
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+            });
+            
+            status.className = 'status success';
+            status.innerHTML = '✅ 数据已清除，正在配置工作流...';
+            
+            // 等待一下，然后配置 Coze 工作流
+            setTimeout(() => {
+                // 自动配置 Coze 工作流
+                const config = {
+                    workflowId: '7676832175183282239',
+                    patToken: 'pat_cO2mlw4Q7rHW5s6DhpfgDTKLerNdjtjNdvbvZ0duYCw7ESiTuNwNwaY8YJdWkdrR'
+                };
+                
+                localStorage.setItem('ai-pm-workbench-connection', JSON.stringify(config));
+                
+                status.innerHTML = '✅ 工作流已配置，正在打开主应用...';
+                btn.textContent = '✅ 配置完成！';
+                
+                // 1秒后打开主应用
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            }, 500);
+        }
+    </script>
+</body>
+</html>

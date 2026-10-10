@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3 分钟自我介绍 · 提词器 · 李雪蓉</title>
+<style>
+    :root {
+        --bg: #11141a; --panel: #1a1f28; --ink: #e8ebf0; --dim: #8d96a5;
+        --accent: #5fd08a; --time: #f0b429; --mark: #5c7cfa;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC",
+                     "Microsoft YaHei", "PingFang SC", sans-serif;
+        background: var(--bg); color: var(--ink); line-height: 1.95;
+    }
+
+    /* ===== 工具条 ===== */
+    .bar {
+        position: sticky; top:0; z-index:20; background:#161a21;
+        border-bottom:1px solid #262c37; padding:10px 18px;
+        display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    .bar button {
+        padding:7px 16px; border:1px solid #333a47; border-radius:999px;
+        background:transparent; color:var(--ink); font-size:13px; cursor:pointer;
+    }
+    .bar button.on { background:var(--accent); color:#0d1117; border-color:var(--accent); font-weight:600; }
+    .bar .info { margin-left:auto; font-size:12.5px; color:var(--dim); }
+
+    .wrap { max-width: 820px; margin: 0 auto; padding: 26px 22px 80px; }
+
+    h1 { font-size:20px; margin-bottom:4px; letter-spacing:.5px; }
+    .sub { font-size:13px; color:var(--dim); margin-bottom:22px; }
+
+    /* ===== 提词器主体 ===== */
+    .seg { margin-bottom: 30px; }
+    .seg-head {
+        display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+        padding-bottom:7px; border-bottom:1px solid #262c37; margin-bottom:14px;
+    }
+    .t { font-size:13px; font-weight:700; color:var(--time); font-variant-numeric:tabular-nums;
+         letter-spacing:.5px; white-space:nowrap; }
+    .t-name { font-size:13.5px; color:var(--dim); }
+
+    .lines { font-size:23px; line-height:2.0; letter-spacing:1px; }
+    .lines .l { display:block; margin-bottom:2px; }
+    .lines strong { color:var(--accent); font-weight:700; }
+    .slash { color:var(--mark); font-weight:700; padding:0 2px; }
+
+    /* 动作/表情提示：念的时候不用管 */
+    .cue {
+        display:block; font-size:14px; color:#7b8494; font-style:normal;
+        margin: 9px 0 9px 2px; padding-left:11px; border-left:2px solid #2c3442;
+        line-height:1.7;
+    }
+    .pause { display:block; text-align:center; color:#3f4855; font-size:13px; margin:16px 0; letter-spacing:4px; }
+
+    /* ===== 下方说明 ===== */
+    .notes { margin-top:44px; padding-top:20px; border-top:1px solid #262c37; }
+    .notes h2 { font-size:14px; color:var(--accent); margin:18px 0 8px; }
+    .notes p, .notes li { font-size:13.5px; color:#b9c1cd; line-height:1.8; }
+    .notes ul { margin-left:18px; }
+    .notes li { margin-bottom:4px; }
+    table { width:100%; border-collapse:collapse; margin:8px 0 4px; font-size:13px; }
+    th, td { text-align:left; padding:6px 9px; border-bottom:1px solid #262c37; vertical-align:top; }
+    th { color:var(--dim); font-weight:600; }
+    .warn { color:#f0b429; }
+    .ok { color:var(--accent); }
+
+    /* ===== 放大模式 ===== */
+    body.big .lines { font-size:30px; line-height:2.05; }
+    body.big .wrap { max-width: 980px; }
+
+    /* ===== 打印：翻成白底，只留台词 ===== */
+    @page { size: A4; margin: 14mm; }
+    @media print {
+        body { background:#fff; color:#111; line-height:1.7; }
+        .bar { display:none !important; }
+        .wrap { max-width:none; padding:0; }
+        h1 { font-size:15pt; }
+        .sub { color:#666; margin-bottom:12pt; }
+        .seg { margin-bottom:14pt; break-inside:avoid; }
+        .seg-head { border-bottom:1px solid #ddd; padding-bottom:3pt; margin-bottom:7pt; }
+        .t { color:#b07d00; font-size:9.5pt; }
+        .t-name { color:#666; font-size:9.5pt; }
+        .lines { font-size:12pt; line-height:1.75; }
+        .lines strong { color:#1a7f4b; }
+        .slash { color:#3b5bdb; }
+        .cue { font-size:9pt; color:#777; border-left:2px solid #ddd; margin:5pt 0 5pt 2px; }
+        .pause { color:#bbb; margin:8pt 0; }
+        .notes { display:none !important; }
+    }
+    @media (max-width: 700px) {
+        .lines { font-size:19px; }
+        body.big .lines { font-size:24px; }
+        .wrap { padding:18px 16px 60px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="bar">
+    <button id="btn-big">放大字号</button>
+    <button onclick="window.print()">打印台词</button>
+    <span class="info">斜杠 / = 停顿换气　｜　绿色 = 要加重　｜　灰色小字 = 动作提示，不用念</span>
+</div>
+
+<div class="wrap">
+
+    <h1>3 分钟自我介绍</h1>
+    <div class="sub">李雪蓉 ｜ 面试用提词器版 ｜ 约 780 字，按 260 字/分钟 ≈ 3 分钟</div>
+
+    <!-- ============ 0:00 ============ -->
+    <div class="seg">
+        <div class="seg-head"><span class="t">0:00 – 0:20</span><span class="t-name">开场 · 先把弱点摆到桌上</span></div>
+        <div class="lines">
+            <span class="l">我先说清楚 <span class="slash">/</span> 我<strong>没有产品经理的抬头</strong> <span class="slash">/</span></span>
+            <span class="l">但我今天带了<strong>三个东西</strong> <span class="slash">/</span> 都是我自己从设计到部署做完的 <span class="slash">/</span></span>
+            <span class="l">您随时可以点开看</span>
+        </div>
+        <span class="cue">（语速放慢，看着对方。这句是主动交底，不要像道歉）</span>
+    </div>
+
+    <!-- ============ 0:20 ============ -->
+    <div class="seg">
+        <div class="seg-head"><span class="t">0:20 – 0:55</span><span class="t-name">我是谁 · 为什么转</span></div>
+        <div class="lines">
+            <span class="l">我是李雪蓉 <span class="slash">/</span> <strong>12 年 B2B 销售</strong> <span class="slash">/</span></span>
+            <span class="l">前三年做建筑工程 <span class="slash">/</span> 现在是<strong>工业测控仪表</strong> <span class="slash">/</span></span>
+            <span class="l">累计推动过 <strong>30 多个项目</strong>成交闭环 <span class="slash">/</span> 单项目 5 万到 50 万</span>
+        </div>
+        <span class="pause">— — —</span>
+        <div class="lines">
+            <span class="l">我为什么想转产品 <span class="slash">/</span></span>
+            <span class="l">是因为做仪表这几年 <span class="slash">/</span> 我发现一件事</span>
+            <span class="l">客户的设备其实<strong>一直在产生数据</strong> <span class="slash">/</span></span>
+            <span class="l">但是这些数据 <span class="slash">/</span> <strong>几乎没人用</strong></span>
+            <span class="l">巡检记录写在纸上 <span class="slash">/</span> 报警响过就过去了</span>
+        </div>
+        <span class="pause">— — —</span>
+        <div class="lines">
+            <span class="l">我当时想的是 <span class="slash">/</span> <strong>这不是缺数据</strong> <span class="slash">/</span> 是缺把数据变成判断的东西</span>
+            <span class="l">后来大模型出来了 <span class="slash">/</span> 我发现这件事 <span class="slash">/</span> <strong>真的可以做了</strong></span>
+        </div>
+        <span class="cue">（这段是全场最可信的一段。说完停两秒——不要马上接下一个话题）</span>
+    </div>
+
+    <!-- ============ 0:55 ============ -->
+    <div class="seg">
+        <div class="seg-head"><span class="t">0:55 – 2:20</span><span class="t-name">三个证据 · 每个约 30 秒</span></div>
+        <div class="lines">
+            <span class="l"><strong>第一个</strong> <span class="slash">/</span> 行业分析工作台</span>
+            <span class="l">我做它是为了解决一个问题 <span class="slash">/</span> 大模型做行业分析 <span class="slash">/</span></span>
+            <span class="l">最大的风险不是答不出 <span class="slash">/</span> 是<strong>答得像真的</strong></span>
+            <span class="l">所以我设计了一条硬规则 <span class="slash">/</span> 每个事实必须标证据等级</span>
+            <span class="l">A 是公开可查 <span class="slash">/</span> 必须给到文件名和年份</span>
+            <span class="l">B 是推断 <span class="slash">/</span> 必须写出推断链</span>
+            <span class="l">C 是纯推测 <span class="slash">/</span> <strong>一律不许进正文</strong></span>
+            <span class="l">查不到就输出「<strong>未获取</strong>」 <span class="slash">/</span> 不许用推测把版面填满</span>
+        </div>
+        <span class="pause">— — —</span>
+        <div class="lines">
+            <span class="l"><strong>第二个</strong> <span class="slash">/</span> AI 投标技术方案生成工作台</span>
+            <span class="l">这个是把我原来的主业和 AI 接上了</span>
+            <span class="l">它打通了招标文件解析 <span class="slash">/</span> 方案框架 <span class="slash">/</span> 正文生成 <span class="slash">/</span> 交付物输出</span>
+            <span class="l"><strong>它的产出用在了我们公司真实的投标和营销物料上</strong></span>
+            <span class="l">公司简介 <span class="slash">/</span> 服务承诺书 <span class="slash">/</span> 拍摄脚本 <span class="slash">/</span> 发布物料 <span class="slash">/</span> 都是它生成的</span>
+        </div>
+        <span class="pause">— — —</span>
+        <div class="lines">
+            <span class="l"><strong>第三个</strong> <span class="slash">/</span> 智能客服系统</span>
+            <span class="l">这个是证明我能啃工程上的硬骨头</span>
+            <span class="l">流式对话 <span class="slash">/</span> 按工作流节点和轮次的多气泡分组 <span class="slash">/</span></span>
+            <span class="l">还有<strong>中断-恢复机制</strong> <span class="slash">/</span> 人工介入之后工作流还能继续跑</span>
+            <span class="l">代码在 GitHub 上 <span class="slash">/</span> 您可以随时看</span>
+        </div>
+        <span class="pause">— — —</span>
+        <div class="lines">
+            <span class="l">这三个东西我都部署成了<strong>公开链接</strong> <span class="slash">/</span> 手机上就能打开</span>
+            <span class="l">其中一个还能装到手机主屏幕上 <span class="slash">/</span> 像 App 一样用</span>
+        </div>
+        <span class="cue">（三个证据之间停一下，别连成一串。每个都是「先说问题、再说做法」）</span>
+    </div>
+
+    <!-- ============ 2:20 ============ -->
+    <div class="seg">
+        <div class="seg-head"><span class="t">2:20 – 2:45</span><span class="t-name">定位 · 一句话</span></div>
+        <div class="lines">
+            <span class="l">所以我给自己的定位是这样 <span class="slash">/</span></span>
+            <span class="l">我不是 5 年经验的 AI 产品经理</span>
+            <span class="l">我是一个<strong>懂工业现场数据</strong> <span class="slash">/</span> 而且已经自己动手做过 AI 应用的 <strong>toB 销售</strong></span>
+        </div>
+        <span class="pause">— — —</span>
+        <div class="lines">
+            <span class="l"><strong>我做不了模型</strong> <span class="slash">/</span></span>
+            <span class="l">但我知道<strong>它该落在哪</strong> <span class="slash">/</span> 以及它错了之后 <span class="slash">/</span> 产品该怎么兜</span>
+        </div>
+        <span class="cue">（这两句放慢，一句一顿。这是全篇的落点）</span>
+    </div>
+
+    <!-- ============ 2:45 ============ -->
+    <div class="seg">
+        <div class="seg-head"><span class="t">2:45 – 3:00</span><span class="t-name">收尾 · 把球给对方</span></div>
+        <div class="lines">
+            <span class="l">我今天还带了一份<strong>一页纸</strong>的东西 <span class="slash">/</span></span>
+            <span class="l">是我看您这个岗位之后 <span class="slash">/</span> 判断<strong>第一步该做什么</strong></span>
+            <span class="l">里面标了「推断」的地方 <span class="slash">/</span> 都是我从公开信息推的</span>
+            <span class="l">如果猜错了 <span class="slash">/</span> 您直接纠正我 <span class="slash">/</span></span>
+            <span class="l"><strong>纠正比认同对我更有价值</strong></span>
+        </div>
+        <span class="cue">（最后一句说完，把判断文档递过去或推到屏幕前。等他开口）</span>
+    </div>
+
+    <!-- ============ 说明 ============ -->
+    <div class="notes">
+        <h2>怎么用这份稿子</h2>
+        <ul>
+            <li><strong>背结构，不背逐字。</strong>记住五段的功能（交底 → 我是谁 → 三个证据 → 定位 → 交球），现场自由发挥。逐字背会像背书。</li>
+            <li><strong>念三遍，再录音听一遍。</strong>你会发现有些句子说不顺——那就是要改的地方。（这是最省时间的一步，别省）</li>
+            <li>点上方「<strong>放大字号</strong>」，站着念也能看清。要打印就点「打印台词」——会自动去掉说明、翻成白底。</li>
+        </ul>
+
+        <h2>为什么这么排</h2>
+        <table>
+            <tr><th>段落</th><th>作用</th></tr>
+            <tr><td>开场先认「没有 PM 抬头」</td><td>你最大的劣势对方两分钟必会发现。<strong>自己先说，就从「隐瞒」变成「坦诚」</strong>，而且立刻把话题引到证据上</td></tr>
+            <tr><td>「为什么转」用真实观察</td><td class="warn">不要说「我对 AI 有热情」——课件 P88 明确列为忌讳。上面那个理由来自你的真实工作，<strong>别人编不出来</strong></td></tr>
+            <tr><td>三个证据的顺序</td><td>行业分析 → <strong>产品判断力</strong>；投标工作台 → <strong>懂 toB 业务</strong>；智能客服 → <strong>工程能力</strong></td></tr>
+            <tr><td>每个证据先问题后做法</td><td class="warn">不要说「我用了 React 18 和 SSE」——对方不关心技术栈，关心你解决了什么</td></tr>
+            <tr><td>收尾说「纠正比认同更有价值」</td><td>给对方话头，把「你问我答」变成<strong>一起讨论</strong></td></tr>
+        </table>
+
+        <h2>红线</h2>
+        <p><span class="warn">不要提</span>：RLHF、reward model、LoRA、微调策略、chunk 策略 —— 这些你撑不住追问。</p>
+        <p><span class="ok">可以放心说</span>：幻觉、召回、多模态、证据分级、兜底、流式、工作流编排。</p>
+        <p>数字只用确认过的：<strong>30+ 项目、5–50 万、月均 1–2 单、最高 4 单、100+ 在跟客户、带教 4 人</strong>。</p>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById('btn-big').addEventListener('click', function () {
+        document.body.classList.toggle('big');
+        this.classList.toggle('on');
+        this.textContent = document.body.classList.contains('big') ? '还原字号' : '放大字号';
+    });
+</script>
+
+</body>
+</html>

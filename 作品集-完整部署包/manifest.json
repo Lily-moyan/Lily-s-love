@@ -1,0 +1,38 @@
+{
+  "name": "行业分析工作台",
+  "short_name": "行业分析",
+  "description": "把行业调研从「问模型要答案」改造成可验证的结构化流程：三级证据分级 + 对抗式校验。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fafafa",
+  "theme_color": "#51cf66",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "看演示",
+      "url": "./index.html?demo=1"
+    }
+  ]
+}

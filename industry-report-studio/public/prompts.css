@@ -1,0 +1,97 @@
+/* 提示词说明书：独立入口，读者是 AI 产品经理——按"能不能快速扫完"来排版 */
+body.docs { background: var(--bg); color: var(--ink); }
+
+.docs-head { border-bottom: 1px solid var(--line); background: var(--card); position: sticky; top: 0; z-index: 5; }
+.docs-head-in {
+  max-width: 1180px; margin: 0 auto; padding: 18px 24px;
+  display: flex; align-items: center; gap: 16px;
+}
+.docs-head h1 { font-size: 20px; margin: 0; }
+.docs-head .sub { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.docs-head a { margin-left: auto; }
+
+.docs-body { max-width: 1180px; margin: 0 auto; padding: 24px; display: flex; gap: 28px; align-items: flex-start; }
+
+.docs-nav { position: sticky; top: 92px; width: 190px; flex: none; font-size: 13px; }
+.docs-nav .grp { margin-bottom: 16px; }
+.docs-nav .grp > b { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.docs-nav a {
+  display: block; padding: 5px 9px; border-radius: 6px;
+  color: var(--ink); text-decoration: none; border-left: 2px solid transparent;
+}
+.docs-nav a:hover { background: var(--card); }
+.docs-nav a.on { background: var(--card); border-left-color: var(--accent); font-weight: 600; }
+
+.docs-main { flex: 1; min-width: 0; }
+
+.principle {
+  border: 1px solid var(--accent); border-radius: 12px; padding: 18px 20px;
+  background: var(--card); margin-bottom: 26px;
+}
+.principle h2 { margin: 0 0 8px; font-size: 16px; }
+.principle p { margin: 0; font-size: 14px; line-height: 1.75; color: var(--ink); white-space: pre-line; }
+
+.pd {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+  padding: 20px 22px; margin-bottom: 20px;
+  scroll-margin-top: 96px;   /* 页头是吸顶的，锚点跳过来别被盖住 */
+}
+.pd > header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.pd h3 { margin: 0; font-size: 17px; }
+.pd .tag {
+  font-size: 11px; padding: 2px 8px; border-radius: 20px;
+  background: var(--bg); border: 1px solid var(--line); color: var(--muted);
+}
+.pd .where { font-size: 12px; color: var(--muted); margin: 0 0 14px; }
+
+.pd h4 {
+  margin: 16px 0 7px; font-size: 12px; letter-spacing: .06em;
+  color: var(--muted); text-transform: none;
+}
+.pd p, .pd li { font-size: 14px; line-height: 1.78; margin: 0 0 6px; }
+.pd ul { margin: 0; padding-left: 19px; }
+.pd .positioning { font-size: 14.5px; line-height: 1.75; }
+
+.guards { border-left: 3px solid #b9770e; padding: 2px 0 2px 13px; background: transparent; }
+.guards li { color: var(--ink); }
+.guards li::marker { color: #b9770e; }
+
+.pd details { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.pd summary { cursor: pointer; font-size: 12.5px; color: var(--muted); user-select: none; }
+.pd summary:hover { color: var(--ink); }
+.pd pre {
+  margin: 10px 0 0; padding: 13px 15px; border-radius: 8px; overflow-x: auto;
+  background: var(--bg); border: 1px solid var(--line);
+  font-size: 12.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word;
+}
+.pd .acts { display: grid; gap: 6px; margin-top: 10px; }
+.pd .act { display: flex; gap: 10px; font-size: 13px; }
+.pd .act b { flex: none; min-width: 92px; }
+.pd .act span { color: var(--muted); }
+
+.docs-foot { font-size: 12.5px; color: var(--muted); line-height: 1.7; padding: 8px 2px 40px; }
+
+@media (max-width: 860px) {
+  .docs-body { flex-direction: column; }
+  .docs-nav { position: static; width: 100%; display: flex; flex-wrap: wrap; gap: 6px; }
+  .docs-nav .grp { margin: 0; }
+  .docs-nav .grp > b { display: none; }
+}
+
+/* user 消息的拼装顺序 */
+.assembly { border-color: var(--border); }
+.asm { margin: 12px 0 0; padding: 0; list-style: none; counter-reset: a; }
+.asm li {
+  display: grid; grid-template-columns: 110px 130px 1fr; gap: 12px; align-items: baseline;
+  padding: 7px 0; border-top: 1px solid var(--border); font-size: 13px; line-height: 1.65;
+}
+.asm li:first-child { border-top: 0; }
+.asm b { font-weight: 600; }
+.asm i { font-style: normal; font-size: 11.5px; color: var(--faint); }
+.asm span { color: var(--muted); }
+
+.tag.ab { border-color: color-mix(in srgb, var(--accent) 35%, transparent); color: var(--accent-ink); }
+.tag.off { opacity: .6; text-decoration: line-through; }
+.docs-nav a.off { opacity: .5; }
+
+@media (max-width: 860px) { .asm li { grid-template-columns: 1fr; gap: 2px; } }

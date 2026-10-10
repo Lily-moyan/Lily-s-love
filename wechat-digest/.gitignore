@@ -1,0 +1,10 @@
+# 本地隐私数据：绝不进版本库
+backup/
+out/
+keys/
+*.decrypted.db
+*.db-wal
+*.db-shm
+found_keys*.txt
+*.key
+scan_report*.json

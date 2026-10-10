@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行业分析工作台</title>
+<meta name="theme-color" content="#51cf66">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="行业分析">
+<style>
+    :root {
+        --bg-primary: #fafafa;
+        --bg-card: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --accent: #51cf66;
+        --accent-hover: #40c057;
+        --border: #e5e7eb;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg-primary: #0f131c;
+            --bg-card: #1e2636;
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --border: #374151;
+        }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+    .topbar {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 24px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .topbar input {
+        flex: 1;
+        min-width: 200px;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 14px;
+        background: var(--bg-card);
+        color: var(--text-primary);
+    }
+    .topbar button {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 14px;
+        background: var(--accent);
+        color: white;
+        transition: background 0.2s;
+        font-weight: 500;
+    }
+    .topbar button:hover:not(:disabled) { background: var(--accent-hover); }
+    .topbar button:disabled { background: #ccc; cursor: not-allowed; opacity: 0.6; }
+    .topbar button.secondary { background: #6b7280; }
+    .topbar button.secondary:hover:not(:disabled) { background: #4b5563; }
+    .token-counter {
+        margin-left: auto;
+        font-size: 13px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .card {
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .card-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+    .card-status {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+        padding: 6px 12px;
+        background: var(--bg-primary);
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .card-status.generating::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #5c7cfa;
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    .card-status.completed::before {
+        content: '✓';
+        color: var(--accent);
+        font-weight: 700;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
+    .card-content {
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+    .card-content h1, .card-content h2, .card-content h3, .card-content h4 {
+        margin: 20px 0 12px 0;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+    .card-content h1:first-child,
+    .card-content h2:first-child,
+    .card-content h3:first-child,
+    .card-content h4:first-child { margin-top: 0; }
+    .card-content h1 { font-size: 24px; }
+    .card-content h2 { font-size: 20px; }
+    .card-content h3 { font-size: 18px; }
+    .card-content h4 { font-size: 16px; }
+    .card-content p { margin-bottom: 12px; }
+    .card-content ul, .card-content ol {
+        margin-left: 24px;
+        margin-bottom: 12px;
+    }
+    .card-content li { margin-bottom: 6px; }
+    .card-content code {
+        background: rgba(128,128,128,0.15);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 13px;
+    }
+    .card-content pre {
+        background: rgba(128,128,128,0.15);
+        padding: 14px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 12px 0;
+    }
+    .card-content pre code {
+        background: none;
+        padding: 0;
+    }
+    .card-content blockquote {
+        border-left: 3px solid var(--accent);
+        padding-left: 16px;
+        color: var(--text-secondary);
+        margin: 12px 0;
+    }
+    .card-content hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 20px 0;
+    }
+    .card-content a {
+        color: var(--accent);
+        text-decoration: none;
+    }
+    .card-content a:hover { text-decoration: underline; }
+    .card-content strong { font-weight: 600; }
+    .boundary-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 16px;
+    }
+    .boundary-btn {
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s;
+        color: var(--text-primary);
+        font-size: 14px;
+    }
+    .boundary-btn:hover {
+        background: var(--bg-primary);
+        border-color: var(--accent);
+    }
+    .custom-boundary {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+    }
+    .custom-boundary input {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        background: var(--bg-card);
+        color: var(--text-primary);
+    }
+    .step5-input-area {
+        margin-top: 16px;
+        border-top: 1px dashed var(--border);
+        padding-top: 16px;
+    }
+    .step5-input-area textarea {
+        width: 100%;
+        min-height: 80px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        resize: vertical;
+        background: var(--bg-card);
+        color: var(--text-primary);
+    }
+    .step5-input-area .step5-actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+    }
+
+    /* ===== PWA 安装引导 ===== */
+    #install-bar {
+        display: none;
+        align-items: center;
+        gap: 12px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--accent);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        flex-wrap: wrap;
+    }
+    #install-bar button {
+        padding: 7px 16px;
+        border: none;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 13px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+    #install-bar button.later {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+    }
+    /* 移动端适配 */
+    @media (max-width: 640px) {
+        .topbar { padding: 12px 14px; gap: 8px; }
+        .topbar input { min-width: 100%; order: -1; }
+        .topbar button { padding: 8px 14px; font-size: 13px; }
+        .token-counter { margin-left: 0; width: 100%; font-size: 12px; }
+        .container { padding: 14px; }
+        .card { padding: 16px; border-radius: 10px; }
+        .intro-card { padding: 18px; }
+        .intro-card h1 { font-size: 19px; }
+        .intro-card .grid { grid-template-columns: 1fr; gap: 10px; }
+        .intro-actions button { width: 100%; }
+        .modal-content { padding: 20px; border-radius: 12px; }
+        .boundary-btn { padding: 12px 14px; }
+    }
+    /* ===== 作品集演示模式样式 ===== */
+    .intro-card {
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 28px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border-left: 4px solid var(--accent);
+    }
+    .intro-card h1 { font-size: 22px; margin-bottom: 6px; }
+    .intro-card .sub { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; }
+    .intro-card .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+    .intro-card .cell {
+        background: var(--bg-primary);
+        border-radius: 8px;
+        padding: 14px;
+    }
+    .intro-card .cell .k { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+    .intro-card .cell .v { font-size: 14px; line-height: 1.6; }
+    .intro-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .intro-actions button {
+        padding: 10px 22px;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        background: var(--accent);
+        color: #fff;
+    }
+    .intro-actions button.ghost {
+        background: transparent;
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+    }
+    .intro-note {
+        margin-top: 16px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+        border-top: 1px dashed var(--border);
+        padding-top: 14px;
+    }
+    .demo-flag {
+        display: inline-block;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #ff922b;
+        color: #fff;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+        background: var(--bg-card);
+        border-radius: 16px;
+        padding: 28px;
+        max-width: 560px;
+        width: 90%;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    .modal-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+    .modal-body label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .modal-body input:not([type="checkbox"]),
+    .modal-body select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 18px;
+        background: var(--bg-card);
+        color: var(--text-primary);
+    }
+    .modal-body input[type="checkbox"] {
+        margin-right: 8px;
+    }
+    .modal-body .hint {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: -14px;
+        margin-bottom: 18px;
+        line-height: 1.5;
+    }
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 24px;
+    }
+    .modal-actions button {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .modal-actions button.primary {
+        background: var(--accent);
+        color: white;
+    }
+    .modal-actions button.primary:hover {
+        background: var(--accent-hover);
+    }
+    .modal-actions button.secondary {
+        background: #e5e7eb;
+        color: #374151;
+    }
+    @media (prefers-color-scheme: dark) {
+        .modal-actions button.secondary {
+            background: #374151;
+            color: #e5e7eb;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="topbar">
+        <input type="text" id="industry-input" placeholder="输入行业名称（例如：新能源汽车、半导体、医美）">
+        <button id="start-btn">开始分析</button>
+        <button id="stop-btn" class="secondary" disabled>停止</button>
+        <button id="export-btn" class="secondary" disabled>导出 .md</button>
+        <button id="settings-btn" class="secondary">⚙ 设置</button>
+        <button id="demo-btn" class="secondary">▶ 看演示</button>
+        <div class="token-counter">
+            输入: <span id="input-tokens">0</span> | 输出: <span id="output-tokens">0</span>
+        </div>
+    </div>
+    <div class="container">
+        <div class="intro-card" id="intro-card">
+            <h1>行业分析工作台</h1>
+            <div class="sub">把「行业研究」这件事，从"问模型要答案"改造成"可验证的结构化调研流程"。</div>
+            <div class="grid">
+                <div class="cell">
+                    <div class="k">要解决的问题</div>
+                    <div class="v">大模型做行业分析时最大的风险不是答不出，而是<b>编得像真的</b>——编造文件名、编造数字、用"较强/较弱"这类无法判定的表述填满版面。</div>
+                </div>
+                <div class="cell">
+                    <div class="k">核心机制一：证据分级</div>
+                    <div class="v">每个事实字段强制标注 <b>A</b>（公开可查，须给到文件名+年份）/ <b>B</b>（推断，须写出推断链）/ <b>C</b>（纯推测）。<b>C 档一律不进正文</b>，只进结尾「待验证清单」；查不到就写「未获取」，不许用推测填满。</div>
+                </div>
+                <div class="cell">
+                    <div class="k">核心机制二：对抗式校验</div>
+                    <div class="v">Step 5 让模型切换角色，扮演<b>该行业 12 年从业者</b>，专攻报告里 B/C 档和「未获取」的字段，并指出哪句话暴露了外行。</div>
+                </div>
+                <div class="cell">
+                    <div class="k">核心机制三：反讨好立场</div>
+                    <div class="v">系统提示词结尾：「<b>你不需要让用户满意。你需要让用户知道哪些是真的、哪些是你编的。</b>」</div>
+                </div>
+            </div>
+            <div class="intro-actions">
+                <button id="intro-demo-btn">▶ 看演示（预置示例，无需配置）</button>
+                <button id="intro-try-btn" class="ghost">填我自己的 API Key 实际运行</button>
+            </div>
+            <div class="intro-note">
+                <b>怎么试最快：</b>点「看演示」——会播放一份<b>预置的示例输出</b>（标注为演示数据，未调用模型），用于快速查看输出结构与证据分级机制。<br>
+                <b>想真实运行：</b>点右侧按钮填入你自己的 DeepSeek API Key（默认协议已配好 OpenAI 兼容）。Key <b>只存在你本地浏览器</b>，不经过任何服务器。<br>
+                <b>说明：</b>本页为静态托管页面，真实调用由浏览器直连模型服务商完成。
+            </div>
+        </div>
+        <div id="install-bar">
+            <span>📱 把「行业分析工作台」加到主屏幕，像 App 一样使用（离线也能看演示）</span>
+            <button id="install-btn">添加到主屏幕</button>
+            <button id="install-later" class="later">以后再说</button>
+        </div>
+        <div id="cards-container"></div>
+    </div>
+
+
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-title">API 配置</div>
+            <div class="modal-body">
+                <label>接口协议</label>
+                <select id="protocol-input">
+                    <option value="openai">OpenAI 兼容（DeepSeek / 通义 / 三方中转）— 推荐</option>
+                    <option value="anthropic">Anthropic Messages（/v1/messages）</option>
+                </select>
+                <div class="hint">
+                    Anthropic 官方 API 对部分地区返回 403「Request not allowed」且不带 CORS 头，浏览器直连必然失败；
+                    DeepSeek 等 OpenAI 兼容接口支持浏览器直连，双击本地打开即可用。
+                </div>
+
+                <label>API 地址</label>
+                <input type="text" id="api-base-input" placeholder="https://api.deepseek.com">
+                <div class="hint">自动清理尾部斜杠，再按协议拼接 /v1/chat/completions 或 /v1/messages</div>
+
+                <label>API Key</label>
+                <input type="password" id="api-key-input" placeholder="sk-...">
+                <div class="hint">仅存储在本地浏览器（localStorage），不会上传到任何服务器</div>
+
+                <label>模型 ID</label>
+                <input type="text" id="model-input" list="model-list" placeholder="deepseek-chat">
+                <datalist id="model-list">
+                    <option value="deepseek-chat">
+                    <option value="deepseek-reasoner">
+                    <option value="claude-opus-5">
+                    <option value="claude-sonnet-5">
+                    <option value="anthropic/claude-sonnet-5">
+                </datalist>
+                <div class="hint">OpenAI 协议填 deepseek-chat；Anthropic 协议填 claude-* 或中转平台的前缀格式</div>
+
+                <label>认证方式（仅 Anthropic 协议生效）</label>
+                <select id="auth-mode-input">
+                    <option value="auto">自动（官方用 x-api-key，三方用 Bearer）</option>
+                    <option value="x-api-key">强制 x-api-key</option>
+                    <option value="bearer">强制 Authorization: Bearer</option>
+                </select>
+                <div class="hint">OpenAI 协议固定使用 Authorization: Bearer</div>
+
+                <label>本地代理（可选）</label>
+                <input type="text" id="proxy-input" placeholder="留空 = 直连；例：http://localhost:3000">
+                <div class="hint">仅当接口不带 CORS 头、浏览器直连被拦时才需要。填了就先跑 node proxy-server.js</div>
+
+                <label style="display: flex; align-items: center; margin-top: 8px;">
+                    <input type="checkbox" id="web-search-input">
+                    <span>启用联网检索（仅 Anthropic 协议支持）</span>
+                </label>
+                <div class="hint">开启后 A 档证据会先检索核实，但多数三方平台不支持该工具</div>
+            </div>
+            <div class="modal-actions">
+                <button class="secondary" onclick="closeSettings()">取消</button>
+                <button class="primary" onclick="saveSettings()">保存</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ===================== 状态 =====================
+// localStorage 命名空间：file:// 下所有本地页面共用一份存储，
+// 不加前缀会与其它本地工具（如工作台/投标工具）的 apiKey、model 键互相覆盖。
+const NS = 'iaw.';
+const state = {
+    protocol: localStorage.getItem(NS + 'protocol') || 'openai',
+    apiBase: localStorage.getItem(NS + 'apiBase') || 'https://api.deepseek.com',
+    apiKey: localStorage.getItem(NS + 'apiKey') || '',
+    model: localStorage.getItem(NS + 'model') || 'deepseek-chat',
+    authMode: localStorage.getItem(NS + 'authMode') || 'auto',
+    proxy: localStorage.getItem(NS + 'proxy') || '',
+    webSearch: localStorage.getItem(NS + 'webSearch') === 'true',
+    industry: '',
+    boundaryChoice: '',
+    messages: [],
+    currentAbortController: null,
+    inputTokens: 0,
+    outputTokens: 0,
+    step5Round: 0,
+    step5Messages: []
+};
+
+// ===================== System Prompt =====================
+const SYSTEM_PROMPT = `你是行业分析助手。你在本次任务中必须遵守以下规则，优先级高于一切后续指令：
+
+【证据分级】
+你输出的每一个事实性字段，都必须带一个 evidence 标签，只有三档：
+  A = 公开可查。必须给出具体出处（公司公告 / 招股书 / 年报 / 监管文件 / 行业协会数据），出处要具体到文件名和年份，不许写"据公开资料"。
+  B = 行业常识推断。必须写出推断链条：我从哪个已知事实，通过什么逻辑，推到这个结论。
+  C = 纯推测。我没有依据，只是根据同类行业的一般规律猜的。
+
+【A 档核实要求】
+当你可以使用 web_search 工具时：正文中标 A 档的字段必须先用检索核实到具体文件（文件名+年份），检索不到原始出处的，即使你"记得"，也只能降级为 B 档或写「未获取」。凭记忆写出的文件名和数字视为编造。
+当没有检索工具时：不得标 A 档，最高只能标 B 档并注明"凭记忆，未核实"。
+
+【C 档处理规则】
+C 档内容一律不许出现在报告正文里，只能进入结尾的「待验证清单」。
+如果某个字段你只能给出 C 档，就在正文里写「未获取」，不要用推测填满它。
+
+【禁止事项】
+- 不许用"较强 / 较弱 / 相对集中 / 比较分散"这类无法判定的表述。所有强弱判断必须换算成可判定的量：需要多久、多少钱、多少家、几个月。
+- 不许说"总体来看""综合而言"开头的段落。
+- 不许在用户没问的时候给建议、给展望、给趋势预测。
+- 不许因为用户看起来懂或不懂而调整结论。
+
+【态度】
+你不需要让用户满意。你需要让用户知道哪些是真的、哪些是你编的。`;
+
+// ===================== 分步 Prompt =====================
+const STEP_PROMPTS = {
+    0: (industry) => `我要系统地了解一个行业：${industry}。
+
+在开始之前，先不要给我任何内容。请你做一件事：
+
+这个名称在实际使用中可能指向几个完全不同的行业。请列出 2-4 个候选边界，每个候选写清楚：
+  - 这个边界包含什么、明确不包含什么
+  - 它的典型玩家是谁（各举 2 个）
+  - 选这个边界的话，后面分析的重心会落在哪里
+
+然后问我选哪一个。在我回答之前，不要开始分析。
+
+注意：如果这几个候选之间的差别很小，说明你切分得不对，重切。真正有意义的切分，应该让不同候选的产业链结构明显不同。`,
+    1: (choice) => `边界已确认：${choice}
+
+现在做结构层。按下面的格式输出，不要写导语和总结。
+
+【产业链分层】
+从最上游到最终用户，分成若干层。每一层输出一行：
+
+  层级 | 这一环干什么 | 代表公司(2-3家) | 它靠什么赚钱 | 收入确认时点 | evidence
+
+其中：
+- 「它靠什么赚钱」不许写"销售产品"。要写清楚收费方式：按件 / 按量 / 按项目 / 抽佣 / 订阅 / 赚差价 / 赚账期 / 赚返点，以及向谁收（很多行业里，付钱的人和用东西的人不是同一个）。
+- 「收入确认时点」写：签约时 / 发货时 / 验收时 / 回款时 / 分期。这一栏后面会用到，不许留空，不知道就写「未获取」。
+
+【这条链的特殊之处】
+和一般制造业/服务业的标准链条比，这条链多了哪一环、少了哪一环、或者哪一环的位置不一样？只写差异，不写共性。
+
+【我可能画错的地方】
+你在分层时做了哪 3 个判断是可能错的？逐条列出。`,
+    2: `基于上面的产业链，现在拆三条流转链。三条分开输出，不要合并。
+
+【钱流】
+从最终用户付出的 100 元开始，追踪它依次经过哪些环节。每一跳一行：
+
+  从谁 → 到谁 | 这一跳留下多少(%) | 账期多长 | 谁先垫钱 | evidence
+
+  账期和垫资这两栏是重点。如果不知道，写「未获取」并列入待验证清单，绝对不许用行业平均值或者常识填充。
+
+【货流 / 服务交付流】
+东西（或服务）实际怎么从生产端到达用户端。每一跳一行：
+
+  从哪 → 到哪 | 谁掌握控制权 | 谁承担损耗和退货 | 时间多久 | evidence
+
+  注意：货流和钱流的路径经常不一致（比如经销商不碰货只走账，或者平台碰货不碰账）。如果这条链和钱流路径不同，明确指出不同在哪。
+
+【用户流】
+用户是怎么被找到、被转化、被留住的。
+
+  获客渠道 | 决策者是谁 | 付钱的是谁 | 使用的是谁 | 复购触发条件 | evidence
+
+  「决策者 / 付钱的 / 使用的」三者是否分离，是这个行业的一个关键特征，必须明确回答是或否。
+
+【三条链的错位】
+三条链在哪一环出现了错位（控制权、资金、使用权不在同一方手里）？错位的地方通常就是这个行业的矛盾和机会所在，逐条指出。`,
+    3: `现在分析议价能力。
+
+严格禁止使用以下表述：议价能力较强 / 较弱 / 相对集中 / 比较分散 / 处于优势地位 / 话语权较大。这些说法对任何行业都成立，等于没说。
+
+对下面五个问题逐一作答，每个问题的答案必须是一个可以被验证的量。
+
+1. 供应商议价
+   问：如果现在要换掉这条链上最大的那个供应商，需要多久？成本上升多少？有几家可替代的？换供应商需要重新认证/备案吗？
+   → 答案里必须出现具体的时间或金额。答不出来写「未获取」。
+
+2. 客户议价
+   问：客户从这一环切换到竞争对手，具体要付出什么代价？（合同违约金 / 数据迁移 / 重新培训 / 库存作废 / 关系重建 / 无代价）
+   → 如果答案是"基本无代价"，那这一环的议价权就是零，直接这么写。
+
+3. 替代品威胁
+   问：这个行业的需求，上一次被另一种形态吃掉是什么时候？吃掉了多少？现在有没有正在发生的同类事情？
+   → 要具体事件，不要"随着技术发展可能被替代"这种话。
+
+4. 新进入者
+   问：挡住新人的到底是什么？在下面几项里点名，不许全选：
+   牌照/资质 | 起步资本量 | 渠道关系 | 手艺和经验 | 数据积累 | 规模成本 | 品牌信任 | 几乎没有壁垒
+   → 点名之后回答：一个有钱有人的新玩家，从零到能接单要多久？
+
+5. 同业竞争
+   问：现有玩家是在同一个维度上打，还是分层错开？最近三年发生过几次价格战？由谁发起？结果如何？
+   → 如果分层，说明分层的依据是什么（客户规模/地域/品类/服务深度）。
+
+【综合结论】
+在这条产业链上，利润最终沉淀在哪一环？为什么是这一环而不是别的？用上面五个答案来论证，不许引入新的理由。
+
+【最脆弱的一环】
+哪一环的议价权最容易在未来两年内被削弱？触发条件是什么？标注 evidence，如果是 C 档就明说这是推测。`,
+    4: `最后一层。注意：这一层的规则和前面三层完全不同。
+
+这三类信息在公开资料里极少存在，你大概率不知道。因此本步骤中：
+- 你不许输出结论
+- 你只许输出「我猜是这样」+「怎么验证」+「该问谁」
+- 每一条都默认是 C 档，不需要标 evidence，但必须写清楚验证方法
+
+【约束｜这个行业不能做的事】
+分三类，每类给 3-5 条假设：
+  法规约束：牌照、审批、准入、强制标准、监管红线
+  物理约束：保质期、温控、运输半径、产能爬坡时间、设备切换成本
+  习惯约束：账期惯例、返点潜规则、渠道保护、不能越过的关系
+
+  格式：假设 | 如果这条成立会导致什么 | 怎么验证 | 该问谁
+
+  重点：外行提出的蠢建议，几乎全部是撞在某条约束上，而且提出时完全不知道那条线存在。请你尽量列出那些"外行不会想到"的约束。
+
+【节奏｜这个行业按什么周期运转】
+  旺淡季在什么时候？| 客户的预算审批窗口？| 决策周期多长？| 库存周转天数？| 什么时候找客户是白费力气？
+
+  格式同上：假设 | 影响 | 怎么验证 | 该问谁
+
+  重点：外行最典型的失败不是做错事，是在错误的时间点做正确的事。
+
+【异常｜看到什么意味着出事了】
+  列出 8-10 个"数据组合"，每个说明它可能意味着什么。写成问句形式：「如果我看到 X 和 Y 同时发生，这在你们行业里通常意味着什么？」这些问句就是我要去问内行的清单。
+
+【结尾必须输出：你还不知道的 10 件事】
+这份报告读完之后，我最可能产生的错觉是什么？明确列出 10 件"这份报告没有回答、但对判断这个行业很关键"的事。
+
+这一屏是整个任务里最重要的部分。不要客气，不要为了让报告显得完整而缩短这个清单。`
+};
+
+// ===================== 卡片 UI =====================
+const STEP_TITLES = {
+    0: 'Step 0 · 边界切分',
+    1: 'Step 1 · 结构层（产业链分层表）',
+    2: 'Step 2 · 三条流转链',
+    3: 'Step 3 · 议价能力',
+    4: 'Step 4 · 约束/节奏/异常',
+    5: 'Step 5 · 从业者拷问'
+};
+
+function addCard(title, step) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.id = 'card-' + step;
+    card.innerHTML = '<div class="card-title"></div><div class="card-status generating" id="status-' + step + '">准备中...</div><div class="card-content" id="content-' + step + '"></div>';
+    card.querySelector('.card-title').textContent = title;
+    document.getElementById('cards-container').appendChild(card);
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function updateCardStatus(step, status, text) {
+    const statusEl = document.getElementById('status-' + step);
+    if (statusEl) {
+        statusEl.className = 'card-status ' + status;
+        statusEl.textContent = text;
+    }
+}
+
+function appendCardContent(step, content) {
+    const contentEl = document.getElementById('content-' + step);
+    if (contentEl) {
+        contentEl.textContent += content;
+        contentEl.parentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+function setCardContent(step, content) {
+    const contentEl = document.getElementById('content-' + step);
+    if (contentEl) contentEl.textContent = content;
+}
+
+function updateTokens(input, output) {
+    state.inputTokens += input || 0;
+    state.outputTokens += output || 0;
+    document.getElementById('input-tokens').textContent = state.inputTokens;
+    document.getElementById('output-tokens').textContent = state.outputTokens;
+}
+
+// ===================== API 调用 =====================
+// openai    —— POST {base}/v1/chat/completions，system 作为首条 message，SSE 取 choices[0].delta.content
+// anthropic —— POST {base}/v1/messages，system 顶层字段，SSE 取 content_block_delta.delta.text
+function buildHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    if (state.protocol === 'openai') {
+        headers['Authorization'] = 'Bearer ' + state.apiKey;
+    } else {
+        headers['anthropic-version'] = '2023-06-01';
+        headers['anthropic-dangerous-direct-browser-access'] = 'true';
+        let mode = state.authMode;
+        if (mode === 'auto') {
+            mode = /anthropic\.com/i.test(state.apiBase) ? 'x-api-key' : 'bearer';
+        }
+        if (mode === 'bearer') {
+            headers['Authorization'] = 'Bearer ' + state.apiKey;
+        } else {
+            headers['x-api-key'] = state.apiKey;
+        }
+    }
+    if (state.proxy) {
+        headers['x-upstream-base'] = (state.apiBase || '').trim().replace(/\/+$/, '');
+    }
+    return headers;
+}
+
+function buildRequestBody(messages) {
+    if (state.protocol === 'openai') {
+        return {
+            model: state.model,
+            messages: [{ role: 'system', content: SYSTEM_PROMPT }].concat(messages),
+            stream: true,
+            max_tokens: 8000
+        };
+    }
+    const body = {
+        model: state.model,
+        max_tokens: 16000,
+        system: SYSTEM_PROMPT,
+        messages: messages,
+        stream: true
+    };
+    if (state.webSearch) {
+        body.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: 8 }];
+    }
+    return body;
+}
+
+function buildUrl() {
+    const host = (state.proxy || state.apiBase || '').trim().replace(/\/+$/, '');
+    const path = state.protocol === 'openai' ? '/v1/chat/completions' : '/v1/messages';
+    return host + path;
+}
+
+// 把两种协议的 SSE 事件统一成文本增量；返回 null 表示该事件与正文无关
+function extractDelta(parsed) {
+    if (state.protocol === 'openai') {
+        const choice = parsed.choices && parsed.choices[0];
+        if (!choice) return null;
+        if (choice.delta && typeof choice.delta.content === 'string') {
+            return { text: choice.delta.content };
+        }
+        if (choice.message && typeof choice.message.content === 'string') {
+            return { text: choice.message.content };
+        }
+        return { text: '' };
+    }
+    if (parsed.type === 'content_block_delta') {
+        const t = parsed.delta && parsed.delta.text;
+        return { text: typeof t === 'string' ? t : '' };
+    }
+    return null;
+}
+
+function extractUsage(parsed) {
+    if (state.protocol === 'openai') {
+        if (parsed.usage) {
+            return { input: parsed.usage.prompt_tokens || 0, output: parsed.usage.completion_tokens || 0 };
+        }
+        return null;
+    }
+    if (parsed.type === 'message_start') {
+        return { input: parsed.message?.usage?.input_tokens || 0, output: 0 };
+    }
+    if (parsed.type === 'message_delta') {
+        return { input: 0, output: parsed.usage?.output_tokens || 0 };
+    }
+    return null;
+}
+
+async function callClaude(messages, onStream, onComplete) {
+    if (!state.apiKey) {
+        alert('请先在设置中配置 API Key');
+        openSettings();
+        return;
+    }
+    if (!state.apiBase && !state.proxy) {
+        alert('请先在设置中配置 API 地址');
+        openSettings();
+        return;
+    }
+    state.currentAbortController = new AbortController();
+    try {
+        const response = await fetch(buildUrl(), {
+            method: 'POST',
+            headers: buildHeaders(),
+            body: JSON.stringify(buildRequestBody(messages)),
+            signal: state.currentAbortController.signal
+        });
+        if (!response.ok) {
+            let msg = 'API 请求失败（HTTP ' + response.status + '）';
+            try {
+                const text = await response.text();
+                try {
+                    const err = JSON.parse(text);
+                    msg = err.error?.message || err.message || msg;
+                } catch (e) {
+                    if (text) msg += ' ' + text.slice(0, 200);
+                }
+            } catch (e) {}
+            if (response.status === 403 && state.protocol === 'anthropic') {
+                msg += ' ｜ 403 Request not allowed 通常表示该地区无法直连 Anthropic 官方 API，请改用「OpenAI 兼容」协议或配置中转。';
+            }
+            throw new Error(msg);
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let fullText = '';
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop();
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed.indexOf('data:') !== 0) continue;
+                const data = trimmed.slice(5).trim();
+                if (data === '[DONE]') continue;
+                let parsed;
+                try { parsed = JSON.parse(data); } catch (e) { continue; }
+                const usage = extractUsage(parsed);
+                if (usage) updateTokens(usage.input, usage.output);
+                const delta = extractDelta(parsed);
+                if (delta && delta.text) {
+                    fullText += delta.text;
+                    onStream(delta.text);
+                }
+            }
+        }
+        if (!fullText) {
+            throw new Error('接口返回了空内容。请检查模型 ID 是否正确（OpenAI 协议一般填 deepseek-chat）。');
+        }
+        onComplete(fullText);
+    } catch (error) {
+        if (error.name === 'AbortError') throw new Error('已取消');
+        if (error instanceof TypeError && /fetch/i.test(error.message)) {
+            throw new Error('无法连接接口（Failed to fetch）。常见原因：地址填错、接口不带 CORS 头被浏览器拦截、或需要开启本地代理。');
+        }
+        throw error;
+    } finally {
+        state.currentAbortController = null;
+    }
+}
+
+// ===================== 主流程 =====================
+async function startAnalysis() {
+    const industry = document.getElementById('industry-input').value.trim();
+    if (!industry) { alert('请输入行业名称'); return; }
+    state.industry = industry;
+    state.boundaryChoice = '';
+    state.messages = [];
+    state.inputTokens = 0;
+    state.outputTokens = 0;
+    state.step5Round = 0;
+    state.step5Messages = [];
+    document.getElementById('cards-container').innerHTML = '';
+    document.getElementById('start-btn').disabled = true;
+    document.getElementById('stop-btn').disabled = false;
+    document.getElementById('export-btn').disabled = true;
+    document.getElementById('industry-input').disabled = true;
+    try {
+        await runStep0();
+    } catch (error) {
+        alert('分析出错: ' + error.message);
+        resetUI();
+    }
+}
+
+async function runStep0() {
+    addCard(STEP_TITLES[0], 0);
+    updateCardStatus(0, 'generating', '生成中...');
+    const userMessage = { role: 'user', content: STEP_PROMPTS[0](state.industry) };
+    state.messages.push(userMessage);
+    let fullResponse = '';
+    await callClaude(state.messages,
+        (text) => { fullResponse += text; setCardContent(0, fullResponse); },
+        (text) => {
+            state.messages.push({ role: 'assistant', content: text });
+            updateCardStatus(0, 'completed', '完成 - 请选择边界');
+            showBoundaryOptions(0);
+        }
+    );
+}
+
+function showBoundaryOptions(step) {
+    const contentEl = document.getElementById('content-' + step);
+    const optionsDiv = document.createElement('div');
+    optionsDiv.className = 'boundary-options';
+    const labels = ['候选一', '候选二', '候选三', '候选四'];
+    labels.forEach((label, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'boundary-btn';
+        btn.textContent = label;
+        btn.addEventListener('click', () => selectBoundary(idx + 1));
+        optionsDiv.appendChild(btn);
+    });
+    const customDiv = document.createElement('div');
+    customDiv.className = 'custom-boundary';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'custom-boundary-input';
+    input.placeholder = '或输入自定义边界...';
+    const okBtn = document.createElement('button');
+    okBtn.className = 'boundary-btn';
+    okBtn.textContent = '确认';
+    okBtn.addEventListener('click', selectCustomBoundary);
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') selectCustomBoundary(); });
+    customDiv.appendChild(input);
+    customDiv.appendChild(okBtn);
+    optionsDiv.appendChild(customDiv);
+    contentEl.appendChild(optionsDiv);
+}
+
+async function selectBoundary(num) {
+    const choice = '我选择候选' + ['一', '二', '三', '四'][num - 1];
+    await continueWithBoundary(choice);
+}
+
+async function selectCustomBoundary() {
+    const input = document.getElementById('custom-boundary-input');
+    const value = input ? input.value.trim() : '';
+    if (!value) return;
+    await continueWithBoundary(value);
+}
+
+async function continueWithBoundary(choice) {
+    const optionsDiv = document.querySelector('.boundary-options');
+    if (optionsDiv) optionsDiv.remove();
+    appendCardContent(0, '\n\n---\n\n用户选择: ' + choice);
+    state.boundaryChoice = choice;
+    state.messages.push({ role: 'user', content: choice });
+    try {
+        for (let i = 1; i <= 4; i++) {
+            await runStep(i);
+        }
+    } catch (error) {
+        alert('分析出错: ' + error.message);
+        resetUI();
+        return;
+    }
+    document.getElementById('stop-btn').disabled = true;
+    document.getElementById('export-btn').disabled = false;
+    showStep5Option();
+}
+
+async function runStep(stepNum) {
+    addCard(STEP_TITLES[stepNum], stepNum);
+    updateCardStatus(stepNum, 'generating', '生成中...');
+    const promptContent = (stepNum === 1) ? STEP_PROMPTS[1](state.boundaryChoice) : STEP_PROMPTS[stepNum];
+    const userMessage = { role: 'user', content: promptContent };
+    state.messages.push(userMessage);
+    let fullResponse = '';
+    await callClaude(state.messages,
+        (text) => { fullResponse += text; setCardContent(stepNum, fullResponse); },
+        (text) => {
+            state.messages.push({ role: 'assistant', content: text });
+            updateCardStatus(stepNum, 'completed', '完成');
+        }
+    );
+}
+
+function showStep5Option() {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.borderLeft = '4px solid #5c7cfa';
+    const title = document.createElement('div');
+    title.className = 'card-title';
+    title.textContent = '✅ 基础分析已完成';
+    const p = document.createElement('p');
+    p.style.marginBottom = '12px';
+    p.textContent = '基础分析已完成，现在可以：';
+    const btn5 = document.createElement('button');
+    btn5.className = 'boundary-btn';
+    btn5.style.display = 'inline-block';
+    btn5.style.width = 'auto';
+    btn5.style.marginRight = '8px';
+    btn5.style.background = '#5c7cfa';
+    btn5.style.color = '#fff';
+    btn5.textContent = '进入从业者拷问（Step 5）';
+    btn5.addEventListener('click', startStep5);
+    const btnExport = document.createElement('button');
+    btnExport.className = 'boundary-btn';
+    btnExport.style.display = 'inline-block';
+    btnExport.style.width = 'auto';
+    btnExport.textContent = '直接导出报告';
+    btnExport.addEventListener('click', exportMarkdown);
+    card.appendChild(title);
+    card.appendChild(p);
+    card.appendChild(btn5);
+    card.appendChild(btnExport);
+    document.getElementById('cards-container').appendChild(card);
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ===================== Step 5 · 从业者拷问 =====================
+async function startStep5() {
+    state.step5Round = 0;
+    state.step5Messages = state.messages.slice();
+    addCard(STEP_TITLES[5] + '（第 1/15 轮）', 5);
+    updateCardStatus(5, 'generating', '从业者正在提问...');
+    const step5Prompt = `上面是我们一起做出的行业分析。现在切换角色。
+
+你是一位在这个行业干了 12 年的从业者。我是一个刚接触这个行业、读了一些资料就来找你聊的人。
+
+你的行为规则（优先级高于一切）：
+1. 全程保持这个角色，不要跳出来解释你是 AI。
+2. 禁止使用以下表达：很好的问题 / 你说得对 / 思路清晰 / 有道理 / 你已经抓住了重点。一次都不许出现。
+3. 你的提问必须集中攻击上面报告里 evidence 为 B 和 C 的字段，以及「未获取」的那些栏。哪里心虚就问哪里。
+4. 当我的回答里出现外行痕迹时，直接打断，指出是哪个词、哪个假设不对。不要等我说完，也不要先肯定再否定。
+5. 一次只说 3 句话以内，像真人对话。
+
+现在由你先开口，提出第一个问题。`;
+    state.step5Messages.push({ role: 'user', content: step5Prompt });
+    let fullResponse = '';
+    await callClaude(state.step5Messages,
+        (text) => { fullResponse += text; setCardContent(5, fullResponse); },
+        (text) => {
+            state.step5Messages.push({ role: 'assistant', content: text });
+            state.step5Round = 1;
+            updateCardStatus(5, 'completed', '第 1/15 轮 - 等待你的回答');
+            showStep5Input();
+        }
+    );
+}
+
+function showStep5Input() {
+    const contentEl = document.getElementById('content-5');
+    const existing = document.getElementById('step5-input-area');
+    if (existing) existing.remove();
+    const wrap = document.createElement('div');
+    wrap.id = 'step5-input-area';
+    wrap.className = 'step5-input-area';
+    const ta = document.createElement('textarea');
+    ta.id = 'step5-user-input';
+    ta.placeholder = '输入你的回答...';
+    const actions = document.createElement('div');
+    actions.className = 'step5-actions';
+    const sendBtn = document.createElement('button');
+    sendBtn.className = 'boundary-btn';
+    sendBtn.style.width = 'auto';
+    sendBtn.style.background = '#5c7cfa';
+    sendBtn.style.color = '#fff';
+    sendBtn.textContent = '发送';
+    sendBtn.addEventListener('click', sendStep5Response);
+    const endBtn = document.createElement('button');
+    endBtn.className = 'boundary-btn';
+    endBtn.style.width = 'auto';
+    endBtn.textContent = '结束拷问，生成诊断';
+    endBtn.addEventListener('click', endStep5);
+    actions.appendChild(sendBtn);
+    actions.appendChild(endBtn);
+    wrap.appendChild(ta);
+    wrap.appendChild(actions);
+    contentEl.appendChild(wrap);
+    ta.focus();
+}
+
+async function sendStep5Response() {
+    const inputEl = document.getElementById('step5-user-input');
+    const input = inputEl ? inputEl.value.trim() : '';
+    if (!input) return;
+    const area = document.getElementById('step5-input-area');
+    if (area) area.remove();
+    state.step5Round++;
+    appendCardContent(5, '\n\n---\n\n**你**: ' + input + '\n\n');
+    updateCardStatus(5, 'generating', '第 ' + state.step5Round + '/15 轮 - 从业者回应中...');
+    const finalPrompt = '进行了 ' + state.step5Round + ' 轮对话。现在跳出角色，给我一份诊断：\n\n'
+        + '- 这份报告里哪几栏其实是空的，只是看起来被填满了\n'
+        + '- 我哪几处用词暴露了我是外行（原句 + 内行会怎么说）\n'
+        + '- 如果我只能再补 3 块知识，应该补哪 3 块';
+    if (state.step5Round >= 15) {
+        state.step5Messages.push({ role: 'user', content: input + '\n\n' + finalPrompt });
+    } else {
+        state.step5Messages.push({ role: 'user', content: input });
+    }
+    let fullResponse = '';
+    await callClaude(state.step5Messages,
+        (text) => { fullResponse += text; appendCardContent(5, text); },
+        (text) => {
+            state.step5Messages.push({ role: 'assistant', content: text });
+            if (state.step5Round >= 15) {
+                updateCardStatus(5, 'completed', '诊断完成（已满 15 轮）');
+            } else {
+                updateCardStatus(5, 'completed', '第 ' + state.step5Round + '/15 轮 - 等待你的回答');
+                showStep5Input();
+            }
+        }
+    );
+}
+
+async function endStep5() {
+    if (!confirm('确定要结束拷问并生成诊断吗？')) return;
+    const area = document.getElementById('step5-input-area');
+    if (area) area.remove();
+    updateCardStatus(5, 'generating', '生成诊断中...');
+    appendCardContent(5, '\n\n---\n\n**[提前结束拷问]**\n\n');
+    const diagPrompt = '我们只进行了 ' + state.step5Round + ' 轮对话就结束了。现在跳出角色，基于这些对话给我一份诊断：\n\n'
+        + '- 这份报告里哪几栏其实是空的，只是看起来被填满了\n'
+        + '- 我哪几处用词暴露了我是外行（原句 + 内行会怎么说）\n'
+        + '- 如果我只能再补 3 块知识，应该补哪 3 块';
+    state.step5Messages.push({ role: 'user', content: diagPrompt });
+    let fullResponse = '';
+    await callClaude(state.step5Messages,
+        (text) => { fullResponse += text; appendCardContent(5, text); },
+        (text) => {
+            state.step5Messages.push({ role: 'assistant', content: text });
+            updateCardStatus(5, 'completed', '诊断完成（提前结束于第 ' + state.step5Round + ' 轮）');
+        }
+    );
+}
+
+// ===================== 控制 / 导出 =====================
+function stopAnalysis() {
+    if (state.currentAbortController) state.currentAbortController.abort();
+    resetUI();
+}
+
+function resetUI() {
+    document.getElementById('start-btn').disabled = false;
+    document.getElementById('stop-btn').disabled = true;
+    document.getElementById('industry-input').disabled = false;
+}
+
+function exportMarkdown() {
+    let markdown = '# ' + state.industry + ' 行业分析报告\n\n';
+    markdown += '生成时间: ' + new Date().toLocaleString('zh-CN') + '\n\n---\n\n';
+    for (let i = 0; i <= 5; i++) {
+        const contentEl = document.getElementById('content-' + i);
+        if (contentEl) {
+            const titleEl = document.querySelector('#card-' + i + ' .card-title');
+            const title = titleEl ? titleEl.textContent : STEP_TITLES[i];
+            markdown += '## ' + title + '\n\n' + contentEl.textContent + '\n\n';
+        }
+    }
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = state.industry + '_分析报告_' + Date.now() + '.md';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ===================== 设置 =====================
+// 按协议切换时同步提示文案与禁用项，避免填错
+function applyProtocolPlaceholders() {
+    const isOpenAI = document.getElementById('protocol-input').value === 'openai';
+    document.getElementById('api-base-input').placeholder = isOpenAI ? 'https://api.deepseek.com' : 'https://api.anthropic.com';
+    document.getElementById('model-input').placeholder = isOpenAI ? 'deepseek-chat' : 'claude-sonnet-5';
+    document.getElementById('auth-mode-input').disabled = isOpenAI;
+    document.getElementById('web-search-input').disabled = isOpenAI;
+}
+
+function openSettings() {
+    document.getElementById('protocol-input').value = state.protocol;
+    document.getElementById('api-base-input').value = state.apiBase;
+    document.getElementById('api-key-input').value = state.apiKey;
+    document.getElementById('model-input').value = state.model;
+    document.getElementById('auth-mode-input').value = state.authMode;
+    document.getElementById('proxy-input').value = state.proxy;
+    document.getElementById('web-search-input').checked = state.webSearch;
+    applyProtocolPlaceholders();
+    document.getElementById('settings-modal').classList.add('active');
+}
+
+function closeSettings() {
+    document.getElementById('settings-modal').classList.remove('active');
+}
+
+function saveSettings() {
+    state.protocol = document.getElementById('protocol-input').value;
+    state.apiBase = document.getElementById('api-base-input').value.trim();
+    state.apiKey = document.getElementById('api-key-input').value.trim();
+    state.model = document.getElementById('model-input').value.trim();
+    state.authMode = document.getElementById('auth-mode-input').value;
+    state.proxy = document.getElementById('proxy-input').value.trim();
+    state.webSearch = document.getElementById('web-search-input').checked;
+    // 按协议补默认值，避免留空导致拼接出错误地址
+    if (state.protocol === 'openai') {
+        if (!state.apiBase) state.apiBase = 'https://api.deepseek.com';
+        if (!state.model) state.model = 'deepseek-chat';
+        state.webSearch = false;
+    } else {
+        if (!state.apiBase) state.apiBase = 'https://api.anthropic.com';
+        if (!state.model) state.model = 'claude-sonnet-5';
+    }
+    localStorage.setItem(NS + 'protocol', state.protocol);
+    localStorage.setItem(NS + 'apiBase', state.apiBase);
+    localStorage.setItem(NS + 'apiKey', state.apiKey);
+    localStorage.setItem(NS + 'model', state.model);
+    localStorage.setItem(NS + 'authMode', state.authMode);
+    localStorage.setItem(NS + 'proxy', state.proxy);
+    localStorage.setItem(NS + 'webSearch', state.webSearch);
+    closeSettings();
+}
+
+
+// ===================== 作品集演示模式（预置示例，不调用模型） =====================
+const DEMO_STEPS = {
+  0: {
+    title: 'Step 0 · 边界切分',
+    body: `这个名称在实际使用中可能指向几个完全不同的行业。请列出候选边界：
+
+候选一：现制咖啡连锁（门店零售）
+  - 包含：现磨咖啡门店、外送现制饮品；不包含：速溶/即饮咖啡零售
+  - 典型玩家：瑞幸、星巴克
+  - 分析重心：单店模型、点位扩张、供应链与配送
+
+候选二：咖啡豆供应链（上游贸易与烘焙）
+  - 包含：生豆进口、烘焙、供应给门店与商超；不包含：品牌零售端
+  - 典型玩家：三顿半（部分自烘焙）、大型烘焙商
+  - 分析重心：期货与汇率、产能利用率、账期
+
+候选三：即饮咖啡（RTD，快消品逻辑）
+  - 包含：瓶装/罐装咖啡，走商超与便利店；不包含：现制门店
+  - 典型玩家：农夫山泉、雀巢
+  - 分析重心：渠道铺货、货架争夺、经销商体系
+
+三个候选的产业链结构差异明显（门店运营 / 大宗贸易 / 快消分销），切分有效。
+请选择其一。`
+  },
+  1: {
+    title: 'Step 1 · 结构层（产业链分层表）',
+    body: `层级 | 这一环干什么 | 代表公司 | 它靠什么赚钱 | 收入确认时点 | evidence
+
+上游种植 | 咖啡豆种植与初加工 | 产地合作社 | 按量（生豆吨价，赚差价） | 发货时 | B（未获取具体合作社财报）
+生豆贸易 | 进口、仓储、分级 | 贸易商 | 赚差价 + 赚账期 | 发货时 | B
+烘焙加工 | 烘焙、拼配、包装 | 自建烘焙厂/第三方 | 按件（代工费）或自用降本 | 发货时 | B
+品牌与门店运营 | 选址、开店、出品、营销 | 瑞幸、星巴克 | 按件（杯）+ 抽佣（联营） | 回款时（先收后付） | A（瑞幸 2022Q2 财报：直营 4968 家、联营 2227 家）
+配送履约 | 外卖履约、自有配送 | 第三方平台 + 自建 | 抽佣 / 按单 | 验收时 | B
+
+【这条链的特殊之处】
+与标准餐饮链相比：**门店这一环的收入确认是"先收后付"**，用户在 App 下单即付款，而门店对上游是账期采购——这条链最特殊的地方是**品牌方同时握有正现金流和上游账期**，形成类金融的现金池。
+
+【我可能画错的地方】
+1. 上中下游的边界我按"是否自有产能"划分，但头部品牌大多混合，严格分层可能失真
+2. 把配送履约单列一层——在部分品牌里它是成本中心而非独立环节
+3. evidence 多为 B 档，缺少可引用的一手文件`
+  },
+  2: {
+    title: 'Step 2 · 三条流转链',
+    body: `【钱流】从用户支付的 100 元开始
+用户 → 品牌方（App 收款） | 平台抽佣约 15-20% | 账期即时（预付） | 品牌方不垫钱 | B
+品牌方 → 门店（联营） | 毛利分配，联营方约分得 50% 左右毛利 | 月结 | 联营方先垫人力租金 | B
+品牌方 → 生豆贸易商 | 采购成本，约 10-15% 营收 | 账期 30-90 天 | 品牌方占账期优势 | B
+品牌方 → 烘焙/自建工厂 | 内部结算 | — | 自有产能不产生外部账期 | C
+品牌方 → 外卖平台 | 配送与佣金 | 按单结算 | — | B
+
+账期关键：**用户预付、上游账期**——品牌方在两端同时占优，这是现金流的真实来源。
+
+【货流/服务交付流】
+咖啡豆（产地）→ 贸易商仓储 → 烘焙厂 → 中心仓 → 门店 → 用户
+控制权：品牌方掌握从烘焙到门店的全程控制权
+损耗责任：生鲜豆由贸易商承担运输损耗，门店端损耗由门店承担
+时间：产地到门店通常数周至数月（证据：未获取具体批次周期）
+
+【用户流】
+获客渠道：App 首单补贴、写字楼/商场自然流量、企微社群、裂变券
+决策者 / 付钱者 / 使用者：**三者同为一人**（与 toB 供应链采购明显不同——这是 C 端生意）
+复购触发：日常提神需求 + 券包有效期驱动
+
+【三条链的错位】
+错位一：**联营门店承担人力与租金（垫资），但收入和用户数据握在品牌方手里**——成本在联营方，资产在品牌方。
+错位二：**外卖平台碰单不碰货**，掌握流量与用户触达，但不承担出品质量责任。`
+  },
+  3: {
+    title: 'Step 3 · 议价能力',
+    body: `1. 供应商议价
+   问：换掉最大的生豆供应商需要多久？
+   → 未获取。可替代供应商数量：未获取。需重新认证吗：未获取。
+   （此项只能给 C 档，故不进正文结论）
+
+2. 客户议价
+   问：客户从这一品牌切换到竞品，要付出什么代价？
+   → **基本无代价**。券包余额可放弃、口味无迁移成本、App 可并存。
+   结论：**单店面对 C 端客户的议价权为零**。品牌力只影响"选择概率"，不影响"切换成本"。
+
+3. 替代品威胁
+   问：上一次被另一种形态吃掉是什么时候？
+   → 即饮咖啡与现制咖啡长期并存而非替代；现制咖啡自身也在被茶饮（新式茶饮）争夺同一消费场景与点位。
+   （具体份额变化数字：未获取）
+
+4. 新进入者
+   挡住新人的是：**规模成本 + 渠道关系**（点名，不全选）
+   → 一个有钱有人的新玩家，从零到能接单：核心约束是**优质点位已被抢占**，而非资金或技术。
+   （具体月数：未获取）
+
+5. 同业竞争
+   现有玩家分层：按**价格带**（9.9 元 / 20-30 元 / 35 元以上）与**点位类型**（写字楼 vs 商场）错开。
+   最近三年价格战次数：未获取；发起方：未获取。
+
+【综合结论】
+利润最终沉淀在**具备规模与自有供应链的品牌方**这一环。论证：客户议价权为零（第 2 问）→ 品牌端对 C 端有定价权；新进入者最大障碍是点位（第 4 问）→ 先发者的点位即壁垒；供应商端数据缺失，此项不参与论证（第 1 问为 C 档）。
+
+【最脆弱的一环】
+**外卖履约环节**的议价权最易被削弱。触发条件：平台佣金上调或自建配送成本上升。
+标注：C 档——这是我的推测，依据是平台-商家关系中平台通常掌握流量分配权。`
+  },
+  4: {
+    title: 'Step 4 · 约束 / 节奏 / 异常',
+    body: `本步骤不输出结论，只输出「我猜是这样 + 怎么验证 + 该问谁」。
+
+【约束｜这个行业不能做的事】
+假设 | 如果成立会导致什么 | 怎么验证 | 该问谁
+食品经营许可与属地监管差异 | 跨城扩张时每个城市的证照与检查口径不同，直接影响开店周期 | 查目标城市的食品经营许可办理时长 | 已开店城市的门店运营负责人
+鲜奶/生豆的效期约束 | 配送半径被压缩，中心仓布局成为硬约束 | 问供应链负责人单批次效期与配送半径 | 供应链负责人
+点位租约的排他条款 | 商场/写字楼可能禁止同类品牌入驻，先到者锁定优质点位 | 调取已签租约的排他条款 | 拓展（选址）负责人
+（外行不会想到的一条）**门店用电增容** | 高峰期多台咖啡机同时运行，老楼电力容量不足会限制单店产能上限 | 问工程/营建负责人单店电力报装 | 营建负责人
+
+【节奏｜这个行业按什么周期运转】
+旺淡季 | 夏季冰饮与冬季热饮的产品结构差异明显，影响备货与人力排班 | 对比同一门店 12 个月杯量曲线 | 区域运营负责人
+预算审批窗口 | 商场招商通常有固定档期，错过则需等下一轮 | 问拓展负责人招商节奏 | 拓展负责人
+（外行最典型的失败）**在错误的时点开店**——赶在淡季开业，首月数据差会被误判为"点位不行"，从而错误关店
+
+【异常｜看到什么意味着出事了】
+1. 如果**单店杯量下滑但同商圈竞品杯量上升**同时发生，在你们行业里通常意味着什么？
+2. 如果**外卖占比持续上升而堂食占比下降**同时发生，通常意味着什么？
+3. 如果**券包核销率上升但客单价下降**同时发生，通常意味着什么？
+4. 如果**原材料成本下降但毛利率没改善**同时发生，通常意味着什么？
+5. 如果**新店首月数据好、第三个月转差**同时发生，通常意味着什么？
+6. 如果**同一商圈内本品牌两家店互相分流**同时发生，通常意味着什么？
+7. 如果**店员工时增加但出品杯数未增加**同时发生，通常意味着什么？
+8. 如果**租金占比被动上升**同时发生，通常意味着什么？
+
+【你还不知道的 10 件事】
+1. 单店真实的盈亏平衡杯量是多少（按城市等级分层）
+2. 联营模式下，联营方的实际回本周期分布
+3. 外卖平台的实际综合抽佣率（含配送与营销）
+4. 生豆采购的实际账期与锁价机制
+5. 优质点位的排他条款覆盖率
+6. 单店人力成本的峰谷差异有多大
+7. 新品从研发到全国上架的实际周期
+8. 关店决策的触发指标是什么、由谁决定
+9. 门店损耗率的行业区间
+10. 同一商圈内多店分流的容忍阈值`
+  },
+  5: {
+    title: 'Step 5 · 从业者拷问（示例节选）',
+    body: `【说明】以下是该步骤的角色扮演输出示例。它的行为规则被硬性约束为：不许说"很好的问题/你说得对/思路清晰"；只攻击 B、C 档字段与「未获取」栏；一次不超过 3 句。
+
+从业者：你报告里写"单店面对 C 端客户议价权为零"——这句是你自己推的，还是有门店数据？
+我先问个更前面的：你这三条链的钱流里，联营那部分毛利分配你标的是 B 档、写了个"约 50%"，这个数你从哪来的？
+还有，你说新进入者最大障碍是"点位已被抢占"——那你怎么解释过去三年还有新品牌开出来了？
+
+----------
+
+【诊断（跳出角色）】
+
+**哪几栏看起来填满了、其实是空的**
+- Step 1 的「收入确认时点」整列几乎全是 B 档推断，没有一手依据
+- Step 3 第 1 问「供应商议价」整栏是「未获取」——这意味着报告里关于"利润沉淀在品牌方"的论证，实际只由 2 个答案支撑，不是 5 个
+
+**哪几处暴露了外行**
+- 原句："约 50% 左右毛利" → 内行会说具体口径（是门店端毛利还是品牌端毛利？含不含配送？）
+- 原句："优质点位已被抢占" → 内行会区分"租约排他"和"物理位置稀缺"，两者约束力完全不同
+- 原句用"较强/较弱"的地方已按规则清除，但**仍用"约""通常"这类模糊量词替代了数字**——这是把不可判定表述换了个马甲
+
+**如果只能再补 3 块知识**
+1. 单店模型的真实分层数据（不同城市等级、不同点位类型的盈亏平衡杯量）
+2. 联营模式的实际权利与义务划分（谁承担什么成本、数据归谁）
+3. 外卖平台的实际抽佣结构（佣金 + 配送 + 营销的分项）`
+  }
+};
+
+let demoRunning = false;
+
+function demoDelay(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
+
+async function runDemo() {
+    if (demoRunning) return;
+    demoRunning = true;
+    const introCard = document.getElementById('intro-card');
+
+    // 清理旧内容
+    document.getElementById('cards-container').innerHTML = '';
+    const oldBanner = document.getElementById('demo-banner');
+    if (oldBanner) oldBanner.remove();
+
+    // 顶部演示标注
+    const banner = document.createElement('div');
+    banner.id = 'demo-banner';
+    banner.className = 'card';
+    banner.style.borderLeft = '4px solid #ff922b';
+    banner.innerHTML = '<div class="card-title">演示模式<span class="demo-flag">预置示例 · 未调用模型</span></div>'
+        + '<div class="card-content">以下内容是<b>预先准备好的示例输出</b>，用于展示产品的输出结构与证据分级机制，'
+        + '不是实时生成结果。<br>真实使用请点「⚙ 设置」填入你自己的 API Key（默认已配 OpenAI 兼容协议）。'
+        + '<br><br>示例主题：<b>咖啡连锁</b>（在 Step 0 选择"候选一：现制咖啡连锁"后的完整流程）</div>';
+    document.getElementById('cards-container').appendChild(banner);
+    banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    await demoDelay(700);
+
+    for (let step = 0; step <= 5; step++) {
+        const data = DEMO_STEPS[step];
+        if (!data) continue;
+        addCard(data.title, step);
+        updateCardStatus(step, 'generating', '生成中...');
+        await demoDelay(220);
+
+        // 模拟逐字输出
+        const contentEl = document.getElementById('content-' + step);
+        const text = data.body;
+        const chunk = 18;
+        for (let i = 0; i < text.length; i += chunk) {
+            contentEl.textContent += text.slice(i, i + chunk);
+            await demoDelay(12);
+        }
+        updateCardStatus(step, 'completed', '完成（演示数据）');
+        document.getElementById(step === 5 ? 'content-5' : 'status-' + step)
+            .scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        await demoDelay(500);
+    }
+
+    // 演示结束提示
+    const tail = document.createElement('div');
+    tail.className = 'card';
+    tail.style.borderLeft = '4px solid #5c7cfa';
+    tail.innerHTML = '<div class="card-title">演示结束</div>'
+        + '<div class="card-content">以上为预置示例。要真实运行：点「⚙ 设置」填 API Key → 关闭本页内容 → '
+        + '在顶部输入行业名 → 开始分析。<br><br>'
+        + '值得注意的三个设计点：<b>①</b> C 档内容被强制挡在正文外，只进「待验证清单」；'
+        + '<b>②</b> 报告结尾必须列出「你还不知道的 10 件事」，不允许用推测把版面填满；'
+        + '<b>③</b> Step 5 的角色被硬约束为不许恭维，只攻击低置信字段。</div>';
+    document.getElementById('cards-container').appendChild(tail);
+    tail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    demoRunning = false;
+}
+
+
+// ===================== PWA：Service Worker 注册 =====================
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function (e) {
+            console.log('SW 注册失败（不影响使用）:', e.message);
+        });
+    });
+}
+
+// ===================== PWA：安装引导 =====================
+let deferredPrompt = null;
+const installBar = document.getElementById('install-bar');
+
+window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBar) installBar.style.display = 'flex';
+});
+
+// iOS Safari 不支持 beforeinstallprompt，用「是否已安装 + 是否 iOS」判断
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+}
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+if (installBar && !isStandalone() && isIOS) {
+    installBar.style.display = 'flex';
+    document.getElementById('install-btn').textContent = '查看安装方法';
+}
+
+if (installBar) {
+    document.getElementById('install-btn').addEventListener('click', async function () {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const choice = await deferredPrompt.userChoice;
+            if (choice && choice.outcome === 'accepted') installBar.style.display = 'none';
+            deferredPrompt = null;
+        } else if (isIOS) {
+            alert('在 iPhone / iPad 上安装：\n\n1. 点浏览器底部的「分享」按钮\n2. 选「添加到主屏幕」\n3. 点「添加」\n\n之后从主屏幕图标打开，就是全屏 App 效果。');
+        } else {
+            alert('在浏览器菜单里选「安装应用」或「添加到主屏幕」即可。');
+        }
+    });
+    document.getElementById('install-later').addEventListener('click', function () {
+        installBar.style.display = 'none';
+    });
+}
+
+// ===================== 事件绑定 =====================
+document.getElementById('start-btn').addEventListener('click', startAnalysis);
+document.getElementById('stop-btn').addEventListener('click', stopAnalysis);
+document.getElementById('export-btn').addEventListener('click', exportMarkdown);
+document.getElementById('settings-btn').addEventListener('click', openSettings);
+document.getElementById('industry-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !document.getElementById('start-btn').disabled) startAnalysis();
+});
+document.getElementById('settings-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'settings-modal') closeSettings();
+});
+document.getElementById('protocol-input').addEventListener('change', applyProtocolPlaceholders);
+document.getElementById('demo-btn').addEventListener('click', runDemo);
+document.getElementById('intro-demo-btn').addEventListener('click', runDemo);
+document.getElementById('intro-try-btn').addEventListener('click', openSettings);
+// 支持 ./index.html?demo=1 直接进演示（PWA 快捷方式用）
+if (/[?&]demo=1/.test(location.search)) {
+    const ic0 = document.getElementById('intro-card');
+    if (ic0) ic0.style.display = 'none';
+    setTimeout(runDemo, 300);
+}
+document.getElementById('start-btn').addEventListener('click', function () {
+    const ic = document.getElementById('intro-card');
+    if (ic) ic.style.display = 'none';
+});
+
+if (!state.apiKey) setTimeout(openSettings, 500);
+</script>
+</body>
+</html>

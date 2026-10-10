@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微信重点工作台</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#161b22; --panel2:#1c2230; --line:#283041;
+    --fg:#e6edf3; --dim:#8b949e; --accent:#58a6ff; --ok:#3fb950; --warn:#d29922; --bad:#f85149;
+    --chip:#21262d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:14px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+  header{position:sticky;top:0;z-index:10;background:rgba(14,17,22,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:14px 20px}
+  .hrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  h1{font-size:17px;margin:0;font-weight:600}
+  .spacer{flex:1}
+  .pill{background:var(--chip);border:1px solid var(--line);border-radius:999px;
+    padding:3px 10px;font-size:12px;color:var(--dim);white-space:nowrap}
+  .pill b{color:var(--fg);font-weight:600}
+  button{background:var(--accent);color:#08131f;border:0;border-radius:6px;
+    padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.5;cursor:default}
+  button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+  main{padding:18px 20px 60px;max-width:1500px;margin:0 auto}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .kpi .v{font-size:24px;font-weight:700;line-height:1.2}
+  .kpi .k{font-size:12px;color:var(--dim);margin-top:2px}
+  .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .tab{padding:7px 15px;border-radius:8px;background:var(--panel);border:1px solid var(--line);
+    cursor:pointer;font-size:13px;color:var(--dim)}
+  .tab.on{background:var(--panel2);color:var(--fg);border-color:var(--accent)}
+  section{display:none}
+  section.on{display:block}
+  table{width:100%;border-collapse:collapse;background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--panel2);font-size:12px;color:var(--dim);font-weight:600;position:sticky;top:62px}
+  tr:last-child td{border-bottom:0}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tag{display:inline-block;padding:1px 7px;border-radius:5px;font-size:11px;
+    background:var(--chip);color:var(--dim);border:1px solid var(--line)}
+  .tag.stale{background:#3a2a12;color:var(--warn);border-color:#5c4318}
+  .tag.fresh{background:#12301c;color:var(--ok);border-color:#1d4a2c}
+  .muted{color:var(--dim)}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .steps{display:grid;gap:6px}
+  .st{display:flex;gap:10px;align-items:baseline;background:var(--panel);
+    border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px}
+  .st .dot{width:8px;height:8px;border-radius:50%;flex:0 0 8px;margin-top:6px}
+  .st .dot.ok{background:var(--ok)} .st .dot.bad{background:var(--bad)}
+  .md{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 24px}
+  .md h1{font-size:20px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-top:0}
+  .md h2{font-size:16px;margin-top:26px;color:#c9d1d9}
+  .md h3{font-size:14px;margin-top:20px;color:var(--dim)}
+  .md table{width:auto;min-width:60%;margin:10px 0;background:var(--panel2)}
+  .md th,.md td{padding:6px 10px;font-size:13px;position:static}
+  .md code{background:var(--chip);padding:1px 5px;border-radius:4px;font-size:12.5px}
+  .md blockquote{margin:10px 0;padding:6px 14px;border-left:3px solid var(--accent);
+    background:var(--panel2);color:var(--dim);border-radius:0 6px 6px 0}
+  .md ul{padding-left:22px} .md li{margin:3px 0}
+  .md hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+  select{background:var(--panel);color:var(--fg);border:1px solid var(--line);
+    border-radius:6px;padding:7px 10px;font-size:13px;max-width:420px}
+  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .gi{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .gi img{width:100%;height:120px;object-fit:cover;display:block;cursor:zoom-in;background:#000}
+  .gi .c{padding:6px 8px;font-size:11px;color:var(--dim);word-break:break-all}
+  .ghead{display:flex;align-items:center;gap:10px;margin:16px 0 8px}
+  .offline{display:none;background:#3a1416;border:1px solid #7a2a2e;color:#ffb3b8;
+    border-radius:8px;padding:12px 16px;margin-bottom:14px;font-size:13px;line-height:1.7}
+  .offline b{color:#ffd7d9}
+  .offline code{background:#25161a;padding:1px 6px;border-radius:4px;color:#ffd7d9}
+  #lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:50;
+    align-items:center;justify-content:center;cursor:zoom-out}
+  #lightbox img{max-width:94vw;max-height:94vh}
+  .warnbox{background:#2b2312;border:1px solid #57471a;color:#e3c26a;border-radius:8px;
+    padding:10px 14px;font-size:12.5px;margin-bottom:14px}
+  .err{color:var(--bad)}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <h1>微信重点工作台</h1>
+    <span class="pill">快照 <b id="snap">—</b></span>
+    <span class="pill">数据刷新于 <b id="gen">—</b></span>
+    <span class="pill" id="pipeline-pill">管线 <b>—</b></span>
+    <span class="spacer"></span>
+    <span class="pill">下次自动刷新 <b id="cd">—</b></span>
+    <button class="ghost" id="btn-reload">立即重载页面</button>
+    <button id="btn-refresh">立即刷新数据</button>
+  </div>
+</header>
+
+<main>
+  <div class="offline" id="offline">
+    <b>⚠️ 与服务失去连接</b> —— 服务进程可能已停止。页面上的倒计时仍在走，但所有操作都会失败。<br>
+    请<b>双击</b> <code>G:\dsh\wechat-digest\workbench\启动工作台.cmd</code> 重新启动服务，然后刷新本页。<br>
+    <span class="muted" id="offline-detail"></span>
+  </div>
+  <div class="warnbox">
+    <b>刷新机制</b>：页面与数据每小时自动刷新一次（数据管线：备份 → 密钥校验 → 解密 → 会话映射 → 图片解密）。
+    <b>摘要本身需要模型生成，无法无人化</b>——「会话索引」里带
+    <span class="tag stale">摘要已过期</span> 的会话表示它之后又来了新消息，需要让 Agent 重跑该会话的摘要。
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tabs">
+    <div class="tab on" data-t="todos">待我处理</div>
+    <div class="tab" data-t="convs">会话索引</div>
+    <div class="tab" data-t="digest">摘要阅读</div>
+    <div class="tab" data-t="images">图片</div>
+    <div class="tab" data-t="pipe">管线状态</div>
+  </div>
+
+  <section id="todos" class="on"><div id="todos-body" class="muted">加载中…</div></section>
+  <section id="convs"><div id="convs-body" class="muted">加载中…</div></section>
+  <section id="digest">
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+      <select id="digest-sel"></select>
+      <span class="muted" id="digest-meta"></span>
+    </div>
+    <div class="md" id="digest-body">选择一份摘要…</div>
+  </section>
+  <section id="images"><div id="images-body" class="muted">加载中…</div></section>
+  <section id="pipe"><div class="steps" id="pipe-body"></div></section>
+</main>
+
+<div id="lightbox"><img id="lightbox-img" alt=""></div>
+
+<script>
+const HOUR = 3600 * 1000;
+const $ = (s) => document.querySelector(s);
+let nextRefresh = Date.now() + HOUR;
+let digestFiles = [];
+
+function esc(s){return String(s??"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ---- 极简 markdown 渲染（支持标题/表格/列表/引用/粗体/行内码/分隔线） ---- */
+function md2html(src){
+  const lines = src.replace(/\r/g,"").split("\n");
+  let out = [], i = 0, inList = false, inTable = false;
+  // 先抽出 `...` 代码段并占位，再做粗体/链接替换，最后还原。
+  // 否则像 `sk-c78d****f297` 这种代码段里的星号会被粗体正则当成定界符，把整行吃乱、
+  // 并残留字面 **（这就是当初渲染校验报的 FAIL）。
+  const inline = (t) => {
+    const codes = [];
+    const s = esc(t)
+      .replace(/`([^`]+)`/g, (m, c) => { codes.push(c); return "\u0000" + (codes.length - 1) + "\u0000"; })
+      .replace(/\*\*([\s\S]+?)\*\*/g, "<b>$1</b>")
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    return s.replace(/\u0000(\d+)\u0000/g, (m, i) => "<code>" + codes[+i] + "</code>");
+  };
+  const closeList = () => { if(inList){ out.push("</ul>"); inList=false; } };
+  const closeTable = () => { if(inTable){ out.push("</table>"); inTable=false; } };
+  while(i < lines.length){
+    // 跨行粗体修正：逐行解析时 **...** 若跨越换行就永远配不上，会残留字面 **。
+    // 因此当本行 ** 个数为奇数（说明配对在后续行）时，先向后合并再解析。
+    // 表格行不参与合并，否则会把表格结构拆坏。
+    let ln = lines[i];
+    let guard = 0;
+    while(!/^\s*\|/.test(ln) && ((ln.match(/\*\*/g) || []).length % 2 === 1)
+          && i + 1 < lines.length && guard < 20){
+      i++; ln += "\n" + lines[i]; guard++;
+    }
+    if(/^\s*\|.*\|\s*$/.test(ln)){
+      const cells = ln.trim().replace(/^\||\|$/g,"").split("|").map(c=>c.trim());
+      if(/^\s*\|[\s:|-]+\|\s*$/.test(ln)){ i++; continue; }
+      if(!inTable){ closeList(); out.push("<table>"); inTable=true;
+        out.push("<tr>"+cells.map(c=>"<th>"+inline(c)+"</th>").join("")+"</tr>"); i++; continue; }
+      out.push("<tr>"+cells.map(c=>"<td>"+inline(c)+"</td>").join("")+"</tr>"); i++; continue;
+    }
+    closeTable();
+    const h = ln.match(/^(#{1,4})\s+(.*)$/);
+    if(h){ closeList(); out.push(`<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`); i++; continue; }
+    if(/^>\s?/.test(ln)){ closeList(); out.push("<blockquote>"+inline(ln.replace(/^>\s?/,""))+"</blockquote>"); i++; continue; }
+    if(/^---+$/.test(ln.trim())){ closeList(); out.push("<hr>"); i++; continue; }
+    const li = ln.match(/^\s*(?:[-*]|\d+\.)\s+(.*)$/);
+    if(li){
+      const indent = ln.match(/^\s*/)[0].length;
+      if(!inList){ out.push(indent>0 ? '<ul style="margin-left:0">' : "<ul>"); inList=true; }
+      out.push("<li>"+inline(li[1])+"</li>"); i++; continue;
+    }
+    if(!ln.trim()){ closeList(); i++; continue; }
+    closeList(); out.push("<p>"+inline(ln)+"</p>"); i++;
+  }
+  closeList(); closeTable();
+  return out.join("\n");
+}
+
+/* ---- 数据加载 ---- */
+async function getJSON(u){ const r = await fetch(u, {cache:"no-store"}); if(!r.ok) throw new Error(r.status); return r.json(); }
+
+async function loadAll(){
+  try{
+    const st = await getJSON("/api/status");
+    renderStatus(st);
+  }catch(e){ $("#pipeline-pill").innerHTML = '管线 <b class="err">读取失败</b>'; }
+  try{
+    const t = await getJSON("/api/todos");
+    renderTodos(t);
+  }catch(e){ $("#todos-body").innerHTML = '<span class="err">待办加载失败：'+esc(e.message)+'</span>'; }
+  try{
+    const d = await getJSON("/api/digests");
+    digestFiles = d.items || [];
+    renderDigestSelect();
+  }catch(e){}
+  try{
+    const im = await getJSON("/api/images");
+    renderImages(im.groups || []);
+  }catch(e){ $("#images-body").innerHTML = '<span class="err">图片加载失败：'+esc(e.message)+'</span>'; }
+}
+
+function renderStatus(st){
+  const d = st.data || {};
+  $("#snap").textContent = d.snapshot_at || "未知";
+  $("#gen").textContent = d.generated_at || "尚未刷新";
+  const s = st.state || {};
+  let cls = "—", txt = "未运行";
+  if(s.refreshing){ txt = "刷新中…"; }
+  else if(s.last_pipeline_ok === true){ txt = "上次成功 " + (s.last_pipeline_end||""); cls = "ok"; }
+  else if(s.last_pipeline_ok === false){ txt = "上次失败 " + (s.last_pipeline_end||""); cls = "err"; }
+  $("#pipeline-pill").innerHTML = '管线 <b class="'+cls+'">'+esc(txt)+'</b>';
+
+  const convs = d.conversations || [];
+  const digests = d.digests || [];
+  const stale = convs.filter(c => c.stale).length;
+  const todos = (window.__todoCount ?? "—");
+  const kpi = [
+    ["活跃会话（近7天）", convs.length],
+    ["已生成摘要", digests.length],
+    ["摘要已过期", stale],
+    ["解密图片", d.image_total ?? "—"],
+    ["数据库密钥", (d.keys ? d.keys.db_with_key + "/" + d.keys.db_total : "—")],
+    ["管线耗时", (d.duration_s != null ? d.duration_s + "s" : "—")],
+  ];
+  $("#kpis").innerHTML = kpi.map(([k,v]) =>
+    `<div class="kpi"><div class="v">${esc(v)}</div><div class="k">${esc(k)}</div></div>`).join("")
+    + `<div class="kpi"><div class="v" id="kpi-todos">—</div><div class="k">待我处理</div></div>`;
+
+  // 会话索引
+  const rows = convs.slice().sort((a,b)=> (b.stale?1:0)-(a.stale?1:0) || b.total-a.total);
+  let html = `<table><thead><tr><th>会话</th><th>类型</th><th class="num">近7天</th>
+    <th class="num">我发</th><th class="num">人数</th><th>最近消息</th><th>摘要状态</th></tr></thead><tbody>`;
+  for(const c of rows){
+    const badge = c.digest_file
+      ? (c.stale ? '<span class="tag stale">摘要已过期</span>' : '<span class="tag fresh">已覆盖</span>')
+      : '<span class="tag">无摘要</span>';
+    const link = c.digest_file
+      ? `<a href="#" onclick="openDigest('${esc(c.digest_file)}');return false">${esc(c.display)}</a>`
+      : esc(c.display);
+    html += `<tr><td>${link}</td><td>${c.is_group?'群':'1:1'}</td>
+      <td class="num">${c.total}</td><td class="num">${c.mine}</td><td class="num">${c.senders}</td>
+      <td class="muted">${esc(fmt(c.last_global || c.last))}</td>
+      <td>${badge}</td></tr>`;
+  }
+  html += "</tbody></table>";
+  $("#convs-body").innerHTML = html;
+
+  // 管线步骤
+  const steps = d.steps || [];
+  $("#pipe-body").innerHTML = steps.length ? steps.map(s =>
+    `<div class="st"><span class="dot ${s.ok?'ok':'bad'}"></span>
+     <span style="min-width:190px">${esc(s.name)}</span>
+     <span class="muted" style="min-width:70px">${s.seconds}s</span>
+     <span class="muted">${esc(s.note||"")}</span></div>`).join("")
+    : '<div class="muted">暂无管线记录，点击右上角「立即刷新数据」。</div>';
+
+  window.__state = s;
+}
+
+function fmt(ts){
+  if(!ts) return "—";
+  const d = new Date(ts*1000);
+  const p = n => String(n).padStart(2,"0");
+  return `${d.getMonth()+1}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+function renderTodos(t){
+  const items = t.items || [];
+  window.__todoCount = items.length;
+  const kpi = document.getElementById("kpi-todos");
+  if(kpi) kpi.textContent = items.length;
+  if(!items.length){
+    $("#todos-body").innerHTML = '<div class="md">全部已生成摘要的会话均无「待我处理」事项。</div>';
+    return;
+  }
+  let html = `<table><thead><tr><th style="width:44px">#</th><th>事项</th><th style="width:230px">来源会话</th></tr></thead><tbody>`;
+  items.forEach((it, n) => {
+    html += `<tr><td class="num">${n+1}</td><td>${md2html(it.text).replace(/^<p>|<\/p>$/g,"")}</td>
+      <td class="muted">${esc(it.conv)}</td></tr>`;
+  });
+  html += "</tbody></table>";
+  $("#todos-body").innerHTML = html;
+}
+
+function renderDigestSelect(){
+  const sel = $("#digest-sel");
+  sel.innerHTML = digestFiles.map(f =>
+    `<option value="${esc(f.file)}">${f.index ? "【汇总】" : ""}${esc(f.file.replace(/\.md$/,""))}</option>`).join("");
+  if(digestFiles.length) openDigest(digestFiles[0].file);
+}
+
+async function openDigest(file){
+  const sel = $("#digest-sel");
+  if(sel.value !== file) sel.value = file;
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x.dataset.t === "digest"));
+  document.querySelectorAll("section").forEach(x => x.classList.toggle("on", x.id === "digest"));
+  const r = await fetch("/api/digest?file=" + encodeURIComponent(file), {cache:"no-store"});
+  if(!r.ok){ $("#digest-body").innerHTML = '<span class="err">读取失败</span>'; return; }
+  const text = await r.text();
+  $("#digest-body").innerHTML = md2html(text);
+  const meta = digestFiles.find(f => f.file === file);
+  $("#digest-meta").textContent = meta ? `${meta.mtime} · ${(meta.size/1024).toFixed(1)} KB` : "";
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function renderImages(groups){
+  if(!groups.length){ $("#images-body").innerHTML = '<div class="md">还没有解密出图片。</div>'; return; }
+  let html = "";
+  for(const g of groups){
+    html += `<div class="ghead"><b>${esc(g.dir)}</b><span class="tag">${g.count} 张</span></div><div class="gallery">`;
+    for(const f of g.files.slice(0,60)){
+      const url = "/img/" + encodeURIComponent(g.dir) + "/" + f.rel.split("/").map(encodeURIComponent).join("/");
+      html += `<div class="gi"><img loading="lazy" src="${url}" alt="${esc(f.name)}"
+        onclick="showImg('${url}')"><div class="c">${esc(f.mtime)}<br>${esc(f.name)}</div></div>`;
+    }
+    html += "</div>";
+  }
+  $("#images-body").innerHTML = html;
+}
+
+function showImg(u){ $("#lightbox-img").src = u; $("#lightbox").style.display = "flex"; }
+$("#lightbox").onclick = () => { $("#lightbox").style.display = "none"; };
+
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.remove("on"));
+  document.querySelectorAll("section").forEach(x => x.classList.remove("on"));
+  t.classList.add("on"); $("#" + t.dataset.t).classList.add("on");
+});
+
+$("#digest-sel").onchange = (e) => openDigest(e.target.value);
+$("#btn-reload").onclick = () => location.reload();
+/* ---- 与服务失联检测 ----
+   服务被杀掉后，页面会停在"看着完全正常、但什么都点不动"的状态
+   （倒计时照走、按钮一按就失败）。必须主动探测并明确告知用户发生了什么、该怎么办。 */
+function setOffline(on, detail){
+  const el = $("#offline");
+  if(!el) return;
+  el.style.display = on ? "block" : "none";
+  if(on && detail) $("#offline-detail").textContent = detail;
+}
+
+async function heartbeat(){
+  try{
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 5000);
+    const r = await fetch("/api/status", {cache:"no-store", signal: ctl.signal});
+    clearTimeout(timer);
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    setOffline(false);
+  }catch(e){
+    setOffline(true, "最后一次探测 " + new Date().toLocaleTimeString() + " · " + (e.message || e));
+  }
+}
+
+$("#btn-refresh").onclick = async () => {
+  const b = $("#btn-refresh");
+  b.disabled = true; b.textContent = "已触发…";
+  try{
+    const r = await fetch("/api/refresh", {method:"POST", cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    if(!j.ok){ b.textContent = j.note || "稍后重试"; return; }
+    setOffline(false);
+    let waited = 0;
+    while(waited < 300000){
+      await new Promise(res => setTimeout(res, 3000));
+      waited += 3000;
+      try{
+        const s = await (await fetch("/api/status", {cache:"no-store"})).json();
+        if(!s.state || !s.state.refreshing){ b.textContent = "刷新完成"; await loadAll(); break; }
+        b.textContent = "刷新中… " + Math.round(waited / 1000) + "s";
+      }catch(err){ break; }
+    }
+  }catch(e){
+    b.textContent = "服务已断开";
+    setOffline(true, "最后一次探测 " + new Date().toLocaleTimeString() + " · " + (e.message || e));
+  }finally{
+    setTimeout(() => { b.disabled = false; b.textContent = "立即刷新数据"; }, 3000);
+  }
+};
+
+function tick(){
+  const left = Math.max(0, nextRefresh - Date.now());
+  const m = Math.floor(left/60000), s = Math.floor(left%60000/1000);
+  $("#cd").textContent = m + " 分 " + String(s).padStart(2,"0") + " 秒";
+  if(left <= 0){ nextRefresh = Date.now() + HOUR; loadAll(); }
+}
+
+loadAll();
+setInterval(tick, 1000);
+setInterval(() => { nextRefresh = Date.now() + HOUR; loadAll(); }, HOUR);  // 每小时自动刷新
+heartbeat();                       // 启动即探测一次
+setInterval(heartbeat, 20000);     // 每 20 秒探测服务是否还在
+</script>
+</body>
+</html>

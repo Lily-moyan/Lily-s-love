@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>文案工坊 · 自媒体选题与成稿</title>
+<link rel="icon" type="image/svg+xml" href="/mark.svg" />
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+<!-- 登录 / 注册 -->
+<div id="authScreen" class="auth-screen hidden">
+  <div class="auth-card">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>文案工坊</span></div>
+    <p class="auth-sub">给一个题材，先出三个话题方向，选中后生成完整成稿。</p>
+
+    <div class="tabs" id="authTabs">
+      <button class="tab active" data-mode="login">登录</button>
+      <button class="tab" data-mode="register">注册</button>
+    </div>
+
+    <form id="authForm" autocomplete="on">
+      <label>用户名<input name="username" required maxlength="24" placeholder="2-24 位，支持中英文" autocomplete="username" /></label>
+      <label>密码<input name="password" type="password" required minlength="6" placeholder="至少 6 位" autocomplete="current-password" /></label>
+      <p class="form-error" id="authError"></p>
+      <button class="btn primary block" type="submit" id="authSubmit">登录</button>
+    </form>
+    <p class="auth-tip">每个账号的创作记录相互独立。</p>
+  </div>
+</div>
+
+<!-- 主应用 -->
+<div id="app" class="app hidden">
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>文案工坊</span></div>
+    <nav class="tabs-nav" id="viewNav">
+      <button data-view="write" class="active">创作</button>
+      <button data-view="hot">热点</button>
+    </nav>
+    <div class="topbar-right">
+      <span class="chip" id="llmChip" title="当前模型通道">…</span>
+      <button class="credit-chip" id="creditChip" title="点开看用量与套餐"></button>
+      <span class="user-name" id="userName"></span>
+      <a class="btn ghost small" href="/prompts" target="_blank" rel="noopener"
+         title="每条提示词的产品定位、价值与功能逻辑">说明书</a>
+      <button class="btn ghost small" id="logoutBtn">退出</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- 侧栏：历史 -->
+    <aside class="sidebar">
+      <div class="persona-bar">
+        <div class="sidebar-head">
+          <span>账号设定</span>
+          <button class="btn ghost small" id="newPersonaBtn">＋ 新账号</button>
+        </div>
+        <!-- 默认只露头像 + 名称 + 定位；其余（目标用户、人设、语气档案…）折起来。
+             侧栏是长期占屏的东西，平时不需要把整份设定摊在那儿。 -->
+        <!-- 多账号时直接列出来，一行一个，不用下拉——下拉要先点开才知道有什么。
+             当前账号那行展开成卡片（定位 + 齿轮 + 完整设定），其余是单行。 -->
+        <div class="persona-card">
+          <div class="persona-list" id="personaList"></div>
+          <button class="persona-more hidden" id="personaMoreBtn" type="button" aria-expanded="false">
+            展开完整设定 <i>▾</i>
+          </button>
+          <div class="persona-summary hidden" id="personaSummary"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-head">
+        <span>创作记录</span>
+        <button class="btn ghost small" id="newBtn">＋ 新建</button>
+      </div>
+
+      <div class="history-filter" id="historyFilter">
+        <button data-arch="0" class="on">进行中<span class="n" id="cntActive"></span></button>
+        <button data-arch="1">已归档<span class="n" id="cntArchived"></span></button>
+      </div>
+
+      <div class="history" id="history"></div>
+
+      <div class="history-foot hidden" id="historyFoot">
+        <button class="btn ghost small" id="archiveDoneBtn">把已完成的收起来</button>
+      </div>
+    </aside>
+
+    <!-- 主区 -->
+    <main class="main" id="main" data-step="1">
+    <div id="writeView">
+      <!-- 步骤条同时是导航：走过的步骤可以点回去 -->
+      <ol class="steps" id="steps">
+        <li class="step active" data-step="1"><b>1</b> 确定选题</li>
+        <li class="step" data-step="2"><b>2</b> 选择话题方向</li>
+        <li class="step" data-step="3"><b>3</b> 创作内容</li>
+      </ol>
+
+      <!-- 引导：还没有账号设定 -->
+      <section class="card onboard hidden" id="onboardCard">
+        <h2>先给这个号定个位</h2>
+        <p>设定账号的平台、内容方向、目标用户和要解决的问题之后，每次创作都会自动带上这份语境——
+          选题不会跑偏，语气也不会每篇都换一个人。</p>
+        <div class="actions">
+          <button class="btn primary" id="onboardBtn">创建账号设定</button>
+          <button class="btn ghost" id="skipOnboardBtn">先不设定，直接创作</button>
+        </div>
+      </section>
+
+      <!-- 第一步 -->
+      <section class="card" id="briefCard">
+        <div class="card-head">
+          <h2>创作简报</h2>
+          <span class="inherit-note" id="inheritNote"></span>
+        </div>
+        <form id="briefForm">
+          <label class="full">题材 <span class="req">*</span>
+            <textarea name="subject" rows="2" maxlength="200" required
+              placeholder="自己写，或从下面挑一条"></textarea>
+          </label>
+
+          <div class="sections-pick" id="sectionPick">
+            <span class="sections-label">内容栏目</span>
+            <div class="section-chips" id="sectionChips"></div>
+            <button type="button" class="btn ghost small" id="manageSectionsBtn">管理栏目</button>
+          </div>
+
+          <div class="section-inputs hidden" id="sectionInputs"></div>
+
+          <div class="hot-ref hidden" id="hotRef"></div>
+
+          <!-- 选题池：热点里看到的、推荐里想留的，不当场写也不丢 -->
+          <div class="pool" id="poolBox">
+            <div class="ideas-head">
+              <span>选题池<em id="poolNote"></em></span>
+              <button class="btn ghost small" type="button" id="poolToggle">展开 ▾</button>
+            </div>
+            <div class="pool-list hidden" id="poolList"></div>
+          </div>
+
+          <div class="ideas" id="ideas">
+            <div class="ideas-head">
+              <span>推荐题材<em id="ideasNote">这个号还没写过的</em></span>
+              <button class="btn ghost small" type="button" id="ideasRefresh">换一批</button>
+            </div>
+            <div class="ideas-list" id="ideasList"></div>
+          </div>
+
+          <!-- 默认按账号设定走，只展示不可改；点「修改」才展开成表单 -->
+          <div class="inherited hidden" id="inheritRow">
+            <div class="inherited-facts" id="inheritFacts"></div>
+            <button type="button" class="btn ghost small" id="editParamsBtn">修改</button>
+          </div>
+
+          <div class="grid" id="paramGrid">
+            <label>发布平台<select name="platform" id="platformSel"></select></label>
+            <label>风格调性<select name="tone" id="toneSel"></select></label>
+            <label>目标读者<input name="audience" maxlength="120" placeholder="例：一线城市上班族" /></label>
+            <label>目标字数<input name="length" type="number" min="150" max="4000" step="50" /></label>
+            <div class="param-reset hidden" id="paramReset">
+              <button type="button" class="btn ghost small" id="resetParamsBtn">恢复账号设定</button>
+            </div>
+          </div>
+
+          <label class="full">必须覆盖的关键词 / 信息点
+            <input name="keywords" maxlength="300" placeholder="用逗号分隔，可留空" />
+          </label>
+
+          <div class="actions">
+            <button class="btn primary" type="submit" id="topicsBtn">生成三个话题方向</button>
+            <span class="hint" id="briefHint"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- 第二步 -->
+      <section class="card hidden" id="topicsCard">
+        <div class="card-head">
+          <button class="btn ghost small step-back" data-goto="1">← 改题材</button>
+          <h2>三个话题方向</h2>
+          <button class="btn ghost small" id="retopicsBtn">换一批</button>
+        </div>
+        <div class="topics" id="topics"></div>
+      </section>
+
+      <!-- 第三步 -->
+      <section class="card hidden" id="contentCard">
+        <!-- 标题行 + 工具条吸顶：长文往下读的时候，模式切换和这几个动作始终够得着 -->
+        <div class="head-stick">
+        <!-- 一排八个按钮谁也找不着，按"要干什么"分三组，模式切换单独提到标题行 -->
+        <div class="card-head">
+          <button class="btn ghost small step-back" data-goto="2">← 换方向</button>
+          <h2 id="contentTitle">完整文案</h2>
+          <span class="counter" id="counter"></span>
+          <span class="grow"></span>
+          <!-- 模式指示器。切换动作在工具条上（修改 / 确认→生成口播 / 返回阅读），
+               这里只负责说明"你现在在哪个模式" -->
+          <span class="mode-now hidden" id="modeNow"></span>
+        </div>
+
+        <!-- 三个动作代替原来的八个：改 / 认了 / 拿走。
+             后两个各带一个菜单，里面才是具体做什么——一次只让人做一个决定。 -->
+        <div class="toolbar">
+          <button class="btn ghost small hidden" id="backReadBtn">← 返回阅读</button>
+          <button class="btn ghost small" id="editBtn">修改</button>
+          <div class="menu-wrap">
+            <button class="btn primary small" id="confirmBtn" aria-haspopup="true">确认 ▾</button>
+            <div class="menu hidden" id="confirmMenu">
+              <div class="menu-head">这稿定了，接下来</div>
+              <button type="button" data-act="cues">生成口播提示<em>切段、标语气，配合提词器照着念</em></button>
+              <button type="button" data-act="multi">出多平台版本<em>事实不变，按各平台重排结构和篇幅</em></button>
+              <button type="button" data-act="illus">配图<em>给这一版排插图位并出图</em></button>
+              <button type="button" data-act="learn">喂给账号学习<em>作为语气样本，影响以后的成稿</em></button>
+              <hr>
+              <button type="button" data-act="review">再检查一遍<em>错字、通顺性、调性与风险</em></button>
+              <button type="button" data-act="metrics">回填发布数据<em>发完填几个数字，复盘才知道什么有效</em></button>
+              <button type="button" data-act="archive">归档<em>收进「已归档」，随时能恢复</em></button>
+            </div>
+          </div>
+          <div class="menu-wrap">
+            <button class="btn ghost small" id="exportBtn" aria-haspopup="true">导出 ▾</button>
+            <div class="menu hidden" id="exportMenu">
+              <div class="menu-head">导出格式</div>
+              <button type="button" data-fmt="copy">复制<em id="copyHint">正文；有配图时连图一起（富文本）</em></button>
+              <button type="button" data-fmt="md">下载 Markdown<em>纯文本，.md</em></button>
+              <button type="button" data-fmt="html">下载图文<em>单个 .html，图嵌在里面</em></button>
+              <button type="button" data-fmt="pdf">导出 PDF<em>走浏览器打印，在弹窗里选「另存为 PDF」</em></button>
+            </div>
+          </div>
+          <span class="grow"></span>
+          <span class="hint" id="toolHint"></span>
+          <!-- 保存跟着编辑模式出现在这一行。原来在编辑区底部，
+               离正文远、也和「确认/导出」这组动作脱节 -->
+          <span class="save-state hidden" id="saveState"></span>
+          <button class="btn ghost small hidden" id="saveBtn">保存</button>
+
+          <!-- 这几个是原来的按钮，逻辑都还在用，只是不再直接露出来——
+               上面的菜单转发点击到它们。比把几百行处理逻辑重写一遍稳妥。 -->
+          <span class="hidden" aria-hidden="true">
+            <button type="button" id="reviewBtn"></button>
+            <button type="button" id="learnBtn"></button>
+            <button type="button" id="multiBtn"></button>
+            <button type="button" id="illusBtn"></button>
+            <button type="button" id="copyBtn"></button>
+            <button type="button" id="downloadBtn"></button>
+          </span>
+        </div>
+        </div><!-- /.head-stick -->
+
+        <div class="review hidden" id="reviewBox">
+          <div class="review-head">
+            <span class="review-verdict" id="reviewVerdict"></span>
+            <span class="review-risk hidden" id="reviewRisk"></span>
+            <span class="review-summary" id="reviewSummary"></span>
+            <span class="grow"></span>
+            <button class="btn ghost small hidden" id="reviewApplyAll">全部采纳</button>
+            <button class="icon-btn" id="reviewClose" title="收起">×</button>
+          </div>
+          <div class="review-flags" id="reviewFlags"></div>
+          <div class="review-list" id="reviewList"></div>
+        </div>
+
+        <!-- 多平台：一份账号设定、一篇成稿，出多个平台的版本。
+             走的是适配改写而不是各平台各生成一遍——否则同一件事会变成几个不同的故事 -->
+        <div class="multi-bar hidden" id="multiBar">
+          <div class="multi-pick" id="multiPick"></div>
+          <div class="multi-acts">
+            <span class="hint" id="multiHint"></span>
+            <span class="grow"></span>
+            <button class="btn primary small" id="multiRunBtn">生成选中的版本</button>
+          </div>
+        </div>
+
+        <div class="ver-tabs hidden" id="verTabs"></div>
+
+        <div class="illus-bar hidden" id="illusBar">
+          <span class="chip" id="illusChip"></span>
+          <span class="hint" id="illusHint"></span>
+          <span class="grow"></span>
+          <button class="btn ghost small" id="illusPlanBtn">重新排版位</button>
+          <button class="btn primary small" id="illusRunBtn">全部出图</button>
+          <div class="illus-list" id="illusList"></div>
+        </div>
+
+        <article class="content" id="content"></article>
+        <textarea class="editor hidden" id="editor" spellcheck="false"></textarea>
+
+        <div class="cues hidden" id="cuesPane">
+          <div class="cues-head">
+            <div class="cues-overall" id="cuesOverall"></div>
+            <div class="toolbar">
+              <div class="tb-group">
+                <span class="tb-label">自己念</span>
+                <button class="btn ghost small" id="prompterBtn">提词器</button>
+                <button class="btn ghost small" id="copyCuesBtn">复制口播稿</button>
+              </div>
+              <span class="grow"></span>
+              <button class="btn primary small" id="cuesRunBtn">生成口播提示</button>
+            </div>
+          </div>
+          <div class="cue-list" id="cueList"></div>
+        </div>
+
+        <div class="editor-bar hidden" id="editorBar">
+          <span class="hint">选中文字 → 调 AI 改写　·　输入 <kbd>/</kbd> → 让 AI 接着写</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- 热点板块 -->
+    <div id="hotView" class="hidden">
+      <section class="card">
+        <div class="card-head">
+          <h2>可蹭的热点</h2>
+          <div class="card-actions">
+            <span class="counter" id="hotMeta"></span>
+            <button class="btn primary small" id="hotRun">抓取并比对</button>
+          </div>
+        </div>
+        <p class="hot-intro" id="hotIntro">
+          抓取全网榜单，和当前账号的定位逐条比对，只留下这个号真能接得住的，并给出蹭点和选题建议。
+          <em>比对只看得到榜单标题，看不到原文——动笔前请点开原文核实。伤亡、灾难、点名到个人的争议一律不推荐。</em>
+        </p>
+        <div class="sources" id="hotSources"></div>
+        <div class="matches" id="hotMatches"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>抓到的原始榜单</h2>
+          <div class="card-actions">
+            <select id="boardFilter"></select>
+            <button class="btn ghost small" id="boardRefresh">重新抓取</button>
+          </div>
+        </div>
+        <div class="board" id="boardList"></div>
+        <details class="manual">
+          <summary>榜单抓不到？手动粘一份</summary>
+          <p class="hint">一行一条，可以直接从任何热榜页面复制粘贴，前面的序号会自动去掉。</p>
+          <textarea id="manualInput" rows="5" placeholder="1. 某某热点&#10;2. 另一个热点&#10;3. ..."></textarea>
+          <button class="btn ghost small" id="manualRun">用这份榜单比对</button>
+        </details>
+      </section>
+    </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- 划词菜单 -->
+<div class="pop-menu hidden" id="selMenu"></div>
+
+<!-- 斜杠菜单 -->
+<div class="pop-menu hidden" id="slashMenu">
+  <div class="pop-items" id="slashItems"></div>
+  <div class="pop-custom">
+    <input id="slashInput" placeholder="或直接说要写什么，回车确认" maxlength="200" />
+  </div>
+</div>
+
+<!-- AI 结果 -->
+<div class="assist-pop hidden" id="assistPop">
+  <div class="assist-head">
+    <span id="assistTitle">AI 改写</span>
+    <button class="icon-btn" id="assistClose" title="关闭">×</button>
+  </div>
+  <div class="assist-body" id="assistBody"></div>
+  <div class="assist-foot">
+    <button class="btn ghost small" id="assistRetry">重来一次</button>
+    <span class="grow"></span>
+    <button class="btn ghost small" id="assistInsert">插入到后面</button>
+    <button class="btn primary small" id="assistReplace">替换原文</button>
+  </div>
+</div>
+
+<!-- 内容栏目管理 -->
+<div class="modal-mask hidden" id="sectionModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>内容栏目<span class="modal-sub" id="sectionModalSub"></span></h2>
+      <button class="icon-btn" id="sectionModalClose" title="关闭">×</button>
+    </div>
+
+    <div class="modal-body">
+      <p class="hint">给这个号分几条内容线，创作时可以指定本篇属于哪条。不选就是常规创作。</p>
+
+      <div class="section-list" id="sectionList"></div>
+
+      <div class="section-add">
+        <select id="sectionPreset"></select>
+        <button class="btn ghost small" type="button" id="sectionAddBtn">添加</button>
+      </div>
+
+      <div class="section-form hidden" id="sectionForm">
+        <label class="full">栏目名 <span class="req">*</span>
+          <input id="sectionName" maxlength="20" placeholder="例：来时路" />
+        </label>
+        <label class="full">这个栏目讲什么
+          <textarea id="sectionPurpose" rows="2" maxlength="300"
+            placeholder="例：讲清楚这个号是怎么来的、为什么是我在做、和别人的不一样在哪"></textarea>
+        </label>
+        <label class="full">写作要点
+          <textarea id="sectionGuide" rows="3" maxlength="600"
+            placeholder="这个栏目该怎么写、不该怎么写"></textarea>
+        </label>
+
+        <div class="field-editor">
+          <div class="field-editor-head">
+            <span>写这个栏目时需要你提供的素材</span>
+            <button type="button" class="btn ghost small" id="fieldAddBtn">＋ 加一项</button>
+          </div>
+          <p class="hint">比如「来时路」需要你的背景经历。创作时选中这个栏目就会问你要，模型只能用你填的，不会自己编。</p>
+          <div class="field-rows" id="fieldRows"></div>
+        </div>
+
+        <p class="form-error" id="sectionError"></p>
+        <div class="section-form-foot">
+          <button class="btn ghost small" type="button" id="sectionCancelBtn">取消</button>
+          <button class="btn primary small" type="button" id="sectionSaveBtn">保存栏目</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 账号设定编辑器 -->
+<!-- 账号设定：独立整页 + 左侧导航。以前是浮层，塞不下也不好扩展。
+     加一个新板块 = ACCOUNT_TABS 里加一条 + 这里加一个 data-panel 块。 -->
+<div class="account-page hidden" id="personaModal">
+  <form id="personaForm">
+    <header class="acc-head">
+      <button class="icon-btn" type="button" id="personaCloseBtn" title="返回">←</button>
+      <h2 id="personaModalTitle">账号设定</h2>
+      <span class="grow"></span>
+      <span class="hint" id="personaSaveHint"></span>
+      <button class="btn danger ghost hidden" type="button" id="personaDeleteBtn">删除账号</button>
+      <button class="btn ghost" type="button" id="personaCancelBtn">取消</button>
+      <button class="btn primary" type="submit" id="personaSaveBtn">保存</button>
+    </header>
+
+    <div class="acc-body">
+      <nav class="acc-nav" id="accountNav"></nav>
+
+      <div class="acc-main">
+        <p class="form-error" id="personaError"></p>
+
+        <section class="acc-panel" data-panel="basic">
+          <label class="full">账号名称 <span class="req">*</span>
+            <input name="name" required maxlength="40" placeholder="例：下班后的厨房" />
+          </label>
+
+          <div class="grid">
+            <label>发布平台<select name="platform" id="personaPlatform"></select></label>
+            <label>风格调性<select name="tone" id="personaTone"></select></label>
+          </div>
+
+          <label class="full">主要内容
+            <textarea name="content_focus" rows="2" maxlength="500"
+              placeholder="这个号主要写什么。例：工作日 30 分钟内能做完的家常菜，侧重备菜和一锅出"></textarea>
+          </label>
+
+          <label class="full">目标用户
+            <textarea name="audience" rows="2" maxlength="500"
+              placeholder="给谁看。例：25-35 岁独居或两人住的上班族，会做饭但没时间"></textarea>
+          </label>
+
+          <label class="full">解决的问题
+            <textarea name="problem" rows="2" maxlength="500"
+              placeholder="读者的痛点。例：下班太累不想做饭，又不想天天点外卖"></textarea>
+          </label>
+
+          <label class="full">备注 / 禁忌
+            <textarea name="notes" rows="2" maxlength="800"
+              placeholder="固定要求或不能写的东西。例：不推广付费课程；每篇结尾带一句用量提醒"></textarea>
+          </label>
+        </section>
+
+        <section class="acc-panel hidden" data-panel="persona">
+          <fieldset class="subsection">
+            <legend>个人人设<span>选填 · 决定第一人称用谁的口吻、拿什么举例</span></legend>
+
+            <div class="grid">
+              <label>年龄<input name="creator_age" maxlength="20" placeholder="例：32，或 30 岁出头" /></label>
+              <label>性别
+                <select name="creator_gender">
+                  <option value="">不设定</option>
+                  <option value="男">男</option>
+                  <option value="女">女</option>
+                  <option value="其他">其他</option>
+                </select>
+              </label>
+              <label>所在行业<input name="creator_industry" maxlength="60" placeholder="例：互联网" /></label>
+              <label>岗位<input name="creator_role" maxlength="60" placeholder="例：产品经理" /></label>
+            </div>
+
+            <label class="full">性格特征
+              <textarea name="creator_traits" rows="2" maxlength="300"
+                placeholder="例：说话直接不绕弯，爱吐槽，怕麻烦所以什么都想找省事的做法"></textarea>
+            </label>
+          </fieldset>
+        </section>
+
+        <section class="acc-panel hidden" data-panel="material">
+          <fieldset class="subsection">
+            <legend>素材库<span>你的真实经历、数据、案例——写作时按题材自动召回</span></legend>
+
+            <div class="mat-add">
+              <select id="matKind"></select>
+              <input id="matTitle" maxlength="80" placeholder="一句话说清这条是什么，例：第一次带团队把人带走一半">
+              <textarea id="matBody" rows="3" maxlength="4000"
+                placeholder="具体细节：时间、数字、当时怎么想的、结果如何。越具体，写进稿子时越像真的。"></textarea>
+              <div class="mat-add-foot">
+                <input id="matTags" maxlength="200" placeholder="标签，逗号分隔（召回时权重更高）">
+                <button class="btn primary small" type="button" id="matSaveBtn">存进素材库</button>
+              </div>
+              <p class="form-error" id="matError"></p>
+            </div>
+
+            <div class="mat-list" id="matList"></div>
+            <p class="hint" id="matHint"></p>
+          </fieldset>
+        </section>
+
+        <section class="acc-panel hidden" data-panel="style">
+          <fieldset class="subsection hidden" id="styleSection">
+            <legend>语气样本<span>喂几篇成稿，让它学你真实的语感</span></legend>
+            <div class="sample-list" id="sampleList"></div>
+            <div class="digest-box" id="digestBox"></div>
+            <div class="sample-actions">
+              <button class="btn ghost small" type="button" id="rebuildDigestBtn">重新学习</button>
+              <span class="hint" id="styleHint"></span>
+            </div>
+          </fieldset>
+        </section>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- 用量与套餐。余额见底的时候正好是最愿意付费的时候，所以这一页要说清楚三件事：
+     还剩多少、花在哪了、升级能多什么 -->
+<div class="modal-mask hidden" id="planModal">
+  <div class="modal wide">
+    <div class="modal-head">
+      <h2>用量与套餐<span class="modal-sub" id="planPeriod"></span></h2>
+      <button class="icon-btn" id="planClose" title="关闭">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="plan-now" id="planNow"></div>
+      <h3 class="plan-h">本月花在哪了</h3>
+      <div id="planBreakdown"></div>
+      <h3 class="plan-h">套餐</h3>
+      <div class="plan-cards" id="planCards"></div>
+      <p class="hint" id="planNote"></p>
+
+      <!-- 支付。扫码 + 轮询订单状态——回调可能丢，不能只等推送 -->
+      <div class="paybox hidden" id="payBox">
+        <div class="pay-head">
+          <b id="payTitle"></b>
+          <span class="grow"></span>
+          <button class="icon-btn" id="payCancel" title="取消">×</button>
+        </div>
+        <div class="pay-body">
+          <div class="pay-qr" id="payQr"></div>
+          <div class="pay-side">
+            <div class="pay-ch" id="payChannels"></div>
+            <p class="hint" id="payHint"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 发布数据回填：发完手填几个数字。没有平台开放接口能自动抓，
+     而几个数字的手工成本远低于它带来的信息 -->
+<div class="modal-mask hidden" id="metricsModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>回填发布数据<span class="modal-sub">发完填一下，复盘才知道什么有效</span></h2>
+      <button class="icon-btn" id="metricsClose" title="关闭">×</button>
+    </div>
+    <div class="modal-body">
+      <label class="full">发布日期<input type="date" id="metricsDate"></label>
+      <div class="grid" id="metricsFields"></div>
+      <label class="full">备注<textarea id="metricsNote" rows="2" maxlength="300"
+        placeholder="选填。例：这条被大号转了；标题改过一版；发的时间比平时晚"></textarea></label>
+      <p class="hint">留空的字段不记。全部清空并保存 = 撤销这次回填。</p>
+      <div class="modal-foot">
+        <a class="btn ghost" href="#" id="insightsLink">看复盘 →</a>
+        <span class="grow"></span>
+        <button class="btn primary" type="button" id="metricsSave">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 复盘 -->
+<div class="modal-mask hidden" id="insightsModal">
+  <div class="modal wide">
+    <div class="modal-head">
+      <h2>复盘<span class="modal-sub" id="insightsNote"></span></h2>
+      <button class="icon-btn" id="insightsClose" title="关闭">×</button>
+    </div>
+    <div class="modal-body" id="insightsBody"></div>
+  </div>
+</div>
+
+<!-- 提示词说明书入口在顶栏 -->
+
+<!-- 提词器 -->
+<div class="prompter hidden" id="prompter">
+  <div class="prompter-bar">
+    <button class="pbtn" id="pPlay" title="空格">▶ 开始</button>
+    <div class="pgroup">
+      <span>速度</span>
+      <button class="pbtn sm" data-speed="-1" title="[">−</button>
+      <b id="pSpeedVal">40</b>
+      <button class="pbtn sm" data-speed="1" title="]">＋</button>
+    </div>
+    <div class="pgroup">
+      <span>字号</span>
+      <button class="pbtn sm" data-size="-1" title="减号">−</button>
+      <b id="pSizeVal">40</b>
+      <button class="pbtn sm" data-size="1" title="加号">＋</button>
+    </div>
+    <button class="pbtn" id="pCues" title="C">提示 开</button>
+    <button class="pbtn" id="pMirror" title="M">镜像</button>
+    <button class="pbtn" id="pRestart" title="R">⟲ 重来</button>
+    <span class="pgrow"></span>
+    <span class="pprogress" id="pProgress">0%</span>
+    <button class="pbtn" id="pClose" title="Esc">✕ 退出</button>
+  </div>
+
+  <div class="prompter-stage" id="pStage">
+    <div class="prompter-line"></div>
+    <div class="prompter-scroll" id="pScroll">
+      <div class="prompter-body" id="pBody"></div>
+    </div>
+  </div>
+
+  <div class="prompter-help">
+    空格 播放/暂停　·　<b>↑↓ 挪动画面</b>（滚轮同）　·　PgUp/PgDn 翻页　·　[ ] 速度　·　+− 字号　·　C 提示　·　M 镜像　·　R 重来　·　Esc 退出
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+<script src="/dialog.js"></script>
+<script src="/app.js" type="module"></script>
+</body>
+</html>

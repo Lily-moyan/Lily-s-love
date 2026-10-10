@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>提示词说明书 · 文案工坊</title>
+<link rel="icon" type="image/svg+xml" href="/mark.svg" />
+<link rel="stylesheet" href="/styles.css" />
+<link rel="stylesheet" href="/prompts.css" />
+</head>
+<body class="docs">
+
+<header class="docs-head">
+  <div class="docs-head-in">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <div>
+      <h1>提示词说明书</h1>
+      <p class="sub">文案工坊 —— 每一条提示词的产品定位、价值与功能逻辑</p>
+    </div>
+    <a class="btn ghost small" href="/">回到产品</a>
+  </div>
+</header>
+
+<div class="docs-body">
+  <nav class="docs-nav" id="nav"></nav>
+  <main class="docs-main">
+    <section class="principle" id="principle"></section>
+    <section class="principle assembly" id="assembly"></section>
+    <div id="list"></div>
+    <footer class="docs-foot">
+      提示词正文和 schema 直接从 <code>server/prompts.js</code> 读取，不是复制过来的副本——
+      改了提示词这里就跟着变，不会出现文档骗人的情况。
+    </footer>
+  </main>
+</div>
+
+<script src="/prompts.js"></script>
+</body>
+</html>

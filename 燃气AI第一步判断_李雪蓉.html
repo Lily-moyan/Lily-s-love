@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>燃气 AI 的第一步 · 我的一点判断 · 李雪蓉</title>
+<style>
+    :root { --ink:#1a1a1a; --muted:#5a6270; --line:#dfe3e8; --accent:#1f5c3d; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC",
+                     "Microsoft YaHei", "PingFang SC", sans-serif;
+        background:#eef0f3; color:var(--ink); font-size:13.5px; line-height:1.66;
+    }
+    .toolbar { position:sticky; top:0; z-index:10; background:#fff; border-bottom:1px solid var(--line);
+        padding:11px 20px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; font-size:13px; }
+    .toolbar button { padding:8px 18px; border:none; border-radius:999px; background:var(--accent);
+        color:#fff; font-size:13px; font-weight:500; cursor:pointer; }
+    .toolbar .tip { color:var(--muted); }
+    .toolbar kbd { background:#f1f3f5; border:1px solid var(--line); border-radius:4px; padding:1px 5px; font-family:inherit; }
+
+    .page { width:210mm; min-height:297mm; margin:18px auto 40px; background:#fff;
+        padding:14mm 15mm; box-shadow:0 2px 16px rgba(0,0,0,.12); }
+
+    h1 { font-size:18px; letter-spacing:.4px; }
+    .sub { font-size:12.5px; color:var(--muted); margin-top:3px; }
+
+    .note { margin-top:9px; background:#f7f8fa; border-left:3px solid var(--accent);
+        border-radius:6px; padding:8px 11px; font-size:12.2px; line-height:1.6; }
+
+    section { margin-top:12px; }
+    h2 { font-size:12.8px; font-weight:700; color:var(--accent); letter-spacing:.4px;
+        padding-bottom:3px; border-bottom:1.2px solid var(--accent); margin-bottom:6px; }
+    p { font-size:12.4px; margin-bottom:5px; }
+    ul { list-style:none; }
+    li { position:relative; padding-left:12px; margin-bottom:2.5px; font-size:12.4px; }
+    li::before { content:''; position:absolute; left:2px; top:.62em; width:3px; height:3px;
+        border-radius:50%; background:#9aa3af; }
+    .lead { font-size:12.3px; color:var(--muted); margin-bottom:6px; }
+    .row { margin-bottom:6px; }
+    .row h3 { font-size:12.4px; display:inline; }
+    .ok h3 { color:#1a7f4b; }
+    .no h3 { color:#b03030; }
+    strong { font-weight:600; }
+    a { color:var(--accent); text-decoration:none; word-break:break-all; }
+    .qa li { margin-bottom:4px; }
+    .about { margin-top:11px; padding-top:8px; border-top:1px solid var(--line); font-size:12.2px; }
+    .sign { margin-top:7px; font-size:12px; color:var(--muted); }
+
+    @page { size: A4; margin: 11mm 13mm; }
+    @media print {
+        body { background:#fff; font-size:9pt; line-height:1.42; }
+        .toolbar { display:none !important; }
+        .page { width:auto; min-height:auto; margin:0; padding:0; box-shadow:none; }
+        h1 { font-size:14pt; }
+        h2 { font-size:9.5pt; margin-bottom:3pt; padding-bottom:1.5pt; }
+        p, li, .lead, .row h3 { font-size:8.8pt; }
+        .note { font-size:8.7pt; padding:4pt 6pt; margin-top:6pt; }
+        section { margin-top:6pt; }
+        .about { font-size:8.7pt; margin-top:6pt; padding-top:4pt; }
+        .sign { font-size:8.5pt; margin-top:4pt; }
+        .sub { font-size:8.7pt; }
+        .row, li { break-inside:avoid; }
+        p { margin-bottom:3pt; }
+        li { margin-bottom:1.5pt; }
+    }
+    @media (max-width: 900px) {
+        .page { width:auto; margin:12px; padding:18px 16px; min-height:auto; }
+    }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button onclick="window.print()">打印 / 导出 PDF</button>
+    <span class="tip">打印对话框选「另存为 PDF」，A4、边距默认、<strong>勾选「背景图形」</strong>；或按 <kbd>Ctrl</kbd>+<kbd>P</kbd></span>
+</div>
+
+<div class="page">
+
+    <h1>燃气 AI 的第一步：我的一点判断</h1>
+    <div class="sub">针对「燃气AI产品经理」岗位 ｜ 李雪蓉 ｜ 13452804877 ｜ 382508589@qq.com</div>
+
+    <div class="note">
+        <strong>先说性质：</strong>这不是方案书，是我从公开信息做的判断，外加几个想请教的问题。
+        标「<strong>推断</strong>」的地方很可能不准，<strong>请直接纠正我</strong>——纠正比认同更有价值。
+    </div>
+
+    <section>
+        <h2>一、判断：先做这两件，先不做那两件</h2>
+        <div class="lead">
+            这么排的理由：燃气出事故要问责，所以涉及安全与赔付的判断，<strong>AI 只能排序和提示，决定必须在人手里</strong>；
+            而系统孤岛和一线配合度，又决定了哪些场景现在压根做不了。
+        </div>
+
+        <div class="row ok">
+            <h3>✅ 先做</h3>
+            <ul>
+                <li><strong>监管报送自动化。</strong>不碰安全责任、省的是实打实的人力、效果当月就能算。是脏活，但脏活即壁垒。</li>
+                <li><strong>巡检照片 AI 初筛，最终判定仍在班长手里。</strong>把「AI 排序」和「人决策」分开，风险可控、见效快。</li>
+            </ul>
+        </div>
+
+        <div class="row no">
+            <h3>❌ 先不做</h3>
+            <ul>
+                <li><strong>泄漏预测。</strong>历史数据积累不够；而且一旦误报或漏报，责任无法界定。</li>
+                <li><strong>应急指挥。</strong>需要管网拓扑、实时压力、阀门状态三者同时准确。数据没打通前做不了，做错是二次事故。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>二、两个容易被忽略的点</h2>
+
+        <div class="row">
+            <h3>① 巡检 AI 真正的风险不是「识别不准」，是「一线开始不拍照」</h3>
+            <p>
+                AI 能自动抓漏检之后，巡检员的最优策略就变成应付系统——只拍能过的，或者摆拍。
+                <strong>产品必须让一线受益</strong>（帮他自动填记录、帮他自证「我确实查过了」），
+                否则模型还没上线，数据源先崩。
+            </p>
+        </div>
+
+        <div class="row">
+            <h3>② 监管报送的难点不是「取数」，是「口径映射」</h3>
+            <p>
+                同一个「管网长度」，规划口径、营收口径、安全口径很可能都不一样——含不含庭院管？含不含在建？含不含代管？
+                所以这个产品的核心资产是一张<strong>可配置的口径字典</strong>，不是一个取数脚本。
+            </p>
+        </div>
+    </section>
+
+    <section>
+        <h2>三、不需要预算的起手（我会先做这三步）</h2>
+        <ul>
+            <li>取一份<strong>已经公开的报送要求</strong>，把它拆成字段清单。</li>
+            <li>拿现有系统能取到的字段对一遍，<strong>列出取不到的字段</strong>——这份缺口清单就是这个产品真实的工作量。</li>
+            <li>选一条管线段做<strong>巡检照片小样本核对</strong>，先确认照片质量能不能支撑自动识别。不花钱，但能决定后面要不要做。</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>四、三个想请教的问题</h2>
+        <ul class="qa">
+            <li>1. 向政府报送的数据，目前是各业务部门分别报，还是已经有统一出口？</li>
+            <li>2. 巡检照片现在是拍完就归档，还是中间有复核环节？</li>
+            <li>3.「城市生命线」这条线，现在最大的卡点是数据打通，还是场景没定？</li>
+        </ul>
+    </section>
+
+    <div class="about">
+        <strong>关于我：</strong>12 年工业测控行业 B2B 销售——我卖的仪表就是管网监测的上游。
+        最近独立做了 3 个 AI 工作台，其中一个专门解决「<strong>让 AI 不确定时就说不知道</strong>」：三级证据分级强制标注信息来源，查不到就输出「未获取」，不许用推测填满版面——<strong>燃气场景需要的正是这个</strong>。
+        <br />
+        <a href="https://ai-pm-lixuerong-hangyefenxi.netlify.app/">行业分析工作台</a>（演示，无需配置）　·　
+        <a href="https://github.com/Lily-moyan/coze-customer-service">智能客服代码</a>
+        <div class="sign">李雪蓉 ｜ AI 应用产品经理（toB 方向）｜ 13452804877</div>
+    </div>
+
+</div>
+
+</body>
+</html>
